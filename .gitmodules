@@ -22,3 +22,6 @@
 [submodule ".ref/repos/superpowers"]
 	path = .ref/repos/superpowers
 	url = https://github.com/obra/superpowers.git
+[submodule ".ref/repos/hyperpowers"]
+	path = .ref/repos/hyperpowers
+	url = https://github.com/withzombies/hyperpowers.git
