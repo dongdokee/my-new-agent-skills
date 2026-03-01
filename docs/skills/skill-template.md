@@ -40,67 +40,82 @@ description: >-
   - 경로 정책(상대경로/`..` 금지/절대경로 처리)
   - 출력 패턴(예: `docs/xxx/YYYY-MM-DD-...`)
   - 파일명 규칙
-  - 번호/상태값 허용 목록
+  - 번호/상태값 유효 목록
 - 상태/결정형 스킬:
   - 상태 전이 규칙(예: Proposed → Accepted 등)
 - 상호작용형 스킬:
   - 사용자 확인 포인트를 명확히 표기
-  - `AskUserQuestion` 스타일 권장
-- 다단계 작업형 스킬:
-  - `## Process`와 함께 `### 1.`, `### 2.` 스타일 단계 번호 권장
+  - 다른 스킬 호출이 있으면 호출 조건·대상·예상 산출물·실패시 처리 순서 명시
 
-## Minimal Actionable Skeleton
+## 2) 문서 품질 규칙
 
-```markdown
-## Purpose
+- 명령형 문체 사용: `Check`, `Verify`, `Create`, `Run`, `Report`
+- 모호한 조건 회피
+- 실무에서 재현 가능한 검증 포인트 명시
+- 장문보다 최소 실무 단위 예시 위주 작성
 
-- 문제/목적
+## 4) 코드블록 사용 규칙
 
-## Process
+- 실행 명령: ` ```bash`
+- 정책/알고리즘: ` ```text`
+- 템플릿/산출물: ` ```markdown`
 
-### 1. 사전 점검
+## 5) 체크리스트 (작성 완료 직전)
 
-- [필수 입력 확인]
-- [안전 조건 확인]
+- [ ] frontmatter와 제목 존재
+- [ ] 목적/동작이 명확
+- [ ] 실행형이면 `Process`와 단계가 있는지 확인
+- [ ] 위험/완료형이면 철칙(Iron Law) 또는 Guardrail 존재
+- [ ] 연계 스킬 호출 시 호출 조건이 명시
+- [ ] 최소 반영 체크리스트 있음
+- [ ] `프로젝트` 규칙(경로/파일명/상태)이 필요 시 반영됨
 
-### 2. 실행
+## 6) 금지 패턴
 
-- [핵심 절차]
+- 결과만 주장하고 실행 절차 생략
+- 경로/입력 조건 없이 바로 파일 변경
+- 완료 검증 없이 `완료` 선언
+- 삭제/폐기/강제 변경 시 명시적 동의 부재
+- 파괴적 단계 누락
 
-### 3. 완료/보고
+## 7) 추천 특수 블록 (필요 시)
 
-- [산출물 확인]
-- [결과 요약]
+### The Iron Law
 
-## Anti-Patterns
-
-- **잘못된 동작**: [설명]
-- **올바른 대체**: [설명]
+```text
+## The Iron Law
+- [비교가 불가능할 만큼 핵심인 제약 규칙 1개]
 ```
 
-## Cross-Skill / Tool Invocation
+### 상태 전이
 
-다른 스킬을 호출할 경우 각 항목을 명시합니다.
+```text
+## Status Transitions
+Accepted -> Deprecated
+Accepted -> Superseded by [NNNN](NNNN-title.md)
+```
 
-- 호출 조건
-- 호출 대상 (`<name>`)
-- 기대 산출물(파일/결과/상태)
-- 실패 시 되돌릴 경로
+### 입력/출력 계약
 
-## Safety / Rollback
+```text
+## Input / Output Contract
+- Input: ...
+- Output: ...
+```
 
-- 파괴적 동작은 사전 승인(명시적 확인) 포함
-- 완료 주장 전 검증 근거를 남김
-- 상태 변경이 있는 스킬은 복구 전략 제시
+### 사용자 결정
 
-## Validation Block (권장)
+```text
+How should we proceed?
+- Continue (recommended)
+- Revise assumptions
+- Back to research
+```
 
-- 입력 검증: 경로, 타입, 범위
-- 출력 검증: 파일 존재, 경로 패턴 준수, 상태값 유효성
-- 종료 조건: 수행 근거(명령 출력, 파일 존재, 상태 변경 확인)
+### 스킬 호출
 
-## Integration
-
-- 이전 단계
-- 다음 단계
-- 관련 스킬: `<skill-name>`
+```text
+When [condition]:
+- Invoke "<name>" on [path]
+- If failed: return to fix stage
+```

@@ -6,7 +6,7 @@
 
 1. 파일 최상단 YAML frontmatter
    - `name: <kebab-case-slug>`
-   - `description: >-`
+   - `description:` (단일 라인 문자열 또는 블록 스칼라 `>-` 모두 허용)
 2. 사용자에게 보일 `#` 제목
 3. 스킬 목적/동작이 드러나는 핵심 섹션 1개 이상
    - `## Purpose` 또는 `## Process` 또는 동치 섹션
