@@ -1,0 +1,36 @@
+platforms:
+  claude:
+    display_name: "Claude Code"
+    skill_path: ".claude/commands"
+    agent_path: ".claude/agents"
+    format: markdown
+    tools:
+      search: "Grep"
+      file_discovery: "Glob"
+      file_read: "Read"
+      task_create: "TaskCreate"
+      task_update: "TaskUpdate"
+  gemini:
+    display_name: "Gemini CLI"
+    skill_path: ".gemini/commands"
+    agent_path: ".gemini/agents"
+    command_format: toml
+    format: markdown
+    tools:
+      search: "grep_search"
+      file_discovery: "glob, list_directory"
+      file_read: "read_file, read_many_files"
+      task_create: "_(reciting-task-state)_"
+      task_update: "_(reciting-task-state)_"
+  codex:
+    display_name: "Codex"
+    skill_path: ".codex"
+    agent_path: ".codex/agents"
+    config_file: ".codex/config.toml"
+    format: toml
+    tools:
+      search: "functions.exec_command with rg"
+      file_discovery: "functions.exec_command with find"
+      file_read: "functions.exec_command with cat"
+      task_create: "update_plan"
+      task_update: "update_plan"

@@ -1,0 +1,7 @@
+name: subagent-porter
+description: "Convert provider-specific agent definitions into multi-provider compatible outputs"
+platforms: [claude, gemini, codex]
+install_as: command
+include:
+  - SKILL.md
+  - references/

@@ -5,6 +5,19 @@ description: >
   files, validating constraints, and returning requirement-level evidence for
   research decisions.
 model: haiku
+platforms:
+  claude:
+    model: haiku
+    tools: [Read, Glob, Grep]
+    maxTurns: 12
+  gemini:
+    model: gemini-2.0-flash
+    tools: [grep_search, glob, read_file, read_many_files, list_directory]
+    max_turns: 12
+  codex:
+    model: o4-mini
+    model_reasoning_effort: medium
+    sandbox_mode: read-only
 ---
 
 # Code Explorer Agent

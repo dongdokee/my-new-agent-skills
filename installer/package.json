@@ -1,0 +1,30 @@
+{
+  "name": "agent-skill-installer",
+  "version": "0.1.0",
+  "description": "Multi-platform agent skill installer for Claude Code, Gemini CLI, and Codex",
+  "type": "module",
+  "bin": {
+    "agent-skill-installer": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.0",
+    "@iarna/toml": "^2.2.5",
+    "chalk": "^5.3.0",
+    "ora": "^8.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "vitest": "^2.0.0"
+  }
+}
