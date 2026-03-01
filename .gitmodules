@@ -1,0 +1,24 @@
+[submodule ".ref/repos/rpikit"]
+	path = .ref/repos/rpikit
+	url = https://github.com/bostonaholic/rpikit.git
+[submodule ".ref/repos/agents"]
+	path = .ref/repos/agents
+	url = https://github.com/wshobson/agents.git
+[submodule ".ref/repos/claude-plugins"]
+	path = .ref/repos/claude-plugins
+	url = https://github.com/corca-ai/claude-plugins.git
+[submodule ".ref/repos/claude-plugins-official"]
+	path = .ref/repos/claude-plugins-official
+	url = https://github.com/anthropics/claude-plugins-official.git
+[submodule ".ref/repos/codex"]
+	path = .ref/repos/codex
+	url = https://github.com/openai/codex.git
+[submodule ".ref/repos/everything-claude-code"]
+	path = .ref/repos/everything-claude-code
+	url = https://github.com/affaan-m/everything-claude-code.git
+[submodule ".ref/repos/oh-my-claudecode"]
+	path = .ref/repos/oh-my-claudecode
+	url = https://github.com/Yeachan-Heo/oh-my-claudecode.git
+[submodule ".ref/repos/superpowers"]
+	path = .ref/repos/superpowers
+	url = https://github.com/obra/superpowers.git
