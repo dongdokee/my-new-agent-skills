@@ -25,12 +25,6 @@ by evidence from codebase exploration and optional web research.
 - Compare design options and select one.
 - Produce a structured research ticket for handoff.
 
-## When Not to Use
-
-- Skip this workflow when requirements and implementation approach are already
-  clear and approved.
-- Skip this workflow for trivial edits with no design implications.
-
 ## The Iron Law
 
 - Do not freeze requirements or design before collecting evidence.
@@ -46,22 +40,24 @@ by evidence from codebase exploration and optional web research.
 
 ## Process
 
-### 1. Intent Interrogation
+**REQUIRED SUB-SKILL:** Use `mapping-task-tools` to create a task
+You MUST create a task for each of these steps and complete them in order:
+
+### Step 1: Intent Interrogation
 
 - Ask one question at a time.
 - Prefer multiple-choice framing when possible.
 - Capture: problem, audience, success criteria, constraints, and non-goals.
+- Use `references/question-playbook.md` for question patterns.
 
-Use `references/question-playbook.md` for question patterns.
-
-### 2. Preliminary Requirements
+### Step 2: Preliminary Requirements
 
 - Draft functional and non-functional requirements from user intent.
 - Mark in-scope and out-of-scope explicitly.
 - Record assumptions, unknowns, and validation targets.
 - Treat this as a draft, not a freeze.
 
-### 3. Targeted Exploration
+### Step 3: Targeted Exploration
 
 - Explore only what is needed to validate the draft requirements.
 - Start with codebase exploration:
@@ -76,13 +72,13 @@ If codebase evidence is insufficient:
 
 Use `references/exploration-checklist.md` to avoid shallow exploration.
 
-### 4. Design Synthesis
+### Step 4: Design Synthesis
 
 - Build design options from exploration findings.
 - Compare trade-offs against requirements.
 - Recommend one candidate design with rationale.
 
-### 5. Validated Requirements and Final Design Freeze
+### Step 5: Validated Requirements and Final Design Freeze
 
 - Reconcile draft requirements with exploration evidence.
 - Produce the validated requirement set.
@@ -91,7 +87,7 @@ Use `references/exploration-checklist.md` to avoid shallow exploration.
 
 If the user rejects, run the loop in `references/rejection-loop.md`.
 
-### 6. Ticket Authoring
+### Step 6: Ticket Authoring
 
 - Create the artifact at:
 - `docs/plans/YYYY-MM-DD-<topic>-research.md`
@@ -114,7 +110,11 @@ If the user rejects, run the loop in `references/rejection-loop.md`.
 - Using web research as a default instead of a fallback.
 - Declaring completion without open questions and next actions.
 
-## Checklist Before Finishing
+## Checklist Before Running
+
+- [ ] Activate the `mapping-task-tools` skill.
+
+## Checklist After Completion
 
 - [ ] User intent and success criteria are explicit.
 - [ ] Preliminary requirements are documented with assumptions.
