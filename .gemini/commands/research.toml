@@ -1,0 +1,8 @@
+description = "Unified research workflow for intent discovery, requirement clarification, and design synthesis (<topic to research>)"
+prompt = """
+# Research Command instructions
+
+Invoke the research skill and follow it exactly as presented to you.
+
+{{args}}
+"""
