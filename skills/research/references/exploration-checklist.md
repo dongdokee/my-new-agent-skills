@@ -10,11 +10,14 @@ Use this checklist before concluding exploration.
 
 ## Codebase-First Investigation
 
-- [ ] Locate core files with `file-finder`.
+- [ ] Run one `code-explorer` pass against the highest-priority validation target.
+- [ ] Expand to 2-3 parallel `code-explorer` passes only if findings are conflicting, low-confidence, or incomplete.
 - [ ] Read primary flow files before utility files.
 - [ ] Trace data flow from input to output.
 - [ ] Identify constraints from config, tests, and interfaces.
 - [ ] Capture evidence with file paths and key line/behavior references.
+- [ ] Merge pass outputs, deduplicate files, and map evidence to each major requirement.
+- [ ] Record open questions and confidence (`high`/`medium`/`low`) for each unresolved area.
 
 ## Web Research Fallback
 
@@ -35,3 +38,4 @@ When web research is used:
 - [ ] Each major requirement has evidence.
 - [ ] Design options are informed by evidence, not assumptions.
 - [ ] Remaining unknowns are explicitly listed as open questions.
+- [ ] Confidence is recorded for each major conclusion.

@@ -61,9 +61,19 @@ You MUST create a task for each of these steps and complete them in order:
 
 - Explore only what is needed to validate the draft requirements.
 - Start with codebase exploration:
-- Use `file-finder` to locate primary files.
-- Read core flow files first, then supporting utilities/config/tests.
-- Trace data flow and constraints.
+  - Use `code-explorer` to trace implementation and collect evidence.
+  - Start with one `code-explorer` pass.
+  - Expand to 2-3 parallel `code-explorer` passes only when evidence is low-confidence, conflicting, or incomplete.
+  - Each pass must return:
+    - Core files (3-5 by default, up to 10 when complexity warrants) with relevance notes
+    - Execution/data flow summary
+    - Constraints from config, tests, interfaces, and dependencies
+    - Risks or discrepancies
+    - Open questions
+    - Confidence (`high`, `medium`, or `low`)
+  - Merge pass outputs, deduplicate file lists, and map evidence to each major requirement.
+  - Read core flow files first, then supporting utilities/config/tests.
+  - Trace data flow and constraints.
 
 If codebase evidence is insufficient:
 
