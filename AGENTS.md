@@ -62,6 +62,7 @@ Each skill in `skills/<name>/` has:
 ### Skill Interdependencies
 
 `research` → uses `{{tool.task_tracking}}` (platform-adaptive) for task tracking → spawns `code-explorer` agent for codebase exploration.
+- Example placeholder patterns are platform-aware and must stay in `tool` namespace (for example `{{tool.ask_user}}` for user prompts).
 
 ### Reference Projects
 
@@ -70,7 +71,11 @@ Each skill in `skills/<name>/` has:
 ## Key Conventions
 
 - Agent frontmatter uses a `platforms:` block with per-platform config (model, tools, turns). The installer reads this to generate platform-specific output.
-- `{{tool.*}}` placeholders in agent bodies are Mustache-style. Only `tool.*` keys are substituted; other patterns like `{{args}}` pass through untouched. Mappings are defined in `installer/platforms.yaml`.
+- `SKILL.md` and agent bodies use `{{tool.<key>}}` placeholders for all platform-dependent tool calls and workflow actions.
+- Placeholder engine rule: only `tool.*` keys are substituted. The substitution is implemented in `transform.ts` as `{{tool.<key>}}` replacement; other Mustache-like patterns are **Non-Goal and must not be introduced**.
+- When you need a platform-specific action phrase, put the full phrase in the mapping value (including spaces/prefix), not in fixed SKILL text. Example: `... questions one at a time{{tool.ask_user}}:`.
+- If a platform has no equivalent tool, use empty-string mapping in `installer/platforms.yaml` (for example, Codex) so the phrase remains natural without placeholder residue.
+- Mappings are defined in `installer/platforms.yaml`; every new `{{tool.<key>}}` used in source content must be added to each relevant platform or explicitly documented as intentionally missing.
 - Codex agents require two files: the agent TOML + a `[agents.<name>]` entry in `.codex/config.toml`. The installer handles both.
 - `installer/src/` is the source of truth. `installer/dist/` is a local build artifact and may be stale until `npm run build` is run.
 - The primary language for documentation and commit messages in this project is mixed Korean/English.

@@ -28,6 +28,7 @@ by evidence from codebase exploration and optional web research.
 ## The Iron Law
 
 - Ask exactly one question at a time whenever interacting with the user. Never bundle multiple questions or group intent interrogation with requirement drafting in the same turn.
+- Always provide multiple-choice options when asking questions to the user, along with your recommendation and its rationale.
 - Do not freeze requirements or design before collecting evidence.
 - Use codebase evidence first; use web research only when codebase evidence is
   insufficient.
@@ -40,12 +41,6 @@ by evidence from codebase exploration and optional web research.
 - Do not claim completion without a ticket artifact at
   `docs/plans/YYYY-MM-DD-<topic>-research.md`.
 
-## Input / Output Contract
-
-- Input: user goal, question, or topic requiring clarification and design.
-- Output: `docs/plans/YYYY-MM-DD-<topic>-research.md`
-- Required output structure: use `references/ticket-template.md` exactly.
-
 ## Process
 
 **REQUIRED:** Use {{tool.task_tracking}} to create a task for each step.
@@ -55,7 +50,9 @@ You MUST create a task for each of these steps and complete them in order:
 
 **Goal:** Clarify what the user wants to accomplish.
 
-Ask questions one at a time using AskUserQuestion:
+**CRITICAL:** If a topic needs more exploration, break it into multiple questions
+
+**Actions:** Ask questions one at a time{{tool.ask_user}}:
 
 1. **Problem: What problem are you solving?**
     - The underlying need, not the proposed solution
@@ -88,15 +85,15 @@ Ask questions one at a time using AskUserQuestion:
 
 **Goal:** Draft a preliminary idea and get approval
 
-Draft a preliminary idea based on your understanding from Step 1:
+**Actions:**
 
-- Document what you understood from Step 1
-- Include any assumptions and areas requiring exploration
+1. Draft a preliminary idea based on your understanding from Step 1:
+    - Document what you understood from Step 1
+    - Include any assumptions and areas requiring exploration
 
-Ask the user if the preliminary idea is acceptable:
-
-- **User approves** - proceed to Step 3
-- **User rejects** - Restart step 1 based on the user's message
+2. Ask the user if the preliminary idea is acceptable{{tool.ask_user}}:
+    - **User approves** - proceed to Step 3
+    - **User rejects** - Restart step 1 based on the user's message
 
 ### Step 3: Targeted Exploration
 
