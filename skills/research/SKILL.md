@@ -51,22 +51,52 @@ by evidence from codebase exploration and optional web research.
 **REQUIRED:** Use {{tool.task_tracking}} to create a task for each step.
 You MUST create a task for each of these steps and complete them in order:
 
-### Step 1: Intent Interrogation
+### Step 1: Understanding the Idea
 
-- Ask one question at a time.
-- Prefer multiple-choice framing when possible.
-- Capture: problem, audience, success criteria, constraints, and non-goals.
-- Use `references/question-playbook.md` for question patterns.
+**Goal:** Clarify what the user wants to accomplish.
 
-### Step 2: Preliminary Requirements
+Ask questions one at a time using AskUserQuestion:
 
-- Draft functional and non-functional requirements from user intent.
-- Mark in-scope and out-of-scope explicitly.
-- Record assumptions, unknowns, and validation targets.
-- Treat this as a draft, not a freeze.
-- Present the draft to the user; do not advance to Step 3 without explicit confirmation.
-- Use `references/question-playbook.md` Phase 2 approval gate for framing.
-- If the user changes problem definition or goals, return to Step 1.
+1. **Problem: What problem are you solving?**
+    - The underlying need, not the proposed solution
+    - Why does this matter?
+
+2. **Audience: Who is this for?**
+    - End users, developers, operators?
+    - What do they need?
+
+3. **Success Criteria: What does success look like?**
+    - How will you know it works?
+    - What would make this valuable?
+
+3. **Non-goals: What are we NOT doing?**
+    - Explicitly out of scope for this task
+    - Related problems intentionally left unaddressed
+    - Future considerations deferred to later phases
+
+4. **Constraints: What constraints exist?**
+    - Technical limitations
+    - Time constraints
+    - Compatibility requirements
+
+5. **Exploration: What have you considered?**
+    - Initial ideas or preferences
+    - Approaches to avoid
+    - Prior art to reference
+
+### Step 2: Presenting Preliminary Idea
+
+**Goal:** Draft a preliminary idea and get approval
+
+Draft a preliminary idea based on your understanding from Step 1:
+
+- Document what you understood from Step 1
+- Include any assumptions and areas requiring exploration
+
+Ask the user if the preliminary idea is acceptable:
+
+- **User approves** - proceed to Step 3
+- **User rejects** - Restart step 1 based on the user's message
 
 ### Step 3: Targeted Exploration
 
@@ -116,6 +146,65 @@ If the user rejects, run the loop in `references/rejection-loop.md`.
 - Follow `references/ticket-template.md`.
 - Include ADR-lite fields in the ticket.
 - If rejection loops occurred, include a concise change log.
+
+## Questioning Techniques
+
+### Funnel Questions
+
+Start broad, narrow based on answers:
+
+```text
+1. "What are you trying to build?" (broad)
+2. "Which users will interact with this?" (narrowing)
+3. "What's the most important interaction?" (specific)
+```
+
+### Assumption Surfacing
+
+Make implicit assumptions explicit:
+
+```text
+"I'm assuming this needs to integrate with the existing auth system.
+Is that correct?"
+```
+
+### Trade-off Questions
+
+When multiple valid choices exist:
+
+```text
+"There's a trade-off here:
+- Option A is simpler but less flexible
+- Option B is more flexible but more complex
+
+Which matters more for this use case?"
+```
+
+### Examples for Clarity
+
+When requirements are vague:
+
+```text
+"Can you give me an example of what you'd expect to happen
+when a user does X?"
+```
+
+## YAGNI Principle
+
+**You Aren't Gonna Need It.**
+
+Ruthlessly apply this during research:
+
+- Reject features "for later"
+- Question every "nice to have"
+- Focus on the minimum viable solution
+- Complexity can be added later; removing it is hard
+
+```text
+User: "We should also add support for X in case we need it"
+Response: "Let's focus on the core need first. We can add X
+later if it becomes necessary. What's the minimum we need now?"
+```
 
 ## Integration
 
