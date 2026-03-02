@@ -74,6 +74,14 @@ tools: [Read, Glob, Grep]  # Claude tool names; Gemini/Codex names auto-mapped
 ---
 ```
 
+Available profiles:
+
+| Profile | Claude | Gemini | Codex | maxTurns |
+|---------|--------|--------|-------|----------|
+| `fast` | haiku | gemini-2.5-flash-lite | gpt-5.2 (medium) | 12 |
+| `mid` | sonnet | gemini-3-flash-preview | gpt-5.3-codex (medium) | 12 |
+| `deep` | opus | gemini-3.1-pro-preview | gpt-5.3-codex (xhigh) | 20 |
+
 Legacy `platforms:` block is still supported for backward compatibility (e.g. skill-local agents needing per-platform overrides):
 
 ```yaml

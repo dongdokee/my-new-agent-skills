@@ -82,3 +82,23 @@ profiles:
     codex:
       model: gpt-5.2
       model_reasoning_effort: medium
+  mid:
+    claude:
+      model: sonnet
+      maxTurns: 12
+    gemini:
+      model: gemini-3-flash-preview
+      max_turns: 12
+    codex:
+      model: gpt-5.3-codex
+      model_reasoning_effort: medium
+  deep:
+    claude:
+      model: opus
+      maxTurns: 20
+    gemini:
+      model: gemini-3.1-pro-preview
+      max_turns: 20
+    codex:
+      model: gpt-5.3-codex
+      model_reasoning_effort: xhigh
