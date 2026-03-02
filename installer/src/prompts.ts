@@ -35,7 +35,7 @@ export async function runPrompts(scanResult: ScanResult): Promise<InstallSelecti
   // Step 3: Agent selection
   const agentChoices = scanResult.agents
     .filter((a) => platforms.some((p) => a.manifest.platforms[p] !== undefined))
-    .map((a) => ({ name: `${a.skillName}/${a.name}`, value: a, checked: true }));
+    .map((a) => ({ name: a.skillName ? `${a.skillName}/${a.name}` : a.name, value: a, checked: true }));
   const agents = agentChoices.length > 0
     ? await checkbox({ message: "Select agents to install:", choices: agentChoices })
     : [];
