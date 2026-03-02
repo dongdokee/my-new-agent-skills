@@ -39,6 +39,8 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 - bugs/functional correctness
 - project conventions/abstractions
 
+**REQUIRED SUB-SKILL:** Invoke `test-driven-development` to understand TDD-driven task structure
+
 **Ticket:** `<ticket-file-path>
 
 **Goal:** [One sentence describing what this builds]
