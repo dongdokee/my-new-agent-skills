@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdirSync, readFileSync, rmSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { scanSkills } from "../scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlCommand, buildTomlAgent, updateCodexConfig } from "../transform.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig } from "../transform.js";
 import { installSkill, installAgent } from "../installer.js";
 
 const TEST_ROOT = resolve(import.meta.dirname, "../../.test-output");
@@ -48,12 +48,6 @@ describe("transforms", () => {
     expect(out).toContain("max_turns: 12");
   });
 
-  it("builds Gemini TOML command", () => {
-    const out = buildTomlCommand("desc", "prompt body");
-    expect(out).toContain('description = "desc"');
-    expect(out).toContain("prompt");
-  });
-
   it("builds Codex TOML agent", () => {
     const out = buildTomlAgent({ model: "o4-mini", tools: [], model_reasoning_effort: "medium", sandbox_mode: "read-only" }, "body");
     expect(out).toContain('model = "o4-mini"');
@@ -74,15 +68,15 @@ describe("installer integration", () => {
   it("installs skill for Claude as markdown", () => {
     const { skills } = scanSkills(SKILLS_ROOT);
     const results = installSkill(skills.find((s) => s.name === "research")!, "claude", TEST_ROOT);
-    expect(results[0].outputPath).toContain(".claude/commands/research.md");
+    expect(results[0].outputPath).toContain(".claude/skills/research/research.md");
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
-  it("installs skill for Gemini as TOML", () => {
+  it("installs skill for Gemini as markdown", () => {
     const { skills } = scanSkills(SKILLS_ROOT);
     const results = installSkill(skills.find((s) => s.name === "research")!, "gemini", TEST_ROOT);
-    expect(results[0].outputPath).toContain(".gemini/commands/research.toml");
-    expect(readFileSync(results[0].outputPath, "utf-8")).toContain("prompt");
+    expect(results[0].outputPath).toContain(".gemini/skills/research/research.md");
+    expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
   it("installs agent for Claude as markdown", () => {

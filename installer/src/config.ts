@@ -10,7 +10,6 @@ export interface PlatformConfig {
   skill_path: string;
   agent_path: string;
   format: "markdown" | "toml";
-  command_format?: "toml";
   config_file?: string;
   tools: Record<string, string>;
 }

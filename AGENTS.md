@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -27,7 +27,7 @@ node dist/index.js   # run installer (from project root)
 skills/<name>/SKILL.md + skill.yaml
   → scanner.ts discovers skills & agents
   → transform.ts replaces {{tool.*}} placeholders per platform
-  → transform.ts converts to target format (Markdown or TOML)
+  → transform.ts converts to target format (Markdown for skills, TOML for Codex agents)
   → installer.ts writes to platform-specific paths + copies references/
 ```
 
@@ -35,7 +35,7 @@ skills/<name>/SKILL.md + skill.yaml
 
 - `config.ts` — loads `platforms.yaml` (tool mappings, output paths) and parses `skill.yaml` manifests + agent frontmatter
 - `scanner.ts` — walks `skills/` to find installable skills (by `skill.yaml` presence) and agents (from manifest `agents:` field)
-- `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML command, TOML agent, Codex config.toml registration)
+- `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML agent, Codex config.toml registration)
 - `installer.ts` — orchestrates transform → write → copy references
 - `prompts.ts` — 4-step interactive TUI (platform → skills → agents → confirm)
 - `index.ts` — CLI entry point
@@ -44,9 +44,9 @@ skills/<name>/SKILL.md + skill.yaml
 
 | Platform | Skills | Agents |
 |----------|--------|--------|
-| Claude Code | `.claude/commands/<name>.md` (raw markdown) | `.claude/agents/<name>.md` (YAML frontmatter: `model`, `tools`, `maxTurns`) |
-| Gemini CLI | `.gemini/commands/<name>.toml` (TOML with `prompt` field) | `.gemini/agents/<name>.md` (YAML frontmatter: `kind: local`, `model`, `tools`, `max_turns`) |
-| Codex | `.codex/<name>.toml` | `.codex/agents/<name>.toml` (TOML: `model`, `developer_instructions`) + registration in `.codex/config.toml` |
+| Claude Code | `.claude/skills/<name>/<name>.md` (raw markdown) | `.claude/agents/<name>.md` (YAML frontmatter: `model`, `tools`, `maxTurns`) |
+| Gemini CLI | `.gemini/skills/<name>/<name>.md` (raw markdown) | `.gemini/agents/<name>.md` (YAML frontmatter: `kind: local`, `model`, `tools`, `max_turns`) |
+| Codex | `.codex/skills/<name>/<name>.md` (raw markdown) | `.codex/agents/<name>.toml` (TOML: `model`, `developer_instructions`) + registration in `.codex/config.toml` |
 
 ### Skill Structure
 
@@ -58,7 +58,7 @@ Each skill in `skills/<name>/` has:
 
 ### Skill Interdependencies
 
-`research` → uses `mapping-task-tools` for task tracking → spawns `code-explorer` agent for codebase exploration. `mapping-task-tools` → references `reciting-task-state` for Gemini CLI (file-based task tracking).
+`research` → uses `{{tool.task_tracking}}` (platform-adaptive) for task tracking → spawns `code-explorer` agent for codebase exploration. `mapping-task-tools` → references `reciting-task-state` for Gemini CLI (file-based task tracking).
 
 ### Reference Projects
 

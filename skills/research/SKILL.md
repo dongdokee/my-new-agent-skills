@@ -40,7 +40,7 @@ by evidence from codebase exploration and optional web research.
 
 ## Process
 
-**REQUIRED SUB-SKILL:** Use `mapping-task-tools` to create a task
+**REQUIRED:** Use {{tool.task_tracking}} to create a task for each step.
 You MUST create a task for each of these steps and complete them in order:
 
 ### Step 1: Intent Interrogation
@@ -122,7 +122,7 @@ If the user rejects, run the loop in `references/rejection-loop.md`.
 
 ## Checklist Before Running
 
-- [ ] Activate the `mapping-task-tools` skill.
+- [ ] Confirm {{tool.task_tracking}} is available.
 
 ## Checklist After Completion
 

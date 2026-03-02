@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from "node
 import { resolve, dirname } from "node:path";
 import { getPlatform } from "./config.js";
 import type { DiscoveredSkill, DiscoveredAgent } from "./scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlCommand, buildTomlAgent, updateCodexConfig } from "./transform.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig } from "./transform.js";
 
 export interface InstallResult {
   type: "skill" | "agent" | "config";
@@ -30,14 +30,8 @@ function copyReferences(skillDir: string, targetDir: string): void {
 export function installSkill(skill: DiscoveredSkill, platformId: string, projectRoot: string): InstallResult[] {
   const platform = getPlatform(platformId);
   const body = replacePlaceholders(readFileSync(skill.skillFilePath, "utf-8").trim(), platform.tools);
-
-  const isToml = platformId === "gemini" && platform.command_format === "toml";
-  const ext = isToml ? ".toml" : ".md";
-  const output = isToml
-    ? buildTomlCommand(skill.manifest.description, body)
-    : body + "\n";
-
-  const outputPath = resolve(projectRoot, platform.skill_path, `${skill.name}${ext}`);
+  const output = body + "\n";
+  const outputPath = resolve(projectRoot, platform.skill_path, skill.name, `${skill.name}.md`);
   writeOutput(outputPath, output);
 
   const results: InstallResult[] = [{ type: "skill", name: skill.name, outputPath }];

@@ -38,10 +38,6 @@ export function buildMarkdownAgent(
 
 // --- TOML transforms ---
 
-export function buildTomlCommand(description: string, body: string): string {
-  return TOML.stringify({ description, prompt: body } as TOML.JsonMap);
-}
-
 export function buildTomlAgent(platformConfig: AgentPlatformConfig, body: string): string {
   return TOML.stringify({
     model: platformConfig.model,
