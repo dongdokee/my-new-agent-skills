@@ -1,11 +1,10 @@
 ---
 name: research
 description: >-
-  Unified research workflow for intent discovery, requirement clarification,
-  codebase-first exploration, design synthesis, and research ticket authoring.
-  Use when users ask to understand a problem, refine requirements, investigate
-  implementation details, explore architecture, evaluate options, or produce a
-  decision-ready research artifact.
+  Interactive research workflow that converts ambiguous goals into a
+  decision-ready ticket through structured Q&A, codebase exploration,
+  and design comparison. Use when the user needs to clarify requirements,
+  explore approaches, or produce a research artifact before implementation.
 ---
 
 # Research
@@ -343,18 +342,20 @@ Trade-offs:
 - Evidence:
    - [Include data, code snippets, or research results that validate the choice]
 
-## 9. Open Questions (if any)
+## 4. Open Questions (if any)
 
 - [Question]
 
-## 10. Next Actions
+## 5. Next Actions
 
 - [ ] [Action]
 - [ ] [Action]
 ```
 
 **Ask the user if the ticket is acceptable{{tool.ask_user}}:**
-- **Approve** - Save final ticket to `docs/plans/YYYY-MM-DD-<topic>-ticket.md`
+- **Approve:**
+   - Save final ticket to `docs/plans/YYYY-MM-DD-<topic>-ticket.md`
+   - Ask user whether to invoke `writing-plans` skill to create a detailed implementation plan{{tool.ask_user}}
 - **Reject with feedback** - adjust based on feedback
 
 ## Questioning Techniques
@@ -416,13 +417,6 @@ Response: "Let's focus on the core need first. We can add X
 later if it becomes necessary. What's the minimum we need now?"
 ```
 
-## Integration
-
-- Next step for implementation planning: invoke `rpikit:writing-plans`.
-- For deeper unresolved research: return to Process step 3.
-- For major long-lived architectural impact:
-- Optionally create `docs/adr/YYYY-MM-DD-<topic>-adr.md` and link from ticket.
-
 ## Anti-Patterns
 
 | Wrong                                      | Right                                                 |
@@ -433,19 +427,3 @@ later if it becomes necessary. What's the minimum we need now?"
 | Freezing requirements based on assumptions | Use evidence from exploration to freeze design        |
 | Asking open-ended questions                | Provide multiple-choice options with rationale        |
 | Skipping design for "simple" tasks         | Present design and get approval for every project     |
-| Claiming success without running commands  | Run the verification command before reporting results |
-
-## Checklist After Completion
-
-- [ ] User intent and success criteria are explicit.
-- [ ] Preliminary requirements are documented with assumptions.
-- [ ] Exploration evidence supports the design decision.
-- [ ] Requirements and design are frozen with explicit approval.
-- [ ] Ticket matches `references/ticket-template.md`.
-- [ ] ADR-lite section is complete.
-- [ ] Open questions and next actions are documented.
-
-## Markdown Validation
-
-After writing the ticket, invoke skill `rpikit:markdown-validation` and fix
-all markdown issues before presenting the final artifact.
