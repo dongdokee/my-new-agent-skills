@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from "node
 import { resolve, dirname } from "node:path";
 import { getPlatform, loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { DiscoveredSkill, DiscoveredAgent } from "./scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings } from "./transform.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings, buildGeminiCommand } from "./transform.js";
 
 export interface InstallResult {
   type: "skill" | "agent" | "config";
@@ -38,6 +38,12 @@ export function installSkill(skill: DiscoveredSkill, platformId: string, project
 
   if (skill.manifest.include?.some((i) => i.startsWith("references"))) {
     copyReferences(skill.dir, resolve(projectRoot, platform.skill_path, skill.name));
+  }
+
+  if (platformId === "gemini" && skill.manifest.command && platform.command_path) {
+    const cmdPath = resolve(projectRoot, platform.command_path, `${skill.name}.toml`);
+    writeOutput(cmdPath, buildGeminiCommand(skill.name, skill.manifest.description));
+    results.push({ type: "config", name: `${skill.name}.toml`, outputPath: cmdPath });
   }
 
   return results;

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdirSync, readFileSync, rmSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { scanSkills } from "../scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig } from "../transform.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, buildGeminiCommand } from "../transform.js";
 import { installSkill, installAgent } from "../installer.js";
 import { resolveAgentConfig, loadPlatforms } from "../config.js";
 
@@ -69,6 +69,14 @@ describe("transforms", () => {
     expect(out).toContain("[agents.my-agent]");
     expect(out).toContain('description = "My agent"');
   });
+
+  it("buildGeminiCommand generates correct TOML", () => {
+    const out = buildGeminiCommand("research", "My research skill");
+    expect(out).toContain('description = "My research skill"');
+    expect(out).toContain('prompt =');
+    expect(out).toContain("Invoke the research skill");
+    expect(out).toContain("{{args}}");
+  });
 });
 
 describe("resolveAgentConfig", () => {
@@ -89,7 +97,7 @@ describe("resolveAgentConfig", () => {
     const cfg = resolveAgentConfig(manifest, "gemini", platforms);
     expect(cfg).not.toBeNull();
     expect(cfg!.model).toBe(platforms.profiles!["fast"]["gemini"].model);
-    expect(cfg!.tools).toEqual(["read_file", "read_many_files", "glob", "list_directory", "grep_search"]);
+    expect(cfg!.tools).toEqual(["read_file", "read_many_files", "glob", "grep_search"]);
   });
 
   it("dedupes overlapping gemini tool mappings", () => {
@@ -200,6 +208,28 @@ describe("installer integration", () => {
       });
     }
   }
+
+  // Gemini command TOML tests
+  it("installs research skill for gemini creates .gemini/commands/research.toml", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const research = skills.find((s) => s.name === "research")!;
+    const results = installSkill(research, "gemini", TEST_ROOT);
+    const cmdResult = results.find((r) => r.type === "config" && r.name === "research.toml");
+    expect(cmdResult).toBeDefined();
+    expect(cmdResult!.outputPath).toContain(".gemini/commands/research.toml");
+    expect(existsSync(cmdResult!.outputPath)).toBe(true);
+    const content = readFileSync(cmdResult!.outputPath, "utf-8");
+    expect(content).toContain("Invoke the research skill");
+    expect(content).toContain("{{args}}");
+  });
+
+  it("installs research skill for claude does NOT create command TOML", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const research = skills.find((s) => s.name === "research")!;
+    const results = installSkill(research, "claude", TEST_ROOT);
+    const cmdResult = results.find((r) => r.type === "config");
+    expect(cmdResult).toBeUndefined();
+  });
 
   // Side-effect test: code-explorer for Gemini disables codebase_investigator
   it("code-explorer for Gemini disables codebase_investigator", () => {

@@ -66,6 +66,14 @@ export function updateGeminiSettings(settingsPath: string): string {
   return JSON.stringify(existing, null, 2) + "\n";
 }
 
+export function buildGeminiCommand(skillName: string, description: string): string {
+  const obj: TOML.JsonMap = {
+    description,
+    prompt: `Invoke the ${skillName} skill and follow it exactly as presented to you: {{args}}`,
+  };
+  return TOML.stringify(obj);
+}
+
 export function updateCodexConfig(
   configPath: string,
   agentName: string,

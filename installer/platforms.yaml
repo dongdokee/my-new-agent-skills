@@ -16,6 +16,7 @@ platforms:
     display_name: "Gemini CLI"
     skill_path: ".gemini/skills"
     agent_path: ".gemini/agents"
+    command_path: ".gemini/commands"
     format: markdown
     tools:
       search: "grep_search"
@@ -44,7 +45,7 @@ platforms:
 # Codex agents do not declare a tools list, so only gemini is mapped here.
 agent_tool_map:
   Read:
-    gemini: [read_file]
+    gemini: [read_file, read_many_files]
   Glob:
     gemini: [glob]
   Grep:

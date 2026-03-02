@@ -11,6 +11,7 @@ export interface PlatformConfig {
   agent_path: string;
   format: "markdown" | "toml";
   config_file?: string;
+  command_path?: string;
   tools: Record<string, string>;
 }
 
@@ -40,6 +41,7 @@ export interface SkillManifest {
   install_as: "command" | "skill";
   include: string[];
   agents?: string[];
+  command?: boolean;
 }
 
 export interface AgentPlatformConfig {
