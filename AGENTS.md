@@ -94,7 +94,7 @@ Agents not tied to any specific skill live in the top-level `agents/` directory 
       maxTurns: 12
     gemini:
       model: gemini-2.0-flash
-      tools: [grep_search, glob, read_file, read_many_files, list_directory]
+      tools: [grep_search, glob, read_file]
       max_turns: 12
     codex:
       model: o4-mini
@@ -142,8 +142,6 @@ tools:
   - grep_search
   - glob
   - read_file
-  - read_many_files
-  - list_directory
 model: <MODEL>
 max_turns: 12
 ---
@@ -178,10 +176,10 @@ Map source intent to provider-native tool names. Keep capability intent intact e
 | Intent | Claude Code | Gemini CLI | Codex |
 | --- | --- | --- | --- |
 | Keyword/code search | `Grep` | `grep_search` | `functions.exec_command` with `rg` |
-| File discovery | `Glob` | `glob` + `list_directory` | `functions.exec_command` with `rg --files` or `find` |
+| File discovery | `Glob` | `glob` | `functions.exec_command` with `rg --files` or `find` |
 | Symbol usage exploration | `Grep` + targeted reads | `grep_search` with symbol patterns | `functions.exec_command` with `rg` patterns |
-| File read | `Read` | `read_file` + `read_many_files` | `functions.exec_command` with `sed`/`cat` |
-| Parallel first search batch | parallel tool calls where available | run independent `grep_search`/`glob`/`list_directory` calls in first batch | `multi_tool_use.parallel` with multiple `functions.exec_command` calls |
+| File read | `Read` | `read_file` | `functions.exec_command` with `sed`/`cat` |
+| Parallel first search batch | parallel tool calls where available | run independent `grep_search`/`glob` calls in first batch | `multi_tool_use.parallel` with multiple `functions.exec_command` calls |
 
 ### Frontmatter Requirements
 

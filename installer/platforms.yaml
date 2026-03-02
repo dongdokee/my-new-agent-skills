@@ -44,21 +44,21 @@ platforms:
 # Codex agents do not declare a tools list, so only gemini is mapped here.
 agent_tool_map:
   Read:
-    gemini: [read_file, read_many_files]
+    gemini: [read_file]
   Glob:
-    gemini: [glob, list_directory]
+    gemini: [glob]
   Grep:
     gemini: [grep_search]
   Write:
     gemini: [write_file]
   Edit:
-    gemini: [write_file]
+    gemini: [replace]
   Bash:
-    gemini: [run_in_terminal]
+    gemini: [run_shell_command]
   WebFetch:
-    gemini: [fetch_webpage]
+    gemini: [web_fetch]
   WebSearch:
-    gemini: [google_search]
+    gemini: [google_web_search]
   LS:
     gemini: [list_directory]
   NotebookRead:

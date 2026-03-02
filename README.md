@@ -96,7 +96,7 @@ platforms:
     maxTurns: 12
   gemini:
     model: gemini-2.0-flash
-    tools: [grep_search, glob, read_file, read_many_files, list_directory]
+    tools: [grep_search, glob, read_file]
     max_turns: 12
   codex:
     model: o4-mini
@@ -115,7 +115,7 @@ Note: `sandbox_mode` is not declared in agent frontmatter; it is hardcoded by th
 | Placeholder | Claude Code | Gemini CLI | Codex |
 |-------------|-------------|------------|-------|
 | `{{tool.search}}` | `Grep` | `grep_search` | `functions.exec_command with rg` |
-| `{{tool.file_read}}` | `Read` | `read_file, read_many_files` | `functions.exec_command with cat` |
+| `{{tool.file_read}}` | `Read` | `read_file` | `functions.exec_command with cat` |
 | `{{tool.task_tracking}}` | Task tools (`TaskCreate`, ...) | `reciting-task-state` skill | `update_plan` tool |
 
 ## Development
