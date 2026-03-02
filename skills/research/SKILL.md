@@ -74,10 +74,12 @@ Trade-offs:
    - Related problems intentionally left unaddressed
    - Future considerations deferred to later phases
 
-5. **Constraints: What constraints exist?**
+5. **Risks & Constraints: What constraints exist?**
    - Technical limitations
    - Time constraints
    - Compatibility requirements
+   - [TBD: Risk]
+   - [TBD: Mitigation]
 
 6. **Exploration: What have you considered?**
    - Initial ideas or preferences
@@ -101,8 +103,13 @@ Trade-offs:
 **Non-goals:**
 - [Non-goals]
 
-**Constraints:**
+**Risks:**
+- [Risks]
+
+**Risks & Constraints:**
 - [Constraints]
+- [Risks]
+- [Mitigations]
 
 **Explorations:**
 - [Explorations]
@@ -227,22 +234,111 @@ Trade-offs:
    - "Explore further" - discuss more options
    - "None of these" - gather more requirements
 
-### Step 6: Validated Requirements and Final Design Freeze
+### Step 6: Documenting Ticket
 
-- Reconcile draft requirements with exploration evidence.
-- Produce the validated requirement set.
-- Confirm Success Criteria and Validation Method with the user.
-- Present the full freeze proposal (requirements, design, success criteria, validation method) and request explicit user approval.
+**Present the Ticket:**
 
-If the user rejects, run the loop in `references/rejection-loop.md`.
+```
+# Ticket: <Topic> (YYYY-MM-DD)
 
-### Step 7: Ticket Authoring
+## 1. Requirements
 
-- Create the artifact at:
-- `docs/plans/YYYY-MM-DD-<topic>-research.md`
-- Follow `references/ticket-template.md`.
-- Include ADR-lite fields in the ticket.
-- If rejection loops occurred, include a concise change log.
+### Problem
+[problems]
+
+### Audience
+[audiences]
+
+### Success Criteria
+[success criteria]
+
+### Non-goals
+[Non-goals]
+
+### Constraints
+[Constraints]
+
+### Risks
+[Risks]
+
+### Explorations
+[Explorations]
+
+### Assumptions
+[Assumptions]
+
+## 2. Exploration Findings
+
+### Relevant Files
+
+| File            | Purpose     | Key Lines |
+| --------------- | ----------- | --------- |
+| path/to/file.ts | Description | 42-87     |
+
+### Existing Patterns
+
+[Patterns discovered that inform implementation]
+
+### Dependencies
+
+[External and internal dependencies]
+
+### External Research
+
+[Findings from web research, if conducted - include sources]
+
+### Technical Constraints
+
+[Limitations discovered during exploration]
+
+## 3. Design
+
+### Chosen Architecture
+
+[Detailed architectural specifications to facilitate implementation planning]
+
+### Alternative Architectures Considered
+
+- Alternative 1: [2-3 sentences describing the approach]
+- ...
+
+### Decision Rationale
+
+[Why the chosen option best satisfies constraints and requirements.]
+
+### Architectural Decision Records (ADRs)
+
+#### ADR 1
+
+- Context: [Describe the background and the specific technical challenges or requirements that necessitate this decision]
+- Decision: [State the chosen architecture, technology, or approach clearly]
+- Alternatives Considered:
+   - **Alternative 1:** [Brief description]
+   - ...
+- Trade-offs: (Analyze the pros and cons between the selected option and the alternatives)
+   | Option | Pros | Cons |
+   | :--- | :--- | :--- |
+   | **Chosen ** | [Pros of chosen architecture] | [Cons of chosen architecture] |
+   | **Aternative 1 ** | [Pros of Alternative 1] | [Cons of Alternative 1] |
+- Consequences: (Describe the expected impact and the resulting state after this decision is implemented.)
+   - **Positive:** [e.g., Improved system stability, 20% reduction in response time]
+   - **Negative:** [e.g., Two weeks of additional setup time, dependency on a specific library]
+- Evidence:
+   - [Include data, code snippets, or research results that validate the choice]
+
+## 9. Open Questions (if any)
+
+- [Question]
+
+## 10. Next Actions
+
+- [ ] [Action]
+- [ ] [Action]
+```
+
+**Ask the user if the ticket is acceptable{{tool.ask_user}}:**
+- **Approve** - Save final ticket to `docs/plans/YYYY-MM-DD-<topic>-ticket.md`
+- **Reject with feedback** - adjust based on feedback
 
 ## Questioning Techniques
 
