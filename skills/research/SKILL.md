@@ -74,12 +74,12 @@ Trade-offs:
    - Related problems intentionally left unaddressed
    - Future considerations deferred to later phases
 
-5. **Risks & Constraints: What constraints exist?**
+5. **Risks & Constraints: What risks and constraints exist?**
    - Technical limitations
    - Time constraints
    - Compatibility requirements
-   - [TBD: Risk]
-   - [TBD: Mitigation]
+   - Known risks and failure modes
+   - Mitigation strategies for identified risks
 
 6. **Exploration: What have you considered?**
    - Initial ideas or preferences
