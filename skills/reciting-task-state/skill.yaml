@@ -1,6 +1,6 @@
 name: reciting-task-state
 description: "Maintain task state via todo.md file when platform has no native task-tracking tool"
-platforms: [claude, gemini, codex]
+platforms: [gemini]
 install_as: command
 include:
   - SKILL.md
