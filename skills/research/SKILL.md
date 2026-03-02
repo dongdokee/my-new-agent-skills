@@ -55,31 +55,31 @@ You MUST create a task for each of these steps and complete them in order:
 **Actions:** Ask questions one at a time{{tool.ask_user}}:
 
 1. **Problem: What problem are you solving?**
-    - The underlying need, not the proposed solution
-    - Why does this matter?
+   - The underlying need, not the proposed solution
+   - Why does this matter?
 
 2. **Audience: Who is this for?**
-    - End users, developers, operators?
-    - What do they need?
+   - End users, developers, operators?
+   - What do they need?
 
 3. **Success Criteria: What does success look like?**
-    - How will you know it works?
-    - What would make this valuable?
+   - How will you know it works?
+   - What would make this valuable?
 
 3. **Non-goals: What are we NOT doing?**
-    - Explicitly out of scope for this task
-    - Related problems intentionally left unaddressed
-    - Future considerations deferred to later phases
+   - Explicitly out of scope for this task
+   - Related problems intentionally left unaddressed
+   - Future considerations deferred to later phases
 
 4. **Constraints: What constraints exist?**
-    - Technical limitations
-    - Time constraints
-    - Compatibility requirements
+   - Technical limitations
+   - Time constraints
+   - Compatibility requirements
 
 5. **Exploration: What have you considered?**
-    - Initial ideas or preferences
-    - Approaches to avoid
-    - Prior art to reference
+   - Initial ideas or preferences
+   - Approaches to avoid
+   - Prior art to reference
 
 ### Step 2: Presenting Preliminary Idea
 
@@ -88,37 +88,38 @@ You MUST create a task for each of these steps and complete them in order:
 **Actions:**
 
 1. Draft a preliminary idea based on your understanding from Step 1:
-    - Document what you understood from Step 1
-    - Include any assumptions and areas requiring exploration
+   - Document what you understood from Step 1
+   - Include any assumptions and areas requiring exploration
 
 2. Ask the user if the preliminary idea is acceptable{{tool.ask_user}}:
-    - **User approves** - proceed to Step 3
-    - **User rejects** - Restart step 1 based on the user's message
+   - **User approves** - proceed to Step 3
+   - **User rejects** - Restart step 1 based on the user's message
 
-### Step 3: Targeted Exploration
+### Step 3: Exploring Codebase and Documentation
 
-- Explore only what is needed to validate the draft requirements.
-- Start with codebase exploration:
-  - Use `code-explorer` to trace implementation and collect evidence.
-  - Start with one `code-explorer` pass.
-  - Expand to 2-3 parallel `code-explorer` passes only when evidence is low-confidence, conflicting, or incomplete.
-  - Each pass must return:
-    - Core files (3-5 by default, up to 10 when complexity warrants) with relevance notes
-    - Execution/data flow summary
-    - Constraints from config, tests, interfaces, and dependencies
-    - Risks or discrepancies
-    - Open questions
-    - Confidence (`high`, `medium`, or `low`)
-  - Merge pass outputs, deduplicate file lists, and map evidence to each major requirement.
-  - Read core flow files first, then supporting utilities/config/tests.
-  - Trace data flow and constraints.
+**Goal:** Understand relevant existing code and patterns at both high and low levels
 
-If codebase evidence is insufficient:
+**Actions:**
 
-- Use `web-researcher` with a focused question.
-- Record source links and evidence relevance in findings.
+1. Launch 2-3 `code-explorer` agents in parallel. Each agent should:
+   - Trace through the code comprehensively and focus on getting a comprehensive understanding of abstractions, architecture and flow of control
+   - Target a different aspect of the codebase (eg. similar features, high level understanding, architectural understanding, user experience, etc)
+   - Include a list of 5-10 key files to read
 
-Use `references/exploration-checklist.md` to avoid shallow exploration.
+   **Example agent prompts:**
+   - "Find features similar to [feature] and trace through their implementation comprehensively"
+   - "Map the architecture and abstractions for [feature area], tracing through the code comprehensively"
+   - "Analyze the current implementation of [existing feature/area], tracing through the code comprehensively"
+   - "Identify UI patterns, testing approaches, or extension points relevant to [feature]"
+
+   **Launch `web-explorer` agents if:**
+   - Understanding external libraries of APIs the code depends on
+   - Comparing implementation approaches or best practices
+   - Investigating third-party service documentation
+   - Researching security implications or known issues
+
+2. Once the agents return, please read all files identified by agents to build deep understading
+3. Present comprehensive summary of findings and patterns discovered
 
 ### Step 4: Design Synthesis
 
