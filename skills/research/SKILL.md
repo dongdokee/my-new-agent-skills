@@ -35,26 +35,26 @@ You MUST create a task for each of these steps and complete them in order:
 **Ask questions to clarify what the user wants to accomplish:**
 
 - Ask questions one at a time{{tool.ask_user}}
-- Before asking{{tool.ask_user}}, present a question
+- Before asking{{tool.ask_user}}, you MUST **present** a question
 - If a topic needs more explortion, break it into multiple questions
-- Clearly specify whether the question requires a single selection or allows multiple selections for asking{{tool.ask_user}}
+- Clearly specify whether the question is single-selection type or multiple-selection type to ask{{tool.ask_user}}
 
 **Question Structure:**
 ```
 Question: [Clear question ending with ?]
-Type: [Single-selection / Multiple-selection]
+Type: [Single-selection | Multiple-selection]
 Options:
   A. [Option]
   B. [Option]
   C. [Option]
-  [Variable-length options]
-  D. Other (please specify)
-Recommendations: [If Single-selection: A / If Multiple-selection: A + B]
-Rationale: [Why this/these are recommended]
+  ...
+  E. Other (please specify)
+Recommendations: [MUST match Type. Single: "A" | Multiple: "A + B"]
+Rationale: [Explain the reasoning behind the recommendation]
 Trade-offs:
-  1. [Trade-off]
-  2. [Trade-off]
-  [Variable-length Trade-offs]
+  1. [Trade-off for recommendation]
+  2. [Trade-off for other options]
+  ...
 ```
 
 **Questions:**
@@ -123,29 +123,26 @@ Trade-offs:
 
 ### Step 3: Exploring Codebase and Documentation
 
-**Goal:** Understand relevant existing code and patterns at both high and low levels
+**Launch 2-3 `code-explorer` agents in parallel, each agent should:**
+- Trace through the code comprehensively and focus on getting a comprehensive understanding of abstractions, architecture and flow of control
+- Target a different aspect of the codebase (e.g., similar features, high level understanding, architectural understanding, user experience, etc)
+- Include a list of 5-10 key files to read
 
-**Actions:**
+**Example of `code-explorer` agent prompts:**
+- "Find features similar to [feature] and trace through their implementation comprehensively"
+- "Map the architecture and abstractions for [feature area], tracing through the code comprehensively"
+- "Analyze the current implementation of [existing feature/area], tracing through the code comprehensively"
+- "Identify UI patterns, testing approaches, or extension points relevant to [feature]"
 
-1. Launch 2-3 `code-explorer` agents in parallel. Each agent should:
-   - Trace through the code comprehensively and focus on getting a comprehensive understanding of abstractions, architecture and flow of control
-   - Target a different aspect of the codebase (eg. similar features, high level understanding, architectural understanding, user experience, etc)
-   - Include a list of 5-10 key files to read
+**(WHEN NEEDED) Launch `web-explorer` agents if:**
+- Understanding external libraries of APIs the code depends on
+- Comparing implementation approaches or best practices
+- Investigating third-party service documentation
+- Researching security implications or known issues
 
-   **Example agent prompts:**
-   - "Find features similar to [feature] and trace through their implementation comprehensively"
-   - "Map the architecture and abstractions for [feature area], tracing through the code comprehensively"
-   - "Analyze the current implementation of [existing feature/area], tracing through the code comprehensively"
-   - "Identify UI patterns, testing approaches, or extension points relevant to [feature]"
+**Once the agents return, please read all files identified by agents to build deep understanding**
 
-   **Launch `web-explorer` agents if:**
-   - Understanding external libraries of APIs the code depends on
-   - Comparing implementation approaches or best practices
-   - Investigating third-party service documentation
-   - Researching security implications or known issues
-
-2. Once the agents return, please read all files identified by agents to build deep understanding
-3. Present comprehensive summary of findings and patterns discovered
+**Present comprehensive summary of findings and patterns discovered**
 
 ### Step 4: Design Synthesis
 
