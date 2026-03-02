@@ -29,6 +29,14 @@ describe("scanner", () => {
     expect(writingPlans?.manifest.command).toBe(true);
   });
 
+  it("discovers implementing-plans as an installable skill", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const implementingPlans = skills.find((s) => s.name === "implementing-plans");
+    expect(implementingPlans).toBeDefined();
+    expect(implementingPlans?.manifest.command).toBe(true);
+    expect(implementingPlans?.manifest.command_name).toBe("implement-plans");
+  });
+
   it("all agents have valid manifest structure", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     expect(agents.length).toBeGreaterThanOrEqual(1);
@@ -252,6 +260,22 @@ describe("installer integration", () => {
     expect(existsSync(cmdResult!.outputPath)).toBe(true);
     const content = readFileSync(cmdResult!.outputPath, "utf-8");
     expect(content).toContain("Invoke the write-plans skill");
+    expect(content).toContain("{{args}}");
+  });
+
+  it("installs implementing-plans for gemini creates .gemini/commands/implement-plans.toml", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const implementingPlans = skills.find((s) => s.name === "implementing-plans");
+    expect(implementingPlans).toBeDefined();
+    if (!implementingPlans) return;
+
+    const results = installSkill(implementingPlans, "gemini", TEST_ROOT);
+    const cmdResult = results.find((r) => r.type === "config" && r.name === "implement-plans.toml");
+    expect(cmdResult).toBeDefined();
+    expect(cmdResult!.outputPath).toContain(".gemini/commands/implement-plans.toml");
+    expect(existsSync(cmdResult!.outputPath)).toBe(true);
+    const content = readFileSync(cmdResult!.outputPath, "utf-8");
+    expect(content).toContain("Invoke the implement-plans skill");
     expect(content).toContain("{{args}}");
   });
 
