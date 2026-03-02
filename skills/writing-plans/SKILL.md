@@ -87,14 +87,11 @@ Expected: PASS
 
 **Step 5: Review, refactor, and verify**
 
-1. Launch: Launch `code-reviewer` agent, focusing on
-   - simplicity/DRY/elegance
-   - bugs/functional correctness
-   - project conventions/abstractions
+STRICTLY follow `Review` - `Refactor` - `Verify` cycle.
 
-2. Refactor: Modify codes based on the review comments
-
-3. Verify
+1. **Review**: Launch `code-reviewer` agent to review code
+2. **Refactor**: Modify codes based on the review comments from `code-reviewer` agent
+3. **Verify**
    - Run: `pytest tests/path/test.py::test_name -v`
    - Expected: PASS
 
