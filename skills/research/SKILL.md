@@ -252,6 +252,8 @@ Trade-offs:
 ```
 # Ticket: <Topic> (YYYY-MM-DD)
 
+**Git HEAD:** <HEAD commit id>
+
 ## 1. Requirements
 
 ### Problem

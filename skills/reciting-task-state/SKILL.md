@@ -52,7 +52,7 @@ Exactly one task may be marked `[~]` and annotated with `← current`.
 
 ### 1. Setup
 
-1. Write `todo.md` to `/home/dd/.gemini/tmp/<project>/<session-uuid>/todo.md` (never the project root).
+1. Write `todo.md` to `<project-tmp-dir>/<session-uuid>/todo.md` (never the project root).
 2. Ensure the file contains the full task list, including unchanged completed items.
 
 ### 2. Every active turn
@@ -75,10 +75,11 @@ Exactly one task may be marked `[~]` and annotated with `← current`.
 
 Write `todo.md` only to:
 
-- `/home/dd/.gemini/tmp/<project>/<session-uuid>/todo.md`
+- `<project-tmp-dir>/<session-uuid>/todo.md`
 
 Rules:
 
+- `<project-tmp-dir>` MUST be the temporary directory provided by the agent's session context.
 - `<session-uuid>` MUST be the active Gemini CLI session directory name.
 - Do not use PID-, timestamp-, or bare-name paths (for example: `/tmp/todo.md`, `todo-<pid>.md`).
 - Never write `todo.md` inside the project repository.
@@ -89,7 +90,7 @@ Rules:
 - On state changes, always write the full task file (no partial writes).
 - Write and read must be separate tool calls.
 - Never write in the project directory.
-- Never use any path except `/home/dd/.gemini/tmp/<project>/<session-uuid>/todo.md`.
+- Never use any path except `<project-tmp-dir>/<session-uuid>/todo.md`.
 - `<session-uuid>` must match the active Gemini CLI session directory name.
 - Never use PID-, timestamp-, or bare-name paths.
 - Never use partial writes; always keep completed and unchanged tasks in the file.
@@ -113,7 +114,7 @@ Rules:
 
 ## Checklist
 
-- [x] todo file is under `/home/dd/.gemini/tmp/<project>/<session-uuid>/` and outside repo.
+- [x] todo file is under `<project-tmp-dir>/<session-uuid>/` and outside repo.
 - [x] every active turn starts with a full-file read.
 - [x] full state is written on every state change.
 - [x] write/read are done in separate tool calls.
