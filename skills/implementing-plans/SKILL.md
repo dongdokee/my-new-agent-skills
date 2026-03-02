@@ -25,6 +25,7 @@ Load ticket and plan, review critically, execute tasks in batches, report for re
 
 ### Step 2: Execute Batch
 **Default: First 3 tasks**
+**REQUIRED:** You MUST create a task for each of these steps using {{tool.task_tracking}}
 
 For each task: 
 1. Mark as in_progress
