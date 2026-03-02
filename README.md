@@ -10,7 +10,7 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 
 | Skill | Description |
 |-------|-------------|
-| `research` | Unified research workflow: intent discovery → codebase exploration → design synthesis → ticket authoring |
+| `researching` | Unified research workflow: intent discovery → codebase exploration → design synthesis → ticket authoring |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
 
 ## Installation
@@ -50,7 +50,7 @@ Agents:
 ```
 skills/<name>/
   SKILL.md       # platform-neutral content + frontmatter(name/description) SSOT
-  skill.yaml     # platforms, includes, agent refs
+  skill.yaml     # platforms, includes, agent refs, command settings
   references/    # optional supporting docs, copied on install
   agents/        # optional skill-local sub-agents
 
@@ -59,6 +59,16 @@ agents/          # shared agents (not tied to any skill)
 ```
 
 Use `{{tool.<key>}}` placeholders in `SKILL.md` for platform-varying tool names. Mappings are defined in `installer/platforms.yaml`.
+
+For Gemini custom commands, set both fields in `skill.yaml`:
+
+```yaml
+command: true
+command_name: research
+```
+
+When `command: true`, `command_name` is required and installer outputs `.gemini/commands/<command_name>.toml` (no fallback to skill name).
+Examples: `researching -> research.toml`, `writing-plans -> write-plans.toml`.
 
 ## Multi-Platform Agent Frontmatter
 

@@ -50,14 +50,14 @@ agents/<name>.md (shared)
 | Platform | Skills | Agents | Commands |
 |----------|--------|--------|----------|
 | Claude Code | `.claude/skills/<name>/SKILL.md` (raw markdown) | `.claude/agents/<name>.md` (YAML frontmatter: `model`, `tools`, `maxTurns`) | — |
-| Gemini CLI | `.gemini/skills/<name>/SKILL.md` (raw markdown) | `.gemini/agents/<name>.md` (YAML frontmatter: `kind: local`, `model`, `tools`, `max_turns`) | `.gemini/commands/<name>.toml` (when `command: true` in skill.yaml) |
+| Gemini CLI | `.gemini/skills/<name>/SKILL.md` (raw markdown) | `.gemini/agents/<name>.md` (YAML frontmatter: `kind: local`, `model`, `tools`, `max_turns`) | `.gemini/commands/<command_name>.toml` (when `command: true` in skill.yaml) |
 | Codex | `.codex/skills/<name>/SKILL.md` (raw markdown) | `.codex/agents/<name>.toml` (TOML: `model`, `developer_instructions`) + registration in `.codex/config.toml` | — |
 
 ### Skill Structure
 
 Each skill in `skills/<name>/` has:
 - `SKILL.md` — platform-neutral content (the source of truth; `name` and `description` SSOT in frontmatter)
-- `skill.yaml` — manifest declaring platforms, includes, agent references, and optional `command: true` for Gemini command generation
+- `skill.yaml` — manifest declaring platforms, includes, agent references, and Gemini command settings (`command: true` + required `command_name`)
 - `references/` — optional supporting docs (checklists, templates, playbooks), copied alongside on install
 - `agents/` — optional skill-local sub-agents with per-platform frontmatter
 
@@ -65,7 +65,7 @@ Agents not tied to any specific skill live in the top-level `agents/` directory 
 
 ### Skill Interdependencies
 
-`research` → uses `{{tool.task_tracking}}` (platform-adaptive) for task tracking → spawns `code-explorer` agent for codebase exploration.
+`researching` → uses `{{tool.task_tracking}}` (platform-adaptive) for task tracking → spawns `code-explorer` agent for codebase exploration.
 - Example placeholder patterns are platform-aware and must stay in `tool` namespace (for example `{{tool.ask_user}}` for user prompts).
 
 ### Reference Projects
@@ -108,7 +108,7 @@ Agents not tied to any specific skill live in the top-level `agents/` directory 
 - Mappings are defined in `installer/platforms.yaml`; every new `{{tool.<key>}}` used in source content must be added to each relevant platform or explicitly documented as intentionally missing.
 - Codex agents require two files: the agent TOML + a `[agents.<name>]` entry in `.codex/config.toml`. The installer handles both.
 - Installing `code-explorer` for Gemini automatically patches `.gemini/settings.json` to set `agents.overrides.codebase_investigator.enabled: false`, suppressing the built-in Gemini agent that overlaps in role. The installer handles this side-effect (mirrors the Codex config.toml pattern).
-- Setting `command: true` in `skill.yaml` causes the installer to generate `.gemini/commands/<name>.toml` when installing for Gemini. Operates independently of `install_as`; omitting defaults to `false`. The output path is controlled by `command_path` in the gemini section of `platforms.yaml`.
+- Setting `command: true` in `skill.yaml` causes the installer to generate `.gemini/commands/<command_name>.toml` when installing for Gemini. `command_name` is required when `command: true` (no fallback to skill name). Operates independently of `install_as`; omitting `command` defaults to `false`. The output path is controlled by `command_path` in the gemini section of `platforms.yaml`.
 - `installer/src/` is the source of truth. `installer/dist/` is a local build artifact and may be stale until `npm run build` is run.
 - The primary language for documentation and commit messages in this project is mixed Korean/English.
 
