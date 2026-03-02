@@ -17,11 +17,13 @@ Create a decision-ready research ticket from ambiguous user requests.
 Convert unclear goals into validated requirements and a frozen design, backed
 by evidence from codebase exploration and optional web research.
 
-## The Iron Law
+## The Iron Laws
 
-- Ask exactly one question at a time whenever interacting with the user. Never bundle multiple questions or group intent interrogation with requirement drafting in the same turn.
-- Always provide multiple-choice options when asking questions to the user, along with your recommendation and its rationale.
-- Move to implementation only after explicit user approval of frozen requirements and design.
+```
+NO COMPLETION CLAIMS WITHOUT TICKET ARTIFACT
+```
+
+Unless you have strictly followed the process to generate a ticket artifact, you cannot claim that the research is complete
 
 ## Process
 
@@ -32,9 +34,14 @@ You MUST create a task for each of these steps and complete them in order:
 
 **Goal:** Clarify what the user wants to accomplish.
 
-**CRITICAL:** If a topic needs more exploration, break it into multiple questions
+**CRITICAL:** 
+- If a topic needs more exploration, break it into multiple questions
 
-**Actions:** Ask questions one at a time{{tool.ask_user}}:
+**Actions:** 
+1. Ask questions one at a time{{tool.ask_user}}:
+   - Always provide multiple-choice options, including a specific **recommendation** and the **reasoning**
+
+**Questions:**
 
 1. **Problem: What problem are you solving?**
    - The underlying need, not the proposed solution
@@ -195,15 +202,15 @@ later if it becomes necessary. What's the minimum we need now?"
 
 ## Anti-Patterns
 
-- Bundling questions: Asking multiple questions or grouping intent interrogation with requirement drafting in a single turn.
-- Efficiency over precision: Prioritizing turn reduction over the "one question at a time" constraint.
-- Starting implementation immediately after explicit skill invocation.
-- Switching to implementation before Step 5 freeze approval and explicit user
-  approval.
-- Freezing requirements or design without evidence from exploration.
-- Exploring the entire codebase without a validation target.
-- Using web research as a default instead of a fallback.
-- Declaring completion without a research ticket artifact.
+| Wrong                                      | Right                                                 |
+| ------------------------------------------ | ----------------------------------------------------- |
+| Bundling multiple questions in one turn    | Ask exactly one question at a time                    |
+| Prioritizing turn reduction over precision | Strictly follow "one question at a time" constraint   |
+| Starting implementation immediately        | Explore codebase and get design approval first        |
+| Freezing requirements based on assumptions | Use evidence from exploration to freeze design        |
+| Asking open-ended questions                | Provide multiple-choice options with rationale        |
+| Skipping design for "simple" tasks         | Present design and get approval for every project     |
+| Claiming success without running commands  | Run the verification command before reporting results |
 
 ## Checklist After Completion
 
