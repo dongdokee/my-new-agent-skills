@@ -92,6 +92,38 @@ describe("resolveAgentConfig", () => {
     expect(cfg!.tools).toEqual(["read_file", "read_many_files", "glob", "list_directory", "grep_search"]);
   });
 
+  it("dedupes overlapping gemini tool mappings", () => {
+    const manifest = {
+      name: "test",
+      description: "t",
+      profile: "fast",
+      tools: ["Read", "NotebookRead", "Glob", "LS", "KillShell", "BashOutput"],
+      body: "",
+    };
+    const cfg = resolveAgentConfig(manifest, "gemini", platforms);
+    expect(cfg).not.toBeNull();
+    expect(cfg!.tools).toEqual([
+      "read_file",
+      "read_many_files",
+      "glob",
+      "list_directory",
+      "run_shell_command",
+    ]);
+  });
+
+  it("dedupes duplicated tools in non-gemini profiles too", () => {
+    const manifest = {
+      name: "test",
+      description: "t",
+      profile: "fast",
+      tools: ["Read", "Read", "Glob", "Grep"],
+      body: "",
+    };
+    const cfg = resolveAgentConfig(manifest, "claude", platforms);
+    expect(cfg).not.toBeNull();
+    expect(cfg!.tools).toEqual(["Read", "Glob", "Grep"]);
+  });
+
   it("resolves codex config from profile+tools", () => {
     const manifest = { name: "test", description: "t", profile: "fast", tools: ["Read", "Glob", "Grep"], body: "" };
     const cfg = resolveAgentConfig(manifest, "codex", platforms);

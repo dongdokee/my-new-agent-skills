@@ -62,6 +62,23 @@ export interface AgentManifest {
   body: string;
 }
 
+function dedupeTools(tools: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const tool of tools) {
+    if (!seen.has(tool)) {
+      seen.add(tool);
+      out.push(tool);
+    }
+  }
+  return out;
+}
+
+function normalizeTools(tools: string[] | undefined): string[] {
+  if (!Array.isArray(tools)) return [];
+  return dedupeTools(tools);
+}
+
 // --- Platforms ---
 
 let cachedPlatforms: PlatformsConfig | null = null;
@@ -139,9 +156,11 @@ export function resolveAgentConfig(
       tools = manifest.tools; // claude: as-is; codex: unused but kept
     }
 
-    return { ...profileEntry, tools };
+    return { ...profileEntry, tools: normalizeTools(tools) };
   }
 
   // Legacy format: platforms block
-  return manifest.platforms?.[platformId] ?? null;
+  const legacy = manifest.platforms?.[platformId];
+  if (!legacy) return null;
+  return { ...legacy, tools: normalizeTools(legacy.tools) };
 }
