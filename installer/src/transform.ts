@@ -50,6 +50,22 @@ export function buildTomlAgent(platformConfig: AgentPlatformConfig, body: string
   return TOML.stringify(obj as TOML.JsonMap);
 }
 
+export function updateGeminiSettings(settingsPath: string): string {
+  let existing: Record<string, unknown> = {};
+  if (existsSync(settingsPath)) {
+    existing = JSON.parse(readFileSync(settingsPath, "utf-8"));
+  }
+
+  // Deep-merge: agents.overrides.codebase_investigator.enabled = false
+  if (!existing.agents || typeof existing.agents !== "object") existing.agents = {};
+  const agents = existing.agents as Record<string, unknown>;
+  if (!agents.overrides || typeof agents.overrides !== "object") agents.overrides = {};
+  const overrides = agents.overrides as Record<string, unknown>;
+  overrides.codebase_investigator = { enabled: false };
+
+  return JSON.stringify(existing, null, 2) + "\n";
+}
+
 export function updateCodexConfig(
   configPath: string,
   agentName: string,

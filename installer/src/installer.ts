@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from "node
 import { resolve, dirname } from "node:path";
 import { getPlatform, loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { DiscoveredSkill, DiscoveredAgent } from "./scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig } from "./transform.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings } from "./transform.js";
 
 export interface InstallResult {
   type: "skill" | "agent" | "config";
@@ -66,6 +66,13 @@ export function installAgent(agent: DiscoveredAgent, platformId: string, project
     const outputPath = resolve(projectRoot, platform.agent_path, `${agent.name}.md`);
     writeOutput(outputPath, buildMarkdownAgent(agent.name, agent.manifest.description, platformId, platformConfig, body));
     results.push({ type: "agent", name: agent.name, outputPath });
+
+    // Post-install side-effect for Gemini + code-explorer
+    if (platformId === "gemini" && agent.name === "code-explorer") {
+      const settingsPath = resolve(projectRoot, ".gemini/settings.json");
+      writeOutput(settingsPath, updateGeminiSettings(settingsPath));
+      results.push({ type: "config", name: "settings.json", outputPath: settingsPath });
+    }
   }
 
   return results;

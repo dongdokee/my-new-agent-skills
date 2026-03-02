@@ -137,6 +137,16 @@ describe("installer integration", () => {
     expect(content).toContain("maxTurns: 12");
   });
 
+  it("installs code-explorer for Gemini and disables codebase_investigator in settings.json", () => {
+    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const results = installAgent(agents.find((a) => a.name === "code-explorer")!, "gemini", TEST_ROOT);
+    const configResult = results.find((r) => r.type === "config");
+    expect(configResult).toBeDefined();
+    expect(configResult!.outputPath).toContain(".gemini/settings.json");
+    const settings = JSON.parse(readFileSync(configResult!.outputPath, "utf-8"));
+    expect(settings.agents.overrides.codebase_investigator.enabled).toBe(false);
+  });
+
   it("installs agent for Codex as TOML + config registration", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installAgent(agents[0], "codex", TEST_ROOT);
