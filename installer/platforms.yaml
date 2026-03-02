@@ -11,7 +11,7 @@ platforms:
       task_create: "TaskCreate"
       task_update: "TaskUpdate"
       task_tracking: "Task tools (`TaskCreate`, `TaskGet`, `TaskUpdate`, `TaskList`)"
-      ask_user: " using AskUserQuestion"
+      ask_user: " using `AskUserQuestion` tool"
   gemini:
     display_name: "Gemini CLI"
     skill_path: ".gemini/skills"
@@ -24,7 +24,7 @@ platforms:
       task_create: "_(reciting-task-state)_"
       task_update: "_(reciting-task-state)_"
       task_tracking: "`reciting-task-state` skill"
-      ask_user: " using ask_user"
+      ask_user: " using `ask_user` tool"
   codex:
     display_name: "Codex"
     skill_path: ".codex/skills"
