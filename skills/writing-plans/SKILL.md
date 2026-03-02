@@ -20,10 +20,11 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ## Bite-Sized Task Granularity
 
 **Each step is one action (2-5 minutes):**
-- "Write the failing test" - step
-- "Run it to make sure it fails" - step
-- "Implement the minimal code to make the test pass" - step
-- "Run the tests and make sure they pass" - step
+- "Write the failing test" - `RED` step
+- " Run it to make sure it fails" - `Verify RED` step
+- "Implement the minimal code to make the test pass" - `GREEN` step
+- "Run the tests and make sure they pass" - `Verify GREEN` step
+- "Review, refactor, and verify" - `Refactor` step
 - "Commit" - step
 
 ## Plan Document Header
@@ -32,6 +33,11 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 ```markdown
 # [Topic] Implementation Plan
+
+**REQUIRED SUB-AGENTS:** Launch `code-reviewer` agent in the review step, focusing on
+- simplicity/DRY/elegance
+- bugs/functional correctness
+- project conventions/abstractions
 
 **Ticket:** `<ticket-file-path>
 
@@ -79,7 +85,20 @@ def function(input):
 Run: `pytest tests/path/test.py::test_name -v`
 Expected: PASS
 
-**Step 5: Commit**
+**Step 5: Review, refactor, and verify**
+
+1. Launch: Launch `code-reviewer` agent, focusing on
+   - simplicity/DRY/elegance
+   - bugs/functional correctness
+   - project conventions/abstractions
+
+2. Refactor: Modify codes based on the review comments
+
+3. Verify
+   - Run: `pytest tests/path/test.py::test_name -v`
+   - Expected: PASS
+
+**Step 6: Commit**
 
 ```bash
 git add tests/path/test.py src/path/file.py
