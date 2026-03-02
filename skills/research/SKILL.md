@@ -46,15 +46,13 @@ Type: [Single-selection | Multiple-selection]
 Options:
   A. [Option]
   B. [Option]
-  C. [Option]
-  ...
-  E. Other (please specify)
+  ... (up-to 4 options)
+  D. [Option]
 Recommendations: [MUST match Type. Single: "A" | Multiple: "A + B"]
 Rationale: [Explain the reasoning behind the recommendation]
 Trade-offs:
   1. [Trade-off for recommendation]
   2. [Trade-off for other options]
-  ...
 ```
 
 **Questions:**
@@ -115,6 +113,7 @@ Trade-offs:
 **Open Questions:**
 - [Open questions to ask but not important/critical]
 - [Open questions to explore]
+- ...
 ```
 
 **Ask the user if the preliminary idea is acceptable{{tool.ask_user}}:**
@@ -124,6 +123,7 @@ Trade-offs:
 ### Step 3: Exploring Codebase and Documentation
 
 **Launch 2-3 `code-explorer` agents in parallel, each agent should:**
+- Explore the codebase to answer open questions from preliminary idea
 - Trace through the code comprehensively and focus on getting a comprehensive understanding of abstractions, architecture and flow of control
 - Target a different aspect of the codebase (e.g., similar features, high level understanding, architectural understanding, user experience, etc)
 - Include a list of 5-10 key files to read
@@ -142,7 +142,37 @@ Trade-offs:
 
 **Once the agents return, please read all files identified by agents to build deep understanding**
 
-**Present comprehensive summary of findings and patterns discovered**
+**Present comprehensive summary of findings and patterns discovered:**
+
+```
+## Findings
+
+### Relevant Files
+
+| File            | Purpose     | Key Lines |
+| --------------- | ----------- | --------- |
+| path/to/file.ts | Description | 42-87     |
+
+### Existing Patterns
+
+[Patterns discovered that inform implementation]
+
+### Dependencies
+
+[External and internal dependencies]
+
+### External Research
+
+[Findings from web research, if conducted - include sources]
+
+### Technical Constraints
+
+[Limitations discovered during exploration]
+
+## Open Questions
+
+[Outstanding or newly identified questions from the exploration]
+```
 
 ### Step 4: Design Synthesis
 
