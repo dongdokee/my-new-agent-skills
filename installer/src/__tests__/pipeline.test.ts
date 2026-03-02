@@ -53,7 +53,7 @@ describe("transforms", () => {
   it("builds Codex TOML agent with constant sandbox_mode", () => {
     const out = buildTomlAgent({ model: "o4-mini", tools: [], model_reasoning_effort: "medium" }, "body");
     expect(out).toContain('model = "o4-mini"');
-    expect(out).toContain('sandbox_mode = "read-only"');
+    expect(out).toContain('sandbox_mode = "workspace-write"');
     expect(out).toContain("developer_instructions");
   });
 
@@ -71,7 +71,8 @@ describe("resolveAgentConfig", () => {
     const manifest = { name: "test", description: "t", profile: "fast", tools: ["Read", "Glob", "Grep"], body: "" };
     const cfg = resolveAgentConfig(manifest, "claude", platforms);
     expect(cfg).not.toBeNull();
-    expect(cfg!.model).toBe("claude-haiku-4-5");
+    const fastProfile = platforms.profiles!["fast"]["claude"];
+    expect(cfg!.model).toBe(fastProfile.model);
     expect(cfg!.maxTurns).toBe(12);
     expect(cfg!.tools).toEqual(["Read", "Glob", "Grep"]);
   });
@@ -80,7 +81,7 @@ describe("resolveAgentConfig", () => {
     const manifest = { name: "test", description: "t", profile: "fast", tools: ["Read", "Glob", "Grep"], body: "" };
     const cfg = resolveAgentConfig(manifest, "gemini", platforms);
     expect(cfg).not.toBeNull();
-    expect(cfg!.model).toBe("gemini-2.0-flash");
+    expect(cfg!.model).toBe(platforms.profiles!["fast"]["gemini"].model);
     expect(cfg!.tools).toEqual(["read_file", "read_many_files", "glob", "list_directory", "grep_search"]);
   });
 
@@ -88,7 +89,7 @@ describe("resolveAgentConfig", () => {
     const manifest = { name: "test", description: "t", profile: "fast", tools: ["Read", "Glob", "Grep"], body: "" };
     const cfg = resolveAgentConfig(manifest, "codex", platforms);
     expect(cfg).not.toBeNull();
-    expect(cfg!.model).toBe("o4-mini");
+    expect(cfg!.model).toBe(platforms.profiles!["fast"]["codex"].model);
     expect(cfg!.model_reasoning_effort).toBe("medium");
   });
 
@@ -131,14 +132,16 @@ describe("installer integration", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installAgent(agents[0], "claude", TEST_ROOT);
     const content = readFileSync(results[0].outputPath, "utf-8");
-    expect(content).toContain("model: claude-haiku-4-5");
+    const expectedModel = loadPlatforms().profiles!["fast"]["claude"].model;
+    expect(content).toContain(`model: ${expectedModel}`);
     expect(content).toContain("maxTurns: 12");
   });
 
   it("installs agent for Codex as TOML + config registration", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installAgent(agents[0], "codex", TEST_ROOT);
-    expect(readFileSync(results.find((r) => r.type === "agent")!.outputPath, "utf-8")).toContain('model = "o4-mini"');
+    const expectedModel = loadPlatforms().profiles!["fast"]["codex"].model;
+    expect(readFileSync(results.find((r) => r.type === "agent")!.outputPath, "utf-8")).toContain(`model = "${expectedModel}"`);
     expect(readFileSync(results.find((r) => r.type === "config")!.outputPath, "utf-8")).toContain("[agents.code-explorer]");
   });
 });

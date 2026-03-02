@@ -41,7 +41,7 @@ export function buildMarkdownAgent(
 export function buildTomlAgent(platformConfig: AgentPlatformConfig, body: string): string {
   const obj: Record<string, unknown> = {
     model: platformConfig.model,
-    sandbox_mode: "read-only",
+    sandbox_mode: "workspace-write",
     developer_instructions: body,
   };
   if (platformConfig.model_reasoning_effort) {

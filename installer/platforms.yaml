@@ -64,11 +64,11 @@ agent_tool_map:
 profiles:
   fast:
     claude:
-      model: claude-haiku-4-5
+      model: haiku
       maxTurns: 12
     gemini:
-      model: gemini-2.0-flash
+      model: gemini-2.5-flash-lite
       max_turns: 12
     codex:
-      model: o4-mini
+      model: gpt-5.2
       model_reasoning_effort: medium
