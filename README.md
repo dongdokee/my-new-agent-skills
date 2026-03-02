@@ -11,7 +11,6 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 | Skill | Description |
 |-------|-------------|
 | `research` | Unified research workflow: intent discovery → codebase exploration → design synthesis → ticket authoring |
-| `mapping-task-tools` | Maps generic task-tracking calls to the right platform-native tool |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
 | `subagent-porter` | Converts a provider-specific agent definition into multi-provider compatible outputs |
 

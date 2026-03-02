@@ -1,6 +1,0 @@
-name: mapping-task-tools
-description: "Map task tracking operations to platform-native tools (TaskCreate, update_plan, or todo.md)"
-platforms: [claude, gemini, codex]
-install_as: command
-include:
-  - SKILL.md

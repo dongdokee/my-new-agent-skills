@@ -12,7 +12,7 @@ describe("scanner", () => {
   it("finds all skills with skill.yaml", () => {
     const result = scanSkills(SKILLS_ROOT);
     expect(result.skills.map((s) => s.name).sort()).toEqual(
-      ["mapping-task-tools", "reciting-task-state", "research", "subagent-porter"]
+      ["reciting-task-state", "research", "subagent-porter"]
     );
   });
 

@@ -58,7 +58,7 @@ Each skill in `skills/<name>/` has:
 
 ### Skill Interdependencies
 
-`research` → uses `{{tool.task_tracking}}` (platform-adaptive) for task tracking → spawns `code-explorer` agent for codebase exploration. `mapping-task-tools` → references `reciting-task-state` for Gemini CLI (file-based task tracking).
+`research` → uses `{{tool.task_tracking}}` (platform-adaptive) for task tracking → spawns `code-explorer` agent for codebase exploration.
 
 ### Reference Projects
 
