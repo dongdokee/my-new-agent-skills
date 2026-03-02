@@ -89,8 +89,10 @@ Expected: PASS
 
 STRICTLY follow `Review` - `Refactor` - `Verify` cycle.
 
-1. **Review**: Launch `code-reviewer` agent to review code
-2. **Refactor**: Modify codes based on the review comments from `code-reviewer` agent
+1. **Review**: Launch review agent
+   - codes: Launch `code-reviewer` agent
+   - else: Skip `Refactor` and `Verify`
+2. **Refactor**: Modify codes based on the review comments from review agent
 3. **Verify**
    - Run: `pytest tests/path/test.py::test_name -v`
    - Expected: PASS
