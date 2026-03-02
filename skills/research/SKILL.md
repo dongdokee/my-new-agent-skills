@@ -129,10 +129,6 @@ If the user rejects, run the loop in `references/rejection-loop.md`.
 - Using web research as a default instead of a fallback.
 - Declaring completion without a research ticket artifact.
 
-## Checklist Before Running
-
-- [ ] Confirm {{tool.task_tracking}} is available.
-
 ## Checklist After Completion
 
 - [ ] User intent and success criteria are explicit.
