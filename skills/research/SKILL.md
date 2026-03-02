@@ -32,14 +32,30 @@ You MUST create a task for each of these steps and complete them in order:
 
 ### Step 1: Understanding the Idea
 
-**Goal:** Clarify what the user wants to accomplish.
+**Ask questions to clarify what the user wants to accomplish:**
 
-**CRITICAL:** 
-- If a topic needs more exploration, break it into multiple questions
+- Ask questions one at a time{{tool.ask_user}}
+- Before asking{{tool.ask_user}}, present a question
+- If a topic needs more explortion, break it into multiple questions
+- Clearly specify whether the question requires a single selection or allows multiple selections for asking{{tool.ask_user}}
 
-**Actions:** 
-1. Ask questions one at a time{{tool.ask_user}}:
-   - Always provide multiple-choice options, including a specific **recommendation** and the **reasoning**
+**Question Structure:**
+```
+Question: [Clear question ending with ?]
+Type: [Single-selection / Multiple-selection]
+Options:
+  A. [Option]
+  B. [Option]
+  C. [Option]
+  [Variable-length options]
+  D. Other (please specify)
+Recommendations: [If Single-selection: A / If Multiple-selection: A + B]
+Rationale: [Why this/these are recommended]
+Trade-offs:
+  1. [Trade-off]
+  2. [Trade-off]
+  [Variable-length Trade-offs]
+```
 
 **Questions:**
 
@@ -72,17 +88,38 @@ You MUST create a task for each of these steps and complete them in order:
 
 ### Step 2: Presenting Preliminary Idea
 
-**Goal:** Draft a preliminary idea and get approval
+**Present a preliminary idea:**
 
-**Actions:**
+```
+**Problem:** 
+- [problems]
 
-1. Draft a preliminary idea based on your understanding from Step 1:
-   - Document what you understood from Step 1
-   - Include any assumptions and areas requiring exploration
+**Audience:**
+- [audiences]
 
-2. Ask the user if the preliminary idea is acceptable{{tool.ask_user}}:
-   - **User approves** - proceed to Step 3
-   - **User rejects** - Return to step 1 based on the user's message
+**Success Criteria:**
+- [success criteria]
+
+**Non-goals:**
+- [Non-goals]
+
+**Constraints:**
+- [Constraints]
+
+**Explorations:**
+- [Explorations]
+
+**Assumptions:**
+- [Assumptions]
+
+**Open Questions:**
+- [Open questions to ask but not important/critical]
+- [Open questions to explore]
+```
+
+**Ask the user if the preliminary idea is acceptable{{tool.ask_user}}:**
+- **User approves** - proceed to Step 3
+- **User rejects** - Return to step 1 based on the user's message
 
 ### Step 3: Exploring Codebase and Documentation
 
@@ -107,7 +144,7 @@ You MUST create a task for each of these steps and complete them in order:
    - Investigating third-party service documentation
    - Researching security implications or known issues
 
-2. Once the agents return, please read all files identified by agents to build deep understading
+2. Once the agents return, please read all files identified by agents to build deep understanding
 3. Present comprehensive summary of findings and patterns discovered
 
 ### Step 4: Design Synthesis
