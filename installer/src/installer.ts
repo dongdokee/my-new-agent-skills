@@ -31,7 +31,7 @@ export function installSkill(skill: DiscoveredSkill, platformId: string, project
   const platform = getPlatform(platformId);
   const body = replacePlaceholders(readFileSync(skill.skillFilePath, "utf-8").trim(), platform.tools);
   const output = body + "\n";
-  const outputPath = resolve(projectRoot, platform.skill_path, skill.name, `${skill.name}.md`);
+  const outputPath = resolve(projectRoot, platform.skill_path, skill.name, `SKILL.md`);
   writeOutput(outputPath, output);
 
   const results: InstallResult[] = [{ type: "skill", name: skill.name, outputPath }];

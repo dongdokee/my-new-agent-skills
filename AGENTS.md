@@ -18,7 +18,8 @@ npm run dev          # watch mode
 npm test             # run tests (vitest)
 npx vitest run src/__tests__/pipeline.test.ts  # single test file
 cd ..
-node installer/dist/index.js   # run installer from project root
+node installer/dist/index.js        # run installer (interactive TUI)
+node installer/dist/index.js --all  # install all skills/agents to all platforms
 ```
 
 ## Architecture
@@ -46,9 +47,9 @@ skills/<name>/SKILL.md + skill.yaml
 
 | Platform | Skills | Agents |
 |----------|--------|--------|
-| Claude Code | `.claude/skills/<name>/<name>.md` (raw markdown) | `.claude/agents/<name>.md` (YAML frontmatter: `model`, `tools`, `maxTurns`) |
-| Gemini CLI | `.gemini/skills/<name>/<name>.md` (raw markdown) | `.gemini/agents/<name>.md` (YAML frontmatter: `kind: local`, `model`, `tools`, `max_turns`) |
-| Codex | `.codex/skills/<name>/<name>.md` (raw markdown) | `.codex/agents/<name>.toml` (TOML: `model`, `developer_instructions`) + registration in `.codex/config.toml` |
+| Claude Code | `.claude/skills/<name>/SKILL.md` (raw markdown) | `.claude/agents/<name>.md` (YAML frontmatter: `model`, `tools`, `maxTurns`) |
+| Gemini CLI | `.gemini/skills/<name>/SKILL.md` (raw markdown) | `.gemini/agents/<name>.md` (YAML frontmatter: `kind: local`, `model`, `tools`, `max_turns`) |
+| Codex | `.codex/skills/<name>/SKILL.md` (raw markdown) | `.codex/agents/<name>.toml` (TOML: `model`, `developer_instructions`) + registration in `.codex/config.toml` |
 
 ### Skill Structure
 

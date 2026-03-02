@@ -4,10 +4,12 @@ import ora from "ora";
 import { scanSkills } from "./scanner.js";
 import { runPrompts } from "./prompts.js";
 import { installSkill, installAgent } from "./installer.js";
+import { loadPlatforms } from "./config.js";
 import type { InstallResult } from "./installer.js";
 
 async function main() {
   const projectRoot = process.cwd();
+  const allFlag = process.argv.includes("--all");
 
   console.log(chalk.bold("\n  Agent Skill Installer\n"));
 
@@ -20,17 +22,30 @@ async function main() {
     process.exit(0);
   }
 
-  const selections = await runPrompts(scanResult);
-  if (!selections) process.exit(0);
+  let platforms: string[];
+  let skills: typeof scanResult.skills;
+  let agents: typeof scanResult.agents;
+
+  if (allFlag) {
+    platforms = Object.keys(loadPlatforms().platforms);
+    skills = scanResult.skills;
+    agents = scanResult.agents;
+  } else {
+    const selections = await runPrompts(scanResult);
+    if (!selections) process.exit(0);
+    platforms = selections.platforms;
+    skills = selections.skills;
+    agents = selections.agents;
+  }
 
   const installSpinner = ora("Installing...").start();
   const results: InstallResult[] = [];
 
-  for (const pid of selections.platforms) {
-    for (const s of selections.skills) {
+  for (const pid of platforms) {
+    for (const s of skills) {
       if (s.manifest.platforms.includes(pid)) results.push(...installSkill(s, pid, projectRoot));
     }
-    for (const a of selections.agents) {
+    for (const a of agents) {
       if (a.manifest.platforms[pid]) results.push(...installAgent(a, pid, projectRoot));
     }
   }

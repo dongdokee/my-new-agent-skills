@@ -68,14 +68,14 @@ describe("installer integration", () => {
   it("installs skill for Claude as markdown", () => {
     const { skills } = scanSkills(SKILLS_ROOT);
     const results = installSkill(skills.find((s) => s.name === "research")!, "claude", TEST_ROOT);
-    expect(results[0].outputPath).toContain(".claude/skills/research/research.md");
+    expect(results[0].outputPath).toContain(".claude/skills/research/SKILL.md");
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
   it("installs skill for Gemini as markdown", () => {
     const { skills } = scanSkills(SKILLS_ROOT);
     const results = installSkill(skills.find((s) => s.name === "research")!, "gemini", TEST_ROOT);
-    expect(results[0].outputPath).toContain(".gemini/skills/research/research.md");
+    expect(results[0].outputPath).toContain(".gemini/skills/research/SKILL.md");
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
