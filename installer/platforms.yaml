@@ -59,6 +59,16 @@ agent_tool_map:
     gemini: [fetch_webpage]
   WebSearch:
     gemini: [google_search]
+  LS:
+    gemini: [list_directory]
+  NotebookRead:
+    gemini: [read_file]
+  TodoWrite:
+    gemini: []
+  KillShell:
+    gemini: [run_shell_command]
+  BashOutput:
+    gemini: [run_shell_command]
 
 # Named model/turns profiles for agent frontmatter.
 profiles:

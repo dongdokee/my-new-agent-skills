@@ -62,7 +62,19 @@ Use `{{tool.<key>}}` placeholders in `SKILL.md` for platform-varying tool names.
 
 ## Multi-Platform Agent Frontmatter
 
-Agents use a `platforms:` block so the installer can generate platform-specific output from a single source file:
+Agents declare a `profile` + `tools` pair. The installer resolves platform-specific model names, tool name mappings, and turns from `platforms.yaml` profiles:
+
+```yaml
+---
+name: my-agent
+description: |
+  What this agent does.
+profile: fast              # references a named profile in platforms.yaml
+tools: [Read, Glob, Grep]  # Claude tool names; Gemini/Codex names auto-mapped
+---
+```
+
+Legacy `platforms:` block is still supported for backward compatibility (e.g. skill-local agents needing per-platform overrides):
 
 ```yaml
 ---
@@ -71,7 +83,7 @@ description: |
   What this agent does.
 platforms:
   claude:
-    model: haiku
+    model: claude-haiku-4-5
     tools: [Read, Glob, Grep]
     maxTurns: 12
   gemini:
@@ -81,15 +93,16 @@ platforms:
   codex:
     model: o4-mini
     model_reasoning_effort: medium   # optional
-    sandbox_mode: read-only          # optional
 ---
 ```
+
+Note: `sandbox_mode` is not declared in agent frontmatter; it is hardcoded by the installer.
 
 | Field | Claude | Gemini | Codex |
 |-------|--------|--------|-------|
 | turns | `maxTurns` | `max_turns` | n/a |
 | model | any Claude model | any Gemini model | any OpenAI model |
-| extra | — | `kind: local` added automatically | `model_reasoning_effort`, `sandbox_mode` |
+| extra | — | `kind: local` added automatically | `model_reasoning_effort` |
 
 | Placeholder | Claude Code | Gemini CLI | Codex |
 |-------------|-------------|------------|-------|

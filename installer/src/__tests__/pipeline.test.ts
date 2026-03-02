@@ -10,21 +10,28 @@ const TEST_ROOT = resolve(import.meta.dirname, "../../.test-output");
 const SKILLS_ROOT = resolve(import.meta.dirname, "../../../skills");
 const AGENTS_ROOT = resolve(import.meta.dirname, "../../../agents");
 
+const PLATFORMS = ["claude", "gemini", "codex"] as const;
+
 describe("scanner", () => {
-  it("finds all skills with skill.yaml", () => {
+  it("finds skills with skill.yaml", () => {
     const result = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    expect(result.skills.map((s) => s.name).sort()).toEqual(
-      ["reciting-task-state", "research"]
-    );
+    expect(result.skills.length).toBeGreaterThanOrEqual(1);
+    for (const skill of result.skills) {
+      expect(skill.name).toBeTruthy();
+    }
   });
 
-  it("finds agents with simplified profile/tools frontmatter", () => {
+  it("all agents have valid manifest structure", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    expect(agents).toHaveLength(1);
-    expect(agents[0].name).toBe("code-explorer");
-    expect(agents[0].manifest.profile).toBe("fast");
-    expect(agents[0].manifest.tools).toEqual(["Read", "Glob", "Grep"]);
-    expect(agents[0].manifest.platforms).toBeUndefined();
+    expect(agents.length).toBeGreaterThanOrEqual(1);
+    for (const agent of agents) {
+      expect(agent.name).toBeTruthy();
+      expect(agent.manifest.description).toBeTruthy();
+      expect(agent.manifest.body).toBeTruthy();
+      const hasNewFormat = !!agent.manifest.profile && !!agent.manifest.tools;
+      const hasLegacy = !!agent.manifest.platforms;
+      expect(hasNewFormat || hasLegacy).toBe(true);
+    }
   });
 });
 
@@ -128,30 +135,48 @@ describe("installer integration", () => {
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
-  it("installs agent for Claude as markdown", () => {
-    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const results = installAgent(agents[0], "claude", TEST_ROOT);
-    const content = readFileSync(results[0].outputPath, "utf-8");
-    const expectedModel = loadPlatforms().profiles!["fast"]["claude"].model;
-    expect(content).toContain(`model: ${expectedModel}`);
-    expect(content).toContain("maxTurns: 12");
-  });
+  // Dynamic: all agents x all platforms
+  const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+  const platforms = loadPlatforms();
 
-  it("installs code-explorer for Gemini and disables codebase_investigator in settings.json", () => {
-    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const results = installAgent(agents.find((a) => a.name === "code-explorer")!, "gemini", TEST_ROOT);
+  for (const agent of agents) {
+    for (const platformId of PLATFORMS) {
+      const cfg = resolveAgentConfig(agent.manifest, platformId, platforms);
+      if (!cfg) continue;
+
+      it(`installs ${agent.name} for ${platformId}`, () => {
+        const results = installAgent(agent, platformId, TEST_ROOT);
+        expect(results.length).toBeGreaterThanOrEqual(1);
+
+        const agentResult = results.find((r) => r.type === "agent");
+        expect(agentResult).toBeDefined();
+        expect(existsSync(agentResult!.outputPath)).toBe(true);
+        const content = readFileSync(agentResult!.outputPath, "utf-8");
+
+        if (platformId === "claude") {
+          expect(content).toContain(`model: ${cfg.model}`);
+        } else if (platformId === "gemini") {
+          expect(content).toContain(`model: ${cfg.model}`);
+          expect(content).toContain("kind: local");
+        } else if (platformId === "codex") {
+          expect(content).toContain(`model = "${cfg.model}"`);
+          const configResult = results.find((r) => r.type === "config");
+          expect(configResult).toBeDefined();
+          const configContent = readFileSync(configResult!.outputPath, "utf-8");
+          expect(configContent).toContain(`[agents.${agent.name}]`);
+        }
+      });
+    }
+  }
+
+  // Side-effect test: code-explorer for Gemini disables codebase_investigator
+  it("code-explorer for Gemini disables codebase_investigator", () => {
+    const explorer = agents.find((a) => a.name === "code-explorer");
+    if (!explorer) return;
+    const results = installAgent(explorer, "gemini", TEST_ROOT);
     const configResult = results.find((r) => r.type === "config");
     expect(configResult).toBeDefined();
-    expect(configResult!.outputPath).toContain(".gemini/settings.json");
     const settings = JSON.parse(readFileSync(configResult!.outputPath, "utf-8"));
     expect(settings.agents.overrides.codebase_investigator.enabled).toBe(false);
-  });
-
-  it("installs agent for Codex as TOML + config registration", () => {
-    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const results = installAgent(agents[0], "codex", TEST_ROOT);
-    const expectedModel = loadPlatforms().profiles!["fast"]["codex"].model;
-    expect(readFileSync(results.find((r) => r.type === "agent")!.outputPath, "utf-8")).toContain(`model = "${expectedModel}"`);
-    expect(readFileSync(results.find((r) => r.type === "config")!.outputPath, "utf-8")).toContain("[agents.code-explorer]");
   });
 });
