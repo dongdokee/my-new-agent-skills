@@ -183,7 +183,10 @@ Trade-offs:
 
 ### Step 4: Asking Further Clarifying Questions
 
-**Ask questions to seek answers to outstanding or newly identified open questions**
+**Ask questions one at a time to resolve remaining ambiguities{{tool.ask_user}}:**
+- Outstanding open questions
+- Newly identified ambiguities: Problem, Audience, Success Criteria, Risks, Constraints, Mitigations, Explorations, Assumptions
+- Ambiguities required to clarify before exploring approaches
 
 **Checklist before proceeding to Step 5:**
 
@@ -226,13 +229,12 @@ Trade-offs:
 [Which approach and why, based on stated constraints]
 ```
 
-**Ask user for his preferred approach:**
+**Ask user for his preferred approach{{tool.ask_user}}:**
 
-- Ask{{tool.ask_user}}
-   - "Approach A (recommended)" - with brief rationale
-   - "Approach B" - with brief rationale
-   - "Explore further" - discuss more options
-   - "None of these" - gather more requirements
+- "Approach A (recommended)" - with brief rationale
+- "Approach B" - with brief rationale
+- "Explore further" - discuss more options
+- "None of these" - gather more requirements
 
 ### Step 6: Documenting Ticket
 
@@ -293,9 +295,23 @@ Trade-offs:
 
 ## 3. Design
 
-### Chosen Architecture
+### Chosen Architecture (Detailed architectural specifications to facilitate implementation planning)
 
-[Detailed architectural specifications to facilitate implementation planning]
+- **Component Design**: 
+   - [Each component with file path, responsibilities, dependencies, and interfaces]
+   - ...
+- **Implementation Map**:
+   - [Specific files to create/modify with detailed change descriptions]
+   - ...
+- **Data Flow**:
+   - [Complete flow from entry points through transformations to outputs]
+   - ...
+- **Build Sequence**:
+   - [Phased implementation steps as a checklist]
+   - ...
+- **Critical Details**:
+   - [Error handling, state management, testing, performance, and security considerations]
+   - ...
 
 ### Alternative Architectures Considered
 
@@ -320,6 +336,7 @@ Trade-offs:
    | :--- | :--- | :--- |
    | **Chosen ** | [Pros of chosen architecture] | [Cons of chosen architecture] |
    | **Aternative 1 ** | [Pros of Alternative 1] | [Cons of Alternative 1] |
+   | ... | ... | ... |
 - Consequences: (Describe the expected impact and the resulting state after this decision is implemented.)
    - **Positive:** [e.g., Improved system stability, 20% reduction in response time]
    - **Negative:** [e.g., Two weeks of additional setup time, dependency on a specific library]
