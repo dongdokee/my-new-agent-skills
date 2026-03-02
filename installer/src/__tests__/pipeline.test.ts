@@ -171,15 +171,15 @@ describe("installer integration", () => {
 
   it("installs skill for Claude as markdown", () => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const results = installSkill(skills.find((s) => s.name === "research")!, "claude", TEST_ROOT);
-    expect(results[0].outputPath).toContain(".claude/skills/research/SKILL.md");
+    const results = installSkill(skills.find((s) => s.name === "researching")!, "claude", TEST_ROOT);
+    expect(results[0].outputPath).toContain(".claude/skills/researching/SKILL.md");
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
   it("installs skill for Gemini as markdown", () => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const results = installSkill(skills.find((s) => s.name === "research")!, "gemini", TEST_ROOT);
-    expect(results[0].outputPath).toContain(".gemini/skills/research/SKILL.md");
+    const results = installSkill(skills.find((s) => s.name === "researching")!, "gemini", TEST_ROOT);
+    expect(results[0].outputPath).toContain(".gemini/skills/researching/SKILL.md");
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
@@ -220,7 +220,7 @@ describe("installer integration", () => {
   // Gemini command TOML tests
   it("installs research skill for gemini creates .gemini/commands/research.toml", () => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const research = skills.find((s) => s.name === "research")!;
+    const research = skills.find((s) => s.name === "researching")!;
     const results = installSkill(research, "gemini", TEST_ROOT);
     const cmdResult = results.find((r) => r.type === "config" && r.name === "research.toml");
     expect(cmdResult).toBeDefined();
@@ -233,7 +233,7 @@ describe("installer integration", () => {
 
   it("installs research skill for claude does NOT create command TOML", () => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const research = skills.find((s) => s.name === "research")!;
+    const research = skills.find((s) => s.name === "researching")!;
     const results = installSkill(research, "claude", TEST_ROOT);
     const cmdResult = results.find((r) => r.type === "config");
     expect(cmdResult).toBeUndefined();
@@ -253,6 +253,25 @@ describe("installer integration", () => {
     const content = readFileSync(cmdResult!.outputPath, "utf-8");
     expect(content).toContain("Invoke the writing-plans skill");
     expect(content).toContain("{{args}}");
+  });
+
+  it("throws when command is enabled but command_name is missing", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const researching = skills.find((s) => s.name === "researching");
+    expect(researching).toBeDefined();
+    if (!researching) return;
+
+    const broken = {
+      ...researching,
+      manifest: {
+        ...researching.manifest,
+        command_name: undefined,
+      },
+    };
+
+    expect(() => installSkill(broken, "gemini", TEST_ROOT)).toThrow(
+      'Skill "researching" has command: true but missing command_name',
+    );
   });
 
   // Side-effect test: code-explorer for Gemini disables codebase_investigator

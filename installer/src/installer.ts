@@ -41,9 +41,13 @@ export function installSkill(skill: DiscoveredSkill, platformId: string, project
   }
 
   if (platformId === "gemini" && skill.manifest.command && platform.command_path) {
-    const cmdPath = resolve(projectRoot, platform.command_path, `${skill.name}.toml`);
-    writeOutput(cmdPath, buildGeminiCommand(skill.name, skill.description));
-    results.push({ type: "config", name: `${skill.name}.toml`, outputPath: cmdPath });
+    if (!skill.manifest.command_name) {
+      throw new Error(`Skill "${skill.name}" has command: true but missing command_name`);
+    }
+    const commandName = skill.manifest.command_name;
+    const cmdPath = resolve(projectRoot, platform.command_path, `${commandName}.toml`);
+    writeOutput(cmdPath, buildGeminiCommand(commandName, skill.description));
+    results.push({ type: "config", name: `${commandName}.toml`, outputPath: cmdPath });
   }
 
   return results;

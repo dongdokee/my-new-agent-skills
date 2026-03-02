@@ -1,5 +1,5 @@
 ---
-name: research
+name: researching
 description: >-
   Interactive research workflow that converts ambiguous goals into a
   decision-ready ticket through structured Q&A, codebase exploration,

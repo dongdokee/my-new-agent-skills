@@ -40,6 +40,7 @@ export interface SkillManifest {
   include: string[];
   agents?: string[];
   command?: boolean;
+  command_name?: string;
 }
 
 export interface SkillFrontmatter {

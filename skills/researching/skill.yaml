@@ -1,6 +1,7 @@
 platforms: [claude, gemini, codex]
 install_as: command
 command: true
+command_name: research
 include:
   - SKILL.md
   - references/
