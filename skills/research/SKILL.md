@@ -178,6 +178,9 @@ Trade-offs:
 
 **Ask questions to seek answers to outstanding or newly identified open questions**
 
+**Checklist before proceeding to Step 5:**
+- [ ] All open questions have been fully addressed and resolved
+
 ### Step 5: Design Synthesis
 
 - Build design options from exploration findings.
