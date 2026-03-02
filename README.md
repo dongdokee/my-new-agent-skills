@@ -12,7 +12,6 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 |-------|-------------|
 | `research` | Unified research workflow: intent discovery → codebase exploration → design synthesis → ticket authoring |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
-| `subagent-porter` | Converts a provider-specific agent definition into multi-provider compatible outputs |
 
 ## Installation
 
@@ -53,10 +52,44 @@ skills/<name>/
   SKILL.md       # platform-neutral content (source of truth)
   skill.yaml     # name, platforms, includes, agent refs
   references/    # optional supporting docs, copied on install
-  agents/        # optional sub-agents with per-platform frontmatter
+  agents/        # optional skill-local sub-agents
+
+agents/          # shared agents (not tied to any skill)
+  <name>.md
 ```
 
 Use `{{tool.<key>}}` placeholders in `SKILL.md` for platform-varying tool names. Mappings are defined in `installer/platforms.yaml`.
+
+## Multi-Platform Agent Frontmatter
+
+Agents use a `platforms:` block so the installer can generate platform-specific output from a single source file:
+
+```yaml
+---
+name: my-agent
+description: |
+  What this agent does.
+platforms:
+  claude:
+    model: haiku
+    tools: [Read, Glob, Grep]
+    maxTurns: 12
+  gemini:
+    model: gemini-2.0-flash
+    tools: [grep_search, glob, read_file, read_many_files, list_directory]
+    max_turns: 12
+  codex:
+    model: o4-mini
+    model_reasoning_effort: medium   # optional
+    sandbox_mode: read-only          # optional
+---
+```
+
+| Field | Claude | Gemini | Codex |
+|-------|--------|--------|-------|
+| turns | `maxTurns` | `max_turns` | n/a |
+| model | any Claude model | any Gemini model | any OpenAI model |
+| extra | — | `kind: local` added automatically | `model_reasoning_effort`, `sandbox_mode` |
 
 | Placeholder | Claude Code | Gemini CLI | Codex |
 |-------------|-------------|------------|-------|

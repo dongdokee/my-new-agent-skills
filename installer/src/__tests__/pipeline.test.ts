@@ -7,17 +7,18 @@ import { installSkill, installAgent } from "../installer.js";
 
 const TEST_ROOT = resolve(import.meta.dirname, "../../.test-output");
 const SKILLS_ROOT = resolve(import.meta.dirname, "../../../skills");
+const AGENTS_ROOT = resolve(import.meta.dirname, "../../../agents");
 
 describe("scanner", () => {
   it("finds all skills with skill.yaml", () => {
-    const result = scanSkills(SKILLS_ROOT);
+    const result = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     expect(result.skills.map((s) => s.name).sort()).toEqual(
-      ["reciting-task-state", "research", "subagent-porter"]
+      ["reciting-task-state", "research"]
     );
   });
 
   it("finds agents with platform configs", () => {
-    const { agents } = scanSkills(SKILLS_ROOT);
+    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     expect(agents).toHaveLength(1);
     expect(agents[0].name).toBe("code-explorer");
     expect(agents[0].manifest.platforms.claude.model).toBe("haiku");
@@ -66,21 +67,21 @@ describe("installer integration", () => {
   afterEach(() => { if (existsSync(TEST_ROOT)) rmSync(TEST_ROOT, { recursive: true }); });
 
   it("installs skill for Claude as markdown", () => {
-    const { skills } = scanSkills(SKILLS_ROOT);
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installSkill(skills.find((s) => s.name === "research")!, "claude", TEST_ROOT);
     expect(results[0].outputPath).toContain(".claude/skills/research/SKILL.md");
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
   it("installs skill for Gemini as markdown", () => {
-    const { skills } = scanSkills(SKILLS_ROOT);
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installSkill(skills.find((s) => s.name === "research")!, "gemini", TEST_ROOT);
     expect(results[0].outputPath).toContain(".gemini/skills/research/SKILL.md");
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
   it("installs agent for Claude as markdown", () => {
-    const { agents } = scanSkills(SKILLS_ROOT);
+    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installAgent(agents[0], "claude", TEST_ROOT);
     const content = readFileSync(results[0].outputPath, "utf-8");
     expect(content).toContain("model: haiku");
@@ -88,7 +89,7 @@ describe("installer integration", () => {
   });
 
   it("installs agent for Codex as TOML + config registration", () => {
-    const { agents } = scanSkills(SKILLS_ROOT);
+    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installAgent(agents[0], "codex", TEST_ROOT);
     expect(readFileSync(results.find((r) => r.type === "agent")!.outputPath, "utf-8")).toContain('model = "o4-mini"');
     expect(readFileSync(results.find((r) => r.type === "config")!.outputPath, "utf-8")).toContain("[agents.code-explorer]");
