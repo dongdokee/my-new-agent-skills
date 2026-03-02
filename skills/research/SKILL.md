@@ -181,6 +181,11 @@ Trade-offs:
 [Outstanding or newly identified questions from the exploration]
 ```
 
+**Checklist before proceeding to Step 4:**
+
+- [ ] Dispatch `code-explorer` agents in parallel
+- [ ] Comprehensive summary of findings and patterns discovered MUST follows the template STRICTLY
+
 ### Step 4: Asking Further Clarifying Questions
 
 **Ask questions one at a time to resolve remaining ambiguities{{tool.ask_user}}:**
@@ -235,6 +240,10 @@ Trade-offs:
 - "Approach B" - with brief rationale
 - "Explore further" - discuss more options
 - "None of these" - gather more requirements
+
+**Checklist before proceeding to Step 6:**
+
+- [ ] Dispatch `code-architect` agents in parallel
 
 ### Step 6: Documenting Ticket
 
@@ -360,7 +369,7 @@ Trade-offs:
 - **Reject with feedback** - adjust based on feedback
 
 **Checklist before completion:**
-- [ ] 
+- [ ] Ticket document MUST follows the template STRICTLY
 
 ## Questioning Techniques
 
