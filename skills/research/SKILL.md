@@ -19,7 +19,8 @@ by evidence from codebase exploration and optional web research.
 ## The Iron Laws
 
 ```
-NO COMPLETION CLAIMS WITHOUT TICKET ARTIFACT
+1. NO COMPLETION CLAIMS WITHOUT TICKET ARTIFACT
+2. NO COMPLETION CLAIMS WITHOUT 100% TICKET TEMPLATE COMPLIANCE
 ```
 
 Unless you have strictly followed the process to generate a ticket artifact, you cannot claim that the research is complete
@@ -237,7 +238,7 @@ Trade-offs:
 
 ### Step 6: Documenting Ticket
 
-**Present the Ticket:**
+**Present the Ticket:** You MUST strictly follow the following ticket template
 
 ```
 # Ticket: <Topic> (YYYY-MM-DD)
@@ -357,6 +358,9 @@ Trade-offs:
    - Save final ticket to `docs/plans/YYYY-MM-DD-<topic>-ticket.md`
    - Ask user whether to invoke `writing-plans` skill to create a detailed implementation plan{{tool.ask_user}}
 - **Reject with feedback** - adjust based on feedback
+
+**Checklist before completion:**
+- [ ] 
 
 ## Questioning Techniques
 
