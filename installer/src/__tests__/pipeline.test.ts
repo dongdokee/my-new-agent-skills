@@ -22,6 +22,13 @@ describe("scanner", () => {
     }
   });
 
+  it("discovers writing-plans as an installable skill", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const writingPlans = skills.find((s) => s.name === "writing-plans");
+    expect(writingPlans).toBeDefined();
+    expect(writingPlans?.manifest.command).toBe(true);
+  });
+
   it("all agents have valid manifest structure", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     expect(agents.length).toBeGreaterThanOrEqual(1);
@@ -230,6 +237,22 @@ describe("installer integration", () => {
     const results = installSkill(research, "claude", TEST_ROOT);
     const cmdResult = results.find((r) => r.type === "config");
     expect(cmdResult).toBeUndefined();
+  });
+
+  it("installs writing-plans for gemini creates .gemini/commands/writing-plans.toml", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const writingPlans = skills.find((s) => s.name === "writing-plans");
+    expect(writingPlans).toBeDefined();
+    if (!writingPlans) return;
+
+    const results = installSkill(writingPlans, "gemini", TEST_ROOT);
+    const cmdResult = results.find((r) => r.type === "config" && r.name === "writing-plans.toml");
+    expect(cmdResult).toBeDefined();
+    expect(cmdResult!.outputPath).toContain(".gemini/commands/writing-plans.toml");
+    expect(existsSync(cmdResult!.outputPath)).toBe(true);
+    const content = readFileSync(cmdResult!.outputPath, "utf-8");
+    expect(content).toContain("Invoke the writing-plans skill");
+    expect(content).toContain("{{args}}");
   });
 
   // Side-effect test: code-explorer for Gemini disables codebase_investigator

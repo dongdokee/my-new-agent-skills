@@ -374,6 +374,7 @@ Trade-offs:
 
 **Checklist before completion:**
 - [ ] Ticket document MUST follows the template STRICTLY
+- [ ] Ticket file name should match with `docs/plans/YYYY-MM-DD-<topic>-ticket.md`
 
 ## Questioning Techniques
 
