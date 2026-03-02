@@ -1,5 +1,3 @@
-name: research
-description: "Unified research workflow for intent discovery, requirement clarification, codebase exploration, design synthesis, and research ticket authoring"
 platforms: [claude, gemini, codex]
 install_as: command
 command: true

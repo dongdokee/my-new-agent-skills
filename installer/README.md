@@ -25,7 +25,7 @@ The interactive wizard walks through 4 steps:
 
 ```
 Source (skills/research/SKILL.md)
-  -> Parse skill.yaml manifest
+  -> Parse SKILL.md frontmatter (name/description) + skill.yaml manifest
   -> Replace {{tool.*}} placeholders with platform-specific names
   -> Convert to target format (Markdown or TOML)
   -> Write to platform path (.claude/, .gemini/, .codex/)
@@ -61,8 +61,6 @@ Unknown placeholders (e.g. `{{args}}`) pass through untouched.
 2. Add `skills/<name>/skill.yaml`:
 
 ```yaml
-name: my-skill
-description: "What this skill does"
 platforms: [claude, gemini, codex]
 install_as: command
 include:
@@ -71,6 +69,8 @@ include:
 agents:
   - agents/my-agent.md  # optional
 ```
+
+`name` and `description` belong in `SKILL.md` frontmatter (SSOT), not in `skill.yaml`.
 
 3. For agents, add a `platforms:` block in the frontmatter:
 

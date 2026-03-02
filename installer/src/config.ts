@@ -35,13 +35,16 @@ export interface PlatformsConfig {
 }
 
 export interface SkillManifest {
-  name: string;
-  description: string;
   platforms: string[];
   install_as: "command" | "skill";
   include: string[];
   agents?: string[];
   command?: boolean;
+}
+
+export interface SkillFrontmatter {
+  name: string;
+  description: string;
 }
 
 export interface AgentPlatformConfig {
@@ -116,6 +119,21 @@ export function loadSkillManifest(skillDir: string): SkillManifest | null {
   const path = resolve(skillDir, "skill.yaml");
   if (!existsSync(path)) return null;
   return yaml.load(readFileSync(path, "utf-8")) as SkillManifest;
+}
+
+export function parseSkillFrontmatter(skillFilePath: string): SkillFrontmatter | null {
+  if (!existsSync(skillFilePath)) return null;
+
+  const raw = readFileSync(skillFilePath, "utf-8");
+  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!match) return null;
+
+  const fm = yaml.load(match[1]) as Record<string, unknown>;
+  const name = fm.name;
+  const description = fm.description;
+  if (typeof name !== "string" || typeof description !== "string") return null;
+
+  return { name, description };
 }
 
 export function parseAgentFrontmatter(filePath: string): AgentManifest | null {

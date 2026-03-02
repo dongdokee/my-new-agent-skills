@@ -38,7 +38,7 @@ agents/<name>.md (shared)
 
 ### Installer Source (`installer/src/`)
 
-- `config.ts` — loads `platforms.yaml` (tool mappings, output paths, `agent_tool_map`, `profiles`) and parses `skill.yaml` manifests + agent frontmatter; `resolveAgentConfig()` translates profile+tools → per-platform config
+- `config.ts` — loads `platforms.yaml` (tool mappings, output paths, `agent_tool_map`, `profiles`) and parses `skill.yaml` manifests, `SKILL.md` frontmatter, + agent frontmatter; `resolveAgentConfig()` translates profile+tools → per-platform config
 - `scanner.ts` — walks `skills/` to find installable skills (by `skill.yaml` presence) and agents (from manifest `agents:` field); also scans top-level `agents/` for shared agents not tied to any skill
 - `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML agent, Codex config.toml registration, Gemini settings.json patching, Gemini command TOML generation)
 - `installer.ts` — orchestrates transform → write → copy references
@@ -56,8 +56,8 @@ agents/<name>.md (shared)
 ### Skill Structure
 
 Each skill in `skills/<name>/` has:
-- `SKILL.md` — platform-neutral content (the source of truth)
-- `skill.yaml` — manifest declaring name, platforms, includes, agent references, and optional `command: true` for Gemini command generation
+- `SKILL.md` — platform-neutral content (the source of truth; `name` and `description` SSOT in frontmatter)
+- `skill.yaml` — manifest declaring platforms, includes, agent references, and optional `command: true` for Gemini command generation
 - `references/` — optional supporting docs (checklists, templates, playbooks), copied alongside on install
 - `agents/` — optional skill-local sub-agents with per-platform frontmatter
 

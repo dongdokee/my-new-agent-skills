@@ -42,7 +42,7 @@ export function installSkill(skill: DiscoveredSkill, platformId: string, project
 
   if (platformId === "gemini" && skill.manifest.command && platform.command_path) {
     const cmdPath = resolve(projectRoot, platform.command_path, `${skill.name}.toml`);
-    writeOutput(cmdPath, buildGeminiCommand(skill.name, skill.manifest.description));
+    writeOutput(cmdPath, buildGeminiCommand(skill.name, skill.description));
     results.push({ type: "config", name: `${skill.name}.toml`, outputPath: cmdPath });
   }
 

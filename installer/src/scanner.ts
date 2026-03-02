@@ -1,10 +1,11 @@
 import { readdirSync, existsSync, statSync } from "node:fs";
 import { resolve } from "node:path";
-import { loadSkillManifest, parseAgentFrontmatter } from "./config.js";
+import { loadSkillManifest, parseAgentFrontmatter, parseSkillFrontmatter } from "./config.js";
 import type { SkillManifest, AgentManifest } from "./config.js";
 
 export interface DiscoveredSkill {
   name: string;
+  description: string;
   dir: string;
   manifest: SkillManifest;
   skillFilePath: string;
@@ -51,11 +52,13 @@ export function scanSkills(skillsDir: string, agentsDir?: string): ScanResult {
 
     const skillFilePath = resolve(dir, "SKILL.md");
     if (!existsSync(skillFilePath)) continue;
+    const skillFrontmatter = parseSkillFrontmatter(skillFilePath);
+    if (!skillFrontmatter) continue;
 
-    skills.push({ name: manifest.name, dir, manifest, skillFilePath });
+    skills.push({ name: skillFrontmatter.name, description: skillFrontmatter.description, dir, manifest, skillFilePath });
 
     for (const agentPath of manifest.agents ?? []) {
-      scanAgentPath(resolve(dir, agentPath), manifest.name, agents);
+      scanAgentPath(resolve(dir, agentPath), skillFrontmatter.name, agents);
     }
   }
 

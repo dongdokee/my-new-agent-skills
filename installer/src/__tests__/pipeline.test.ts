@@ -13,11 +13,12 @@ const AGENTS_ROOT = resolve(import.meta.dirname, "../../../agents");
 const PLATFORMS = ["claude", "gemini", "codex"] as const;
 
 describe("scanner", () => {
-  it("finds skills with skill.yaml", () => {
+  it("finds skills with skill.yaml + SKILL.md frontmatter", () => {
     const result = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     expect(result.skills.length).toBeGreaterThanOrEqual(1);
     for (const skill of result.skills) {
       expect(skill.name).toBeTruthy();
+      expect(skill.description).toBeTruthy();
     }
   });
 

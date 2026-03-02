@@ -49,8 +49,8 @@ Agents:
 
 ```
 skills/<name>/
-  SKILL.md       # platform-neutral content (source of truth)
-  skill.yaml     # name, platforms, includes, agent refs
+  SKILL.md       # platform-neutral content + frontmatter(name/description) SSOT
+  skill.yaml     # platforms, includes, agent refs
   references/    # optional supporting docs, copied on install
   agents/        # optional skill-local sub-agents
 
