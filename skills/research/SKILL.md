@@ -179,14 +179,53 @@ Trade-offs:
 **Ask questions to seek answers to outstanding or newly identified open questions**
 
 **Checklist before proceeding to Step 5:**
+
 - [ ] All open questions have been fully addressed and resolved
 
-### Step 5: Design Synthesis
+### Step 5: Exploring Approaches
 
-- Build design options from exploration findings.
-- Compare trade-offs against requirements.
-- Present all options with trade-off analysis and wait for explicit user selection.
-- Record the user's selection and their stated rationale.
+**Launch 2-3 `code-architect` agents in parallel with different focuses:**
+
+- **minimal changes:** smallest change, maxmium reuse
+- **clean architecture:** maintainability, elegant abstractions
+- **pragmatic balance:** speed + quality
+
+**Review all approaches:**
+
+- Form your opinion on which fits best for this specific task
+- Analyze the trade-offs between approaches
+
+**Present approaches:**
+
+```
+## Approach A: [Name]
+[2-3 sentences describing the approach]
+
+**Pros**: [Key advantages]
+**Cons**: [Key disadvantages]
+**Best when**: [Situations where this shines]
+
+## Approach B: [Name]
+[2-3 sentences describing the approach]
+
+**Pros**: [Key advantages]
+**Cons**: [Key disadvantages]
+**Best when**: [Situations where this shines]
+
+## Approach C: [Name] (if applicable)
+...
+
+## Recommendation
+[Which approach and why, based on stated constraints]
+```
+
+**Ask user for his preferred approach:**
+
+- Ask{{tool.ask_user}}
+   - "Approach A (recommended)" - with brief rationale
+   - "Approach B" - with brief rationale
+   - "Explore further" - discuss more options
+   - "None of these" - gather more requirements
 
 ### Step 6: Validated Requirements and Final Design Freeze
 
