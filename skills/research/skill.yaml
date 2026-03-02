@@ -5,5 +5,3 @@ install_as: command
 include:
   - SKILL.md
   - references/
-agents:
-  - agents/code-explorer.md

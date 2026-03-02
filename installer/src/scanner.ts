@@ -36,7 +36,7 @@ function scanAgentPath(path: string, skillName: string, agents: DiscoveredAgent[
   }
 }
 
-export function scanSkills(skillsDir: string): ScanResult {
+export function scanSkills(skillsDir: string, agentsDir?: string): ScanResult {
   const skills: DiscoveredSkill[] = [];
   const agents: DiscoveredAgent[] = [];
 
@@ -57,6 +57,10 @@ export function scanSkills(skillsDir: string): ScanResult {
     for (const agentPath of manifest.agents ?? []) {
       scanAgentPath(resolve(dir, agentPath), manifest.name, agents);
     }
+  }
+
+  if (agentsDir) {
+    scanAgentPath(agentsDir, "", agents);
   }
 
   return { skills, agents };

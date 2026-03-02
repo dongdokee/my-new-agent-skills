@@ -14,7 +14,8 @@ async function main() {
   console.log(chalk.bold("\n  Agent Skill Installer\n"));
 
   const spinner = ora("Scanning skills...").start();
-  const scanResult = scanSkills(resolve(projectRoot, "skills"));
+  const agentsDir = resolve(projectRoot, "agents");
+  const scanResult = scanSkills(resolve(projectRoot, "skills"), agentsDir);
   spinner.succeed(`Found ${scanResult.skills.length} skills, ${scanResult.agents.length} agents`);
 
   if (scanResult.skills.length === 0 && scanResult.agents.length === 0) {
