@@ -33,6 +33,8 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 ```markdown
 # [Topic] Implementation Plan
 
+**Ticket:** `<ticket-file-path>
+
 **Goal:** [One sentence describing what this builds]
 
 **Architecture:** [2-3 sentences about approach]
