@@ -17,29 +17,11 @@ Create a decision-ready research ticket from ambiguous user requests.
 Convert unclear goals into validated requirements and a frozen design, backed
 by evidence from codebase exploration and optional web research.
 
-## When to Use
-
-- Clarify user intent before planning or implementation.
-- Derive explicit requirements from vague requests.
-- Investigate codebase behavior to validate assumptions.
-- Compare design options and select one.
-- Produce a structured research ticket for handoff.
-
 ## The Iron Law
 
 - Ask exactly one question at a time whenever interacting with the user. Never bundle multiple questions or group intent interrogation with requirement drafting in the same turn.
 - Always provide multiple-choice options when asking questions to the user, along with your recommendation and its rationale.
-- Do not freeze requirements or design before collecting evidence.
-- Use codebase evidence first; use web research only when codebase evidence is
-  insufficient.
-- If this skill is explicitly invoked by the user or orchestrator, operate in
-  research-only mode.
-- Before Step 5 freeze approval, do not edit implementation code, tests, or
-  automation scripts.
-- Move to implementation only after explicit user approval of frozen
-  requirements and design.
-- Do not claim completion without a ticket artifact at
-  `docs/plans/YYYY-MM-DD-<topic>-research.md`.
+- Move to implementation only after explicit user approval of frozen requirements and design.
 
 ## Process
 
