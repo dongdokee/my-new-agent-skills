@@ -354,6 +354,8 @@ Trade-offs:
 - Evidence:
    - [Include data, code snippets, or research results that validate the choice]
 
+#### ADR N (if applicable)
+
 ## 4. Open Questions (if any)
 
 - [Question]
