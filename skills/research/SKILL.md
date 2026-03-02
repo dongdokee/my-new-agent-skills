@@ -27,6 +27,7 @@ by evidence from codebase exploration and optional web research.
 
 ## The Iron Law
 
+- Ask exactly one question at a time whenever interacting with the user. Never bundle multiple questions or group intent interrogation with requirement drafting in the same turn.
 - Do not freeze requirements or design before collecting evidence.
 - Use codebase evidence first; use web research only when codebase evidence is
   insufficient.
@@ -125,6 +126,8 @@ If the user rejects, run the loop in `references/rejection-loop.md`.
 
 ## Anti-Patterns
 
+- Bundling questions: Asking multiple questions or grouping intent interrogation with requirement drafting in a single turn.
+- Efficiency over precision: Prioritizing turn reduction over the "one question at a time" constraint.
 - Starting implementation immediately after explicit skill invocation.
 - Switching to implementation before Step 5 freeze approval and explicit user
   approval.
