@@ -1,6 +1,6 @@
 platforms: [claude, gemini, codex]
 install_as: command
 command: true
-command_name: writing-plans
+command_name: write-plans
 include:
   - SKILL.md
