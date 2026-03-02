@@ -58,6 +58,26 @@ What scope boundary should we keep?
 - Broad future-ready scope
 ```
 
+### Approval Gate (after drafting requirements)
+
+```text
+Here are the draft requirements. Do these look right before I begin exploration?
+- Approve and proceed to exploration (recommended)
+- Adjust scope first
+- Add or remove a requirement
+```
+
+## Phase 4: Design Selection
+
+### Option Selection
+
+```text
+Here are the design options with trade-off analysis. Which would you like to proceed with?
+- [Option A] — [one-line trade-off summary]
+- [Option B] — [one-line trade-off summary]
+- Need more evidence before deciding
+```
+
 ## Phase 5: Final Freeze Gate
 
 ### Approval Check

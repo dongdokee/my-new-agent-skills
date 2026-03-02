@@ -63,6 +63,10 @@ You MUST create a task for each of these steps and complete them in order:
 - Mark in-scope and out-of-scope explicitly.
 - Record assumptions, unknowns, and validation targets.
 - Treat this as a draft, not a freeze.
+- Present the draft requirements to the user and ask for confirmation before proceeding to exploration.
+- Use `references/question-playbook.md` Phase 2 approval gate pattern for framing.
+- Do not advance to Step 3 until the user confirms or adjusts the draft.
+- If the user's adjustment is substantive, return to Step 1 before re-drafting.
 
 ### Step 3: Targeted Exploration
 
@@ -93,14 +97,18 @@ Use `references/exploration-checklist.md` to avoid shallow exploration.
 
 - Build design options from exploration findings.
 - Compare trade-offs against requirements.
-- Recommend one candidate design with rationale.
+- Present all options to the user with trade-off analysis.
+- Ask the user to select or approve one option before proceeding.
+- Do not select a design unilaterally; wait for explicit user selection.
+- Record the user's selection as the candidate design with their stated rationale.
 
 ### Step 5: Validated Requirements and Final Design Freeze
 
 - Reconcile draft requirements with exploration evidence.
 - Produce the validated requirement set.
-- Finalize one design decision.
-- Request explicit user approval for the frozen set.
+- Confirm the selected design decision from Step 4.
+- Confirm Success Criteria and Validation Method with the user: ask how they will verify the outcome is complete and correct.
+- Present the full freeze proposal (requirements, design, success criteria, validation method) and request explicit user approval.
 
 If the user rejects, run the loop in `references/rejection-loop.md`.
 
