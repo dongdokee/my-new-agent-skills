@@ -11,12 +11,11 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
+**REQUIRED:** Invoke `test-driven-development` skill to organize plan by Test Driven Development (TDD)
+
 **Read FIRST:** `docs/plans/YYYY-MM-DD-<topic>-ticket.md`
 
 **Save plans to:** `docs/plans/YYYY-MM-DD-<topic>-plan.md`
-
-**REQUIRED SKILL:**
-- test-driven-development: Task in the plan is organized by test driven development (TDD)
 
 ## Bite-Sized Task Granularity
 
@@ -95,7 +94,7 @@ git commit -m "feat: add specific feature"
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving the plan, offer execution choice{{tool.ask_user}}:
 
 **"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
 
