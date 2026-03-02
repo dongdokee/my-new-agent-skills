@@ -113,7 +113,7 @@ Trade-offs:
 **Open Questions:**
 - [Open questions to ask but not important/critical]
 - [Open questions to explore]
-- ...
+- (Add further questions at your discretion to ensure clarity)
 ```
 
 **Ask the user if the preliminary idea is acceptable{{tool.ask_user}}:**
@@ -174,14 +174,18 @@ Trade-offs:
 [Outstanding or newly identified questions from the exploration]
 ```
 
-### Step 4: Design Synthesis
+### Step 4: Asking Further Clarifying Questions
+
+**Ask questions to seek answers to outstanding or newly identified open questions**
+
+### Step 5: Design Synthesis
 
 - Build design options from exploration findings.
 - Compare trade-offs against requirements.
 - Present all options with trade-off analysis and wait for explicit user selection.
 - Record the user's selection and their stated rationale.
 
-### Step 5: Validated Requirements and Final Design Freeze
+### Step 6: Validated Requirements and Final Design Freeze
 
 - Reconcile draft requirements with exploration evidence.
 - Produce the validated requirement set.
@@ -190,7 +194,7 @@ Trade-offs:
 
 If the user rejects, run the loop in `references/rejection-loop.md`.
 
-### Step 6: Ticket Authoring
+### Step 7: Ticket Authoring
 
 - Create the artifact at:
 - `docs/plans/YYYY-MM-DD-<topic>-research.md`
