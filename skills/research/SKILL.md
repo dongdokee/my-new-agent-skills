@@ -66,17 +66,17 @@ You MUST create a task for each of these steps and complete them in order:
    - How will you know it works?
    - What would make this valuable?
 
-3. **Non-goals: What are we NOT doing?**
+4. **Non-goals: What are we NOT doing?**
    - Explicitly out of scope for this task
    - Related problems intentionally left unaddressed
    - Future considerations deferred to later phases
 
-4. **Constraints: What constraints exist?**
+5. **Constraints: What constraints exist?**
    - Technical limitations
    - Time constraints
    - Compatibility requirements
 
-5. **Exploration: What have you considered?**
+6. **Exploration: What have you considered?**
    - Initial ideas or preferences
    - Approaches to avoid
    - Prior art to reference
@@ -93,7 +93,7 @@ You MUST create a task for each of these steps and complete them in order:
 
 2. Ask the user if the preliminary idea is acceptable{{tool.ask_user}}:
    - **User approves** - proceed to Step 3
-   - **User rejects** - Restart step 1 based on the user's message
+   - **User rejects** - Return to step 1 based on the user's message
 
 ### Step 3: Exploring Codebase and Documentation
 
