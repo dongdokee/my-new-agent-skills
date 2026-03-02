@@ -19,9 +19,10 @@ Load ticket and plan, review critically, execute tasks in batches, report for re
 
 ### Step 1: Load and Review Plan
 1. Read plan file
-2. Review critically - identify any questions or concerns about the plan
-3. If concerns: Raise them with your human partner before starting
-4. If no concerns: proceed to next step
+2. Invoke skills in the plan file
+3. Review critically - identify any questions or concerns about the plan
+4. If concerns: Raise them with your human partner before starting
+5. If no concerns: proceed to next step
 
 ### Step 2: Execute Batch
 **Default: First 3 tasks**

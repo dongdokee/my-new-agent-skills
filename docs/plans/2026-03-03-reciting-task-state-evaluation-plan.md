@@ -1,11 +1,11 @@
 # Evaluate reciting-task-state Implementation Plan
 
+**REQUIRED:** You MUST use `test-driven-development` skill to understand TDD. The task structure in the plan is based on the Test-driven development (TDD). 
+
 **REQUIRED SUB-AGENTS:** Launch `code-reviewer` agent in the review step, focusing on
 - simplicity/DRY/elegance
 - bugs/functional correctness
 - project conventions/abstractions
-
-**REQUIRED SUB-SKILL:** Invoke `test-driven-development` to understand TDD-driven task structure
 
 **Ticket:** `docs/plans/2026-03-03-reciting-task-state-evaluation-ticket.md`
 
