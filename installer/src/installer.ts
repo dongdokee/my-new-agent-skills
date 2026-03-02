@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
-import { getPlatform } from "./config.js";
+import { getPlatform, loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { DiscoveredSkill, DiscoveredAgent } from "./scanner.js";
 import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig } from "./transform.js";
 
@@ -45,7 +45,7 @@ export function installSkill(skill: DiscoveredSkill, platformId: string, project
 
 export function installAgent(agent: DiscoveredAgent, platformId: string, projectRoot: string): InstallResult[] {
   const platform = getPlatform(platformId);
-  const platformConfig = agent.manifest.platforms[platformId];
+  const platformConfig = resolveAgentConfig(agent.manifest, platformId, loadPlatforms());
   if (!platformConfig) return [];
 
   const body = replacePlaceholders(agent.manifest.body, platform.tools);

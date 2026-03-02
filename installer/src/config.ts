@@ -14,8 +14,23 @@ export interface PlatformConfig {
   tools: Record<string, string>;
 }
 
+export interface AgentToolMap {
+  [claudeTool: string]: {
+    gemini?: string[];
+  };
+}
+
+export interface ProfilePlatformConfig {
+  model: string;
+  maxTurns?: number;
+  max_turns?: number;
+  model_reasoning_effort?: string;
+}
+
 export interface PlatformsConfig {
   platforms: Record<string, PlatformConfig>;
+  agent_tool_map?: AgentToolMap;
+  profiles?: Record<string, Record<string, ProfilePlatformConfig>>;
 }
 
 export interface SkillManifest {
@@ -39,7 +54,11 @@ export interface AgentPlatformConfig {
 export interface AgentManifest {
   name: string;
   description: string;
-  platforms: Record<string, AgentPlatformConfig>;
+  // New simplified format
+  profile?: string;
+  tools?: string[];
+  // Legacy format (kept for backward compat)
+  platforms?: Record<string, AgentPlatformConfig>;
   body: string;
 }
 
@@ -88,10 +107,41 @@ export function parseAgentFrontmatter(filePath: string): AgentManifest | null {
   if (!match) return null;
 
   const fm = yaml.load(match[1]) as Record<string, unknown>;
-  return {
+  const manifest: AgentManifest = {
     name: fm.name as string,
     description: fm.description as string,
-    platforms: (fm.platforms ?? {}) as Record<string, AgentPlatformConfig>,
     body: match[2].trim(),
   };
+
+  if (fm.profile) manifest.profile = fm.profile as string;
+  if (fm.tools) manifest.tools = fm.tools as string[];
+  if (fm.platforms) manifest.platforms = fm.platforms as Record<string, AgentPlatformConfig>;
+
+  return manifest;
+}
+
+export function resolveAgentConfig(
+  manifest: AgentManifest,
+  platformId: string,
+  platforms: PlatformsConfig,
+): AgentPlatformConfig | null {
+  // New format: profile + tools
+  if (manifest.profile && manifest.tools) {
+    const profileEntry = platforms.profiles?.[manifest.profile]?.[platformId];
+    if (!profileEntry) return null;
+
+    let tools: string[];
+    if (platformId === "gemini") {
+      tools = manifest.tools.flatMap(
+        (t) => platforms.agent_tool_map?.[t]?.gemini ?? [],
+      );
+    } else {
+      tools = manifest.tools; // claude: as-is; codex: unused but kept
+    }
+
+    return { ...profileEntry, tools };
+  }
+
+  // Legacy format: platforms block
+  return manifest.platforms?.[platformId] ?? null;
 }

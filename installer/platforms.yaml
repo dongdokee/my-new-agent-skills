@@ -39,3 +39,36 @@ platforms:
       task_update: "update_plan"
       task_tracking: "`update_plan` tool"
       ask_user: ""
+
+# Maps Claude tool names → Gemini tool name arrays for agent frontmatter auto-mapping.
+# Codex agents do not declare a tools list, so only gemini is mapped here.
+agent_tool_map:
+  Read:
+    gemini: [read_file, read_many_files]
+  Glob:
+    gemini: [glob, list_directory]
+  Grep:
+    gemini: [grep_search]
+  Write:
+    gemini: [write_file]
+  Edit:
+    gemini: [write_file]
+  Bash:
+    gemini: [run_in_terminal]
+  WebFetch:
+    gemini: [fetch_webpage]
+  WebSearch:
+    gemini: [google_search]
+
+# Named model/turns profiles for agent frontmatter.
+profiles:
+  fast:
+    claude:
+      model: claude-haiku-4-5
+      maxTurns: 12
+    gemini:
+      model: gemini-2.0-flash
+      max_turns: 12
+    codex:
+      model: o4-mini
+      model_reasoning_effort: medium

@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { scanSkills } from "../scanner.js";
 import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig } from "../transform.js";
 import { installSkill, installAgent } from "../installer.js";
+import { resolveAgentConfig, loadPlatforms } from "../config.js";
 
 const TEST_ROOT = resolve(import.meta.dirname, "../../.test-output");
 const SKILLS_ROOT = resolve(import.meta.dirname, "../../../skills");
@@ -17,13 +18,13 @@ describe("scanner", () => {
     );
   });
 
-  it("finds agents with platform configs", () => {
+  it("finds agents with simplified profile/tools frontmatter", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     expect(agents).toHaveLength(1);
     expect(agents[0].name).toBe("code-explorer");
-    expect(agents[0].manifest.platforms.claude.model).toBe("haiku");
-    expect(agents[0].manifest.platforms.gemini.model).toBe("gemini-2.0-flash");
-    expect(agents[0].manifest.platforms.codex.model).toBe("o4-mini");
+    expect(agents[0].manifest.profile).toBe("fast");
+    expect(agents[0].manifest.tools).toEqual(["Read", "Glob", "Grep"]);
+    expect(agents[0].manifest.platforms).toBeUndefined();
   });
 });
 
@@ -49,9 +50,10 @@ describe("transforms", () => {
     expect(out).toContain("max_turns: 12");
   });
 
-  it("builds Codex TOML agent", () => {
-    const out = buildTomlAgent({ model: "o4-mini", tools: [], model_reasoning_effort: "medium", sandbox_mode: "read-only" }, "body");
+  it("builds Codex TOML agent with constant sandbox_mode", () => {
+    const out = buildTomlAgent({ model: "o4-mini", tools: [], model_reasoning_effort: "medium" }, "body");
     expect(out).toContain('model = "o4-mini"');
+    expect(out).toContain('sandbox_mode = "read-only"');
     expect(out).toContain("developer_instructions");
   });
 
@@ -59,6 +61,51 @@ describe("transforms", () => {
     const out = updateCodexConfig("/nonexistent", "my-agent", "My agent", "agents/my-agent.toml");
     expect(out).toContain("[agents.my-agent]");
     expect(out).toContain('description = "My agent"');
+  });
+});
+
+describe("resolveAgentConfig", () => {
+  const platforms = loadPlatforms();
+
+  it("resolves claude config from profile+tools", () => {
+    const manifest = { name: "test", description: "t", profile: "fast", tools: ["Read", "Glob", "Grep"], body: "" };
+    const cfg = resolveAgentConfig(manifest, "claude", platforms);
+    expect(cfg).not.toBeNull();
+    expect(cfg!.model).toBe("claude-haiku-4-5");
+    expect(cfg!.maxTurns).toBe(12);
+    expect(cfg!.tools).toEqual(["Read", "Glob", "Grep"]);
+  });
+
+  it("resolves gemini config with tool name mapping from profile+tools", () => {
+    const manifest = { name: "test", description: "t", profile: "fast", tools: ["Read", "Glob", "Grep"], body: "" };
+    const cfg = resolveAgentConfig(manifest, "gemini", platforms);
+    expect(cfg).not.toBeNull();
+    expect(cfg!.model).toBe("gemini-2.0-flash");
+    expect(cfg!.tools).toEqual(["read_file", "read_many_files", "glob", "list_directory", "grep_search"]);
+  });
+
+  it("resolves codex config from profile+tools", () => {
+    const manifest = { name: "test", description: "t", profile: "fast", tools: ["Read", "Glob", "Grep"], body: "" };
+    const cfg = resolveAgentConfig(manifest, "codex", platforms);
+    expect(cfg).not.toBeNull();
+    expect(cfg!.model).toBe("o4-mini");
+    expect(cfg!.model_reasoning_effort).toBe("medium");
+  });
+
+  it("falls back to legacy platforms block", () => {
+    const manifest = {
+      name: "test", description: "t", body: "",
+      platforms: { claude: { model: "claude-opus-4-6", tools: ["Read"], maxTurns: 5 } },
+    };
+    const cfg = resolveAgentConfig(manifest, "claude", platforms);
+    expect(cfg!.model).toBe("claude-opus-4-6");
+    expect(cfg!.maxTurns).toBe(5);
+  });
+
+  it("returns null for unknown profile", () => {
+    const manifest = { name: "test", description: "t", profile: "nonexistent", tools: ["Read"], body: "" };
+    const cfg = resolveAgentConfig(manifest, "claude", platforms);
+    expect(cfg).toBeNull();
   });
 });
 
@@ -84,7 +131,7 @@ describe("installer integration", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const results = installAgent(agents[0], "claude", TEST_ROOT);
     const content = readFileSync(results[0].outputPath, "utf-8");
-    expect(content).toContain("model: haiku");
+    expect(content).toContain("model: claude-haiku-4-5");
     expect(content).toContain("maxTurns: 12");
   });
 

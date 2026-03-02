@@ -1,6 +1,6 @@
 import { checkbox, confirm } from "@inquirer/prompts";
 import chalk from "chalk";
-import { loadPlatforms } from "./config.js";
+import { loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { DiscoveredSkill, DiscoveredAgent, ScanResult } from "./scanner.js";
 
 export interface InstallSelections {
@@ -33,8 +33,9 @@ export async function runPrompts(scanResult: ScanResult): Promise<InstallSelecti
     : [];
 
   // Step 3: Agent selection
+  const platformsCfg = loadPlatforms();
   const agentChoices = scanResult.agents
-    .filter((a) => platforms.some((p) => a.manifest.platforms[p] !== undefined))
+    .filter((a) => platforms.some((p) => resolveAgentConfig(a.manifest, p, platformsCfg) !== null))
     .map((a) => ({ name: a.skillName ? `${a.skillName}/${a.name}` : a.name, value: a, checked: true }));
   const agents = agentChoices.length > 0
     ? await checkbox({ message: "Select agents to install:", choices: agentChoices })
@@ -51,7 +52,7 @@ export async function runPrompts(scanResult: ScanResult): Promise<InstallSelecti
     console.log(chalk.bold(`  Platform: ${config.platforms[pid].display_name}`));
     const sNames = skills.filter((s) => s.manifest.platforms.includes(pid)).map((s) => s.name);
     if (sNames.length) console.log(`  Skills (${sNames.length}): ${sNames.join(", ")}`);
-    const aNames = agents.filter((a) => a.manifest.platforms[pid]).map((a) => a.name);
+    const aNames = agents.filter((a) => resolveAgentConfig(a.manifest, pid, platformsCfg)).map((a) => a.name);
     if (aNames.length) console.log(`  Agents (${aNames.length}): ${aNames.join(", ")}`);
     console.log();
   }

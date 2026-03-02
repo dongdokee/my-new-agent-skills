@@ -39,12 +39,15 @@ export function buildMarkdownAgent(
 // --- TOML transforms ---
 
 export function buildTomlAgent(platformConfig: AgentPlatformConfig, body: string): string {
-  return TOML.stringify({
+  const obj: Record<string, unknown> = {
     model: platformConfig.model,
-    model_reasoning_effort: platformConfig.model_reasoning_effort ?? "medium",
-    sandbox_mode: platformConfig.sandbox_mode ?? "read-only",
+    sandbox_mode: "read-only",
     developer_instructions: body,
-  } as TOML.JsonMap);
+  };
+  if (platformConfig.model_reasoning_effort) {
+    obj.model_reasoning_effort = platformConfig.model_reasoning_effort;
+  }
+  return TOML.stringify(obj as TOML.JsonMap);
 }
 
 export function updateCodexConfig(

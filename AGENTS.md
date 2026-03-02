@@ -38,7 +38,7 @@ agents/<name>.md (shared)
 
 ### Installer Source (`installer/src/`)
 
-- `config.ts` — loads `platforms.yaml` (tool mappings, output paths) and parses `skill.yaml` manifests + agent frontmatter
+- `config.ts` — loads `platforms.yaml` (tool mappings, output paths, `agent_tool_map`, `profiles`) and parses `skill.yaml` manifests + agent frontmatter; `resolveAgentConfig()` translates profile+tools → per-platform config
 - `scanner.ts` — walks `skills/` to find installable skills (by `skill.yaml` presence) and agents (from manifest `agents:` field); also scans top-level `agents/` for shared agents not tied to any skill
 - `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML agent, Codex config.toml registration)
 - `installer.ts` — orchestrates transform → write → copy references
@@ -74,22 +74,27 @@ Agents not tied to any specific skill live in the top-level `agents/` directory 
 
 ## Key Conventions
 
-- Agent frontmatter uses a `platforms:` block with per-platform config. The installer reads this to generate platform-specific output. Required structure:
+- Agent frontmatter uses `profile` + `tools` (Claude tool names only). The installer resolves Gemini/Codex tool names automatically via `agent_tool_map` and looks up model/turns from `profiles` in `platforms.yaml`. Preferred structure:
+  ```yaml
+  profile: fast          # references a named profile in platforms.yaml
+  tools: [Read, Glob, Grep]  # Claude tool names; Gemini names auto-mapped
+  ```
+  Legacy `platforms:` block is still supported for backward compatibility (e.g. skill-local agents that need per-platform overrides):
   ```yaml
   platforms:
     claude:
-      model: haiku                  # model name
-      tools: [Read, Glob, Grep]     # Claude tool names
+      model: claude-haiku-4-5
+      tools: [Read, Glob, Grep]
       maxTurns: 12
     gemini:
       model: gemini-2.0-flash
       tools: [grep_search, glob, read_file, read_many_files, list_directory]
-      max_turns: 12                 # note: snake_case for Gemini
+      max_turns: 12
     codex:
       model: o4-mini
       model_reasoning_effort: medium   # optional
-      sandbox_mode: read-only          # optional
   ```
+  Note: `sandbox_mode` is no longer declared in agent frontmatter; it is hardcoded to `"read-only"` by the installer.
 - `SKILL.md` and agent bodies use `{{tool.<key>}}` placeholders for all platform-dependent tool calls and workflow actions.
 - Placeholder engine rule: only `tool.*` keys are substituted. The substitution is implemented in `transform.ts` as `{{tool.<key>}}` replacement; other Mustache-like patterns are **Non-Goal and must not be introduced**.
 - When you need a platform-specific action phrase, put the full phrase in the mapping value (including spaces/prefix), not in fixed SKILL text. Example: `... questions one at a time{{tool.ask_user}}:`.

@@ -4,7 +4,7 @@ import ora from "ora";
 import { scanSkills } from "./scanner.js";
 import { runPrompts } from "./prompts.js";
 import { installSkill, installAgent } from "./installer.js";
-import { loadPlatforms } from "./config.js";
+import { loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { InstallResult } from "./installer.js";
 
 async function main() {
@@ -47,7 +47,7 @@ async function main() {
       if (s.manifest.platforms.includes(pid)) results.push(...installSkill(s, pid, projectRoot));
     }
     for (const a of agents) {
-      if (a.manifest.platforms[pid]) results.push(...installAgent(a, pid, projectRoot));
+      if (resolveAgentConfig(a.manifest, pid, loadPlatforms())) results.push(...installAgent(a, pid, projectRoot));
     }
   }
   installSpinner.stop();
