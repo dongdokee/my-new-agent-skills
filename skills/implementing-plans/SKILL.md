@@ -15,16 +15,18 @@ Load ticket and plan, review critically, execute tasks in batches, report for re
 
 ## The Process
 
+**REQUIRED:** Use {{tool.task_tracking}} to track each steps in the plan
+
 ### Step 1: Load and Review Plan
 1. Read plan file
 2. Review critically - identify any questions or concerns about the plan
 3. If concerns: Raise them with your human partner before starting
-4. If no concerns: Invoke {{tool.task_tracking}} to track (tasks, steps) and proceed
+4. If no concerns: proceed to next step
 
 ### Step 2: Execute Batch
 **Default: First 3 tasks**
 
-For each task:
+For each task: 
 1. Mark as in_progress
 2. Follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified
