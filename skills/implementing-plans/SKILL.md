@@ -30,7 +30,7 @@ Load ticket and plan, review critically, execute tasks in batches, report for re
 
 For each task: 
 1. Mark as in_progress
-2. Announce each step and follow each step exactly (plan has bite-sized steps)
+2. Announce each step (e.g., Task 1 - Step 1) and follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified
 4. Mark as completed
 
