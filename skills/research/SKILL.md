@@ -30,7 +30,14 @@ by evidence from codebase exploration and optional web research.
 - Do not freeze requirements or design before collecting evidence.
 - Use codebase evidence first; use web research only when codebase evidence is
   insufficient.
-- Do not claim completion without a ticket artifact.
+- If this skill is explicitly invoked by the user or orchestrator, operate in
+  research-only mode.
+- Before Step 5 freeze approval, do not edit implementation code, tests, or
+  automation scripts.
+- Move to implementation only after explicit user approval of frozen
+  requirements and design.
+- Do not claim completion without a ticket artifact at
+  `docs/plans/YYYY-MM-DD-<topic>-research.md`.
 
 ## Input / Output Contract
 
@@ -114,11 +121,13 @@ If the user rejects, run the loop in `references/rejection-loop.md`.
 
 ## Anti-Patterns
 
-- Exploring the entire codebase without a hypothesis.
-- Freezing design before evidence collection.
-- Mixing requirements, findings, and decisions without separation.
+- Starting implementation immediately after explicit skill invocation.
+- Switching to implementation before Step 5 freeze approval and explicit user
+  approval.
+- Freezing requirements or design without evidence from exploration.
+- Exploring the entire codebase without a validation target.
 - Using web research as a default instead of a fallback.
-- Declaring completion without open questions and next actions.
+- Declaring completion without a research ticket artifact.
 
 ## Checklist Before Running
 

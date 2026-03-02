@@ -8,15 +8,17 @@ Multi-platform agent skill distribution system. Skills and sub-agents are author
 
 ## Build & Test Commands
 
-All commands run from `installer/`:
+Most build/test commands run from `installer/`. Run the built installer from project root.
 
 ```bash
+cd installer
 npm install          # install dependencies
 npm run build        # production build (tsup → dist/)
 npm run dev          # watch mode
 npm test             # run tests (vitest)
 npx vitest run src/__tests__/pipeline.test.ts  # single test file
-node dist/index.js   # run installer (from project root)
+cd ..
+node installer/dist/index.js   # run installer from project root
 ```
 
 ## Architecture
@@ -69,4 +71,5 @@ Each skill in `skills/<name>/` has:
 - Agent frontmatter uses a `platforms:` block with per-platform config (model, tools, turns). The installer reads this to generate platform-specific output.
 - `{{tool.*}}` placeholders in agent bodies are Mustache-style. Only `tool.*` keys are substituted; other patterns like `{{args}}` pass through untouched. Mappings are defined in `installer/platforms.yaml`.
 - Codex agents require two files: the agent TOML + a `[agents.<name>]` entry in `.codex/config.toml`. The installer handles both.
+- `installer/src/` is the source of truth. `installer/dist/` is a local build artifact and may be stale until `npm run build` is run.
 - The primary language for documentation and commit messages in this project is mixed Korean/English.
