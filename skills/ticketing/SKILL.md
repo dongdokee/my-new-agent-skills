@@ -1,11 +1,11 @@
 ---
 name: ticketing
 description: >-
-  Interactive workflow that decomposes ambiguous user requests into sequential
-  implementation tickets, collects planning-critical details through structured
-  interview and targeted codebase exploration, and produces approved ticket and
-  plan artifacts. Use when requirements are unclear and must be concretized
-  before implementation.
+  Decompose ambiguous or mixed user requests into dependency-ordered,
+  single-type tickets through one-question interviews, then draft
+  approval-gated tickets and implementation plans. Use when requirements are
+  unclear, conflated, or multi-step; skip when the request is already
+  implementation-ready.
 ---
 
 # Ticketing
