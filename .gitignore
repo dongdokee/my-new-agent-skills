@@ -6,3 +6,4 @@ installer/.test-output/
 .gemini/
 
 .worktrees/
+*.swp

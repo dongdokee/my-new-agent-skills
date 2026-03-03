@@ -3,8 +3,8 @@ name: ticketing
 description: >-
   Decompose ambiguous or mixed user requests into dependency-ordered,
   single-type tickets through one-question interviews, then draft
-  approval-gated tickets and implementation plans. Use when requirements are
-  unclear, conflated, or multi-step; skip when the request is already
+  approval-gated ticket artifacts. Use when requirements are unclear,
+  conflated, or multi-step; skip when the request is already
   implementation-ready.
 ---
 
@@ -12,7 +12,7 @@ description: >-
 
 ## Overview
 
-Convert ambiguous requests into approved tickets and an approved implementation plan.
+Convert ambiguous requests into approved tickets.
 
 ## Core Principles
 
@@ -28,31 +28,28 @@ Convert ambiguous requests into approved tickets and an approved implementation 
 
 1. Decompose the request into sequential tickets with one type per ticket.
 2. Collect common required fields for each ticket.
-3. Collect type-specific signals only when they materially help planning.
+3. Collect type-specific signals only when they materially improve ticket quality.
 4. Resolve blocking unknowns with targeted interview and direct codebase exploration.
 5. Run readiness gate and request ticket approval.
 6. Save the approved ticket artifact to `docs/tickets/`.
-7. Draft a decision-complete implementation plan mapped to ticket IDs.
-8. Request plan approval and save the approved plan to `docs/plans/`.
 
 ## When to Use
 
 - The request is broad, mixed, or ambiguous.
 - The request must be split into multiple sequential tickets.
-- Planning cannot start until scope and acceptance criteria are explicit.
-- The user wants a ticket artifact plus an implementation plan.
+- Scope and acceptance criteria must be explicit before implementation.
+- The user wants a ticket artifact before implementation.
 
 ## When Not to Use
 
 - The request is already concrete and implementation-ready.
 - The change is trivial and does not need ticket decomposition.
-- The user asks for direct implementation without planning artifacts.
+- The user asks for direct implementation without ticket artifacts.
 
 ## Input / Output Contract
 
 - Input: a user request that needs decomposition and requirement concretization.
 - Ticket Output: `docs/tickets/YYYY-MM-DD-<topic>-ticket.md`
-- Plan Output: `docs/plans/YYYY-MM-DD-<topic>-plan.md`
 - Topic token rule: `<topic>` must be `snake_case` and must not contain `-`.
 - Ticket IDs in a ticket file: `T01`, `T02`, `T03`, ...
 
@@ -95,7 +92,7 @@ Collect these fields only when needed:
 
 Collection policy:
 
-- Use only planning-relevant questions.
+- Use only ticket-readiness-relevant questions.
 - Use type-specific signal examples as guidance, not mandatory keys.
 - If blocking ambiguity remains, perform targeted direct codebase exploration.
 - Do not launch sub-agents in this workflow.
@@ -127,31 +124,9 @@ Decision handling:
 - `Revise`: return to Phase 1 or Phase 2 as needed.
 - `Stop`: end workflow with current status summary.
 
-### Phase 4: Plan Drafting From Approved Tickets
-
-- Draft a decision-complete implementation plan immediately after ticket approval.
-- Use platform-neutral Markdown only.
-- Do not use provider-specific wrappers (for example, `<proposed_plan>`).
-- Map every task package to at least one `Txx`.
-- Do not include unowned tasks that cannot be traced to a ticket.
-
-### Phase 5: Plan Approval and Finalization
-
-Present decision options{{tool.ask_user}}:
-
-- `Approve`
-- `Revise`
-- `Stop`
-
-Decision handling:
-
-- `Approve`: save plan artifact to `docs/plans/YYYY-MM-DD-<topic>-plan.md`.
-- `Revise`: update the plan and re-run approval.
-- `Stop`: end workflow with current status summary.
-
 ## Ticket Type Signal Examples
 
-Use these as optional signal prompts when they materially improve planning quality.
+Use these as optional signal prompts when they materially improve ticket quality.
 
 - `Feature`
   - Functional intent
@@ -249,63 +224,13 @@ Use these as optional signal prompts when they materially improve planning quali
 - Notes: <...>
 ```
 
-### Plan Template
-
-```markdown
-# Implementation Plan: <topic> (<YYYY-MM-DD>)
-
-**Status:** Draft | Approved
-**Source Ticket:** docs/tickets/<YYYY-MM-DD>-<topic>-ticket.md
-**Plan File:** docs/plans/<YYYY-MM-DD>-<topic>-plan.md
-
-## 1. Goal
-- <one-sentence goal>
-
-## 2. Scope
-- In-Scope: <...>
-- Out-of-Scope: <...>
-
-## 3. Task Packages (Mapped to Tickets)
-
-### Package A (T01)
-- Objective: <...>
-- Files to Create/Modify: <...>
-- Implementation Steps:
-  1. <...>
-  2. <...>
-- Validation:
-  - <tests/checks>
-
-### Package B (T02)
-- Objective: <...>
-- Files to Create/Modify: <...>
-- Implementation Steps:
-  1. <...>
-  2. <...>
-- Validation:
-  - <tests/checks>
-
-## 4. Architectural Decision Record (ADR)
-
-### ADR-001: <decision title>
-- Context: <...>
-- Decision: <...>
-- Alternatives Considered: <...>
-- Consequences: <...>
-
-## 5. Approval Record
-- Plan Decision: <Approve|Revise|Stop>
-- Notes: <...>
-```
-
 ## Anti-Patterns
 
 - Asking multi-part questions in one turn.
 - Asking open-ended questions without actionable options.
-- Collecting details that do not affect planning decisions.
+- Collecting details that do not affect ticket decisions.
 - Mixing multiple ticket types into one ticket.
 - Approving tickets with unresolved blocking questions.
-- Generating plan tasks that are not mapped to `Txx`.
 - Writing provider-specific output syntax into artifacts.
 
 ## Checklist Before Finishing
@@ -315,7 +240,4 @@ Use these as optional signal prompts when they materially improve planning quali
 - [ ] Optional fields appear only when justified.
 - [ ] Blocking open questions are fully resolved before approval.
 - [ ] Ticket artifact is approved and saved under `docs/tickets/`.
-- [ ] Plan is decision-complete and every package maps to `Txx`.
-- [ ] Plan includes an ADR section.
-- [ ] Plan artifact is approved and saved under `docs/plans/`.
 - [ ] All outputs are in English.
