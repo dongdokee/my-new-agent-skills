@@ -37,6 +37,14 @@ describe("scanner", () => {
     expect(implementingPlans?.manifest.command_name).toBe("implement-plans");
   });
 
+  it("discovers ticketing as an installable skill", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const ticketing = skills.find((s) => s.name === "ticketing");
+    expect(ticketing).toBeDefined();
+    expect(ticketing?.manifest.command).toBe(true);
+    expect(ticketing?.manifest.command_name).toBe("ticket");
+  });
+
   it("all agents have valid manifest structure", () => {
     const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     expect(agents.length).toBeGreaterThanOrEqual(1);
@@ -277,6 +285,33 @@ describe("installer integration", () => {
     const content = readFileSync(cmdResult!.outputPath, "utf-8");
     expect(content).toContain("Invoke the implement-plans skill");
     expect(content).toContain("{{args}}");
+  });
+
+  it("installs ticketing for gemini creates .gemini/commands/ticket.toml", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const ticketing = skills.find((s) => s.name === "ticketing");
+    expect(ticketing).toBeDefined();
+    if (!ticketing) return;
+
+    const results = installSkill(ticketing, "gemini", TEST_ROOT);
+    const cmdResult = results.find((r) => r.type === "config" && r.name === "ticket.toml");
+    expect(cmdResult).toBeDefined();
+    expect(cmdResult!.outputPath).toContain(".gemini/commands/ticket.toml");
+    expect(existsSync(cmdResult!.outputPath)).toBe(true);
+    const content = readFileSync(cmdResult!.outputPath, "utf-8");
+    expect(content).toContain("Invoke the ticket skill");
+    expect(content).toContain("{{args}}");
+  });
+
+  it("installs ticketing for claude does NOT create command TOML", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const ticketing = skills.find((s) => s.name === "ticketing");
+    expect(ticketing).toBeDefined();
+    if (!ticketing) return;
+
+    const results = installSkill(ticketing, "claude", TEST_ROOT);
+    const cmdResult = results.find((r) => r.type === "config");
+    expect(cmdResult).toBeUndefined();
   });
 
   it("throws when command is enabled but command_name is missing", () => {
