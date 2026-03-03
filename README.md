@@ -127,6 +127,7 @@ Note: `sandbox_mode` is not declared in agent frontmatter; it is hardcoded by th
 | `{{tool.search}}` | `Grep` | `grep_search` | `functions.exec_command with rg` |
 | `{{tool.file_read}}` | `Read` | `read_file` | `functions.exec_command with cat` |
 | `{{tool.task_tracking}}` | Task tools (`TaskCreate`, ...) | `reciting-task-state` skill | `update_plan` tool |
+| `{{tool.project_config}}` | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
 
 ## Development
 

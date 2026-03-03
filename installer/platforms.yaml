@@ -12,6 +12,7 @@ platforms:
       task_update: "TaskUpdate"
       task_tracking: "Task tools (`TaskCreate`, `TaskGet`, `TaskUpdate`, `TaskList`)"
       ask_user: " using `AskUserQuestion` tool"
+      project_config: "CLAUDE.md"
   gemini:
     display_name: "Gemini CLI"
     skill_path: ".gemini/skills"
@@ -26,6 +27,7 @@ platforms:
       task_update: "_(reciting-task-state)_"
       task_tracking: "`reciting-task-state` skill"
       ask_user: " using `ask_user` tool"
+      project_config: "AGENTS.md"
   codex:
     display_name: "Codex"
     skill_path: ".codex/skills"
@@ -40,6 +42,7 @@ platforms:
       task_update: "update_plan"
       task_tracking: "`update_plan` tool"
       ask_user: ""
+      project_config: "AGENTS.md"
 
 # Maps Claude tool names → Gemini tool name arrays for agent frontmatter auto-mapping.
 # Codex agents do not declare a tools list, so only gemini is mapped here.
