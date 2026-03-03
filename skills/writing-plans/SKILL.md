@@ -49,6 +49,8 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Tech Stack:** [Key technologies/libraries]
 
+**Branch:** `feature/<topic>` (worktree branch for implementing-plans + using-git-worktrees)
+
 ---
 ```
 
