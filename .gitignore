@@ -4,3 +4,5 @@ installer/.test-output/
 .claude/
 .codex/
 .gemini/
+
+.worktrees/
