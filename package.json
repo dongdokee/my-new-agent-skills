@@ -1,0 +1,24 @@
+{
+  "name": "my-new-agent-skills",
+  "version": "1.0.0",
+  "description": "Skills and sub-agents authored once, installed to multiple AI coding platforms.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dongdokee/my-new-agent-skills.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dongdokee/my-new-agent-skills/issues"
+  },
+  "homepage": "https://github.com/dongdokee/my-new-agent-skills#readme"
+}

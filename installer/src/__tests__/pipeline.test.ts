@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdirSync, readFileSync, rmSync, existsSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, existsSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { scanSkills } from "../scanner.js";
 import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, buildGeminiCommand } from "../transform.js";
@@ -307,5 +307,23 @@ describe("installer integration", () => {
     expect(configResult).toBeDefined();
     const settings = JSON.parse(readFileSync(configResult!.outputPath, "utf-8"));
     expect(settings.agents.overrides.codebase_investigator.enabled).toBe(false);
+    expect(settings.context.fileName).toEqual(["AGENTS.md", "CONTEXT.md", "GEMINI.md"]);
+  });
+
+  it("code-explorer for Gemini merges existing context.fileName with defaults", () => {
+    const explorer = agents.find((a) => a.name === "code-explorer");
+    if (!explorer) return;
+
+    const settingsPath = resolve(TEST_ROOT, ".gemini/settings.json");
+    mkdirSync(resolve(TEST_ROOT, ".gemini"), { recursive: true });
+    writeFileSync(settingsPath, JSON.stringify({
+      context: {
+        fileName: ["README.md", "AGENTS.md", "README.md"],
+      },
+    }, null, 2));
+
+    installAgent(explorer, "gemini", TEST_ROOT);
+    const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
+    expect(settings.context.fileName).toEqual(["README.md", "AGENTS.md", "CONTEXT.md", "GEMINI.md"]);
   });
 });

@@ -63,6 +63,14 @@ export function updateGeminiSettings(settingsPath: string): string {
   const overrides = agents.overrides as Record<string, unknown>;
   overrides.codebase_investigator = { enabled: false };
 
+  // Deep-merge: context.fileName includes shared context files.
+  if (!existing.context || typeof existing.context !== "object") existing.context = {};
+  const context = existing.context as Record<string, unknown>;
+  const currentFileNames = Array.isArray(context.fileName)
+    ? context.fileName.filter((value): value is string => typeof value === "string")
+    : [];
+  context.fileName = [...new Set([...currentFileNames, "AGENTS.md", "CONTEXT.md", "GEMINI.md"])];
+
   return JSON.stringify(existing, null, 2) + "\n";
 }
 
