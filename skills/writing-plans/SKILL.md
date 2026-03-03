@@ -118,8 +118,24 @@ git commit -m "feat: add specific feature"
 
 ## Execution Handoff
 
-After saving the plan, guide them to open a new session:
+After saving the plan, guide user on how to implement with the plan
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Open a new session and use the `implementing-plans` skill to implement."**
+**REQUIRED:** Guide use git worktree. You MUST invoke `using-git-worktrees` skill to decide the proper git worktree path
 
-- **REQUIRED SUB-SKILL:** New session uses implementing-plans
+**Guide Template:**
+
+```
+**"Plan complete and saved to `docs/plans/<filename>.md`. To implement:**
+**1. Create git worktree:**
+   ``` shell
+   git worktree add <worktree-path> -b <branch>
+   ```
+
+**2. Go to worktree:**
+   ``` shell
+   cd <worktree-path>
+   ```
+
+**3. Implement with `implementing-plans` skill in the new session**
+```
+
