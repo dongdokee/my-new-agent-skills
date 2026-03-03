@@ -1,129 +1,266 @@
-# Evaluate reciting-task-state Implementation Plan
-
-**REQUIRED:** You MUST use `test-driven-development` skill to understand TDD. The task structure in the plan is based on the Test-driven development (TDD). 
+# Reciting Task State Redesign Implementation Plan
 
 **REQUIRED SUB-AGENTS:** Launch `code-reviewer` agent in the review step, focusing on
 - simplicity/DRY/elegance
 - bugs/functional correctness
 - project conventions/abstractions
 
+**REQUIRED SUB-SKILL:** Invoke `test-driven-development` to understand TDD-driven task structure
+
 **Ticket:** `docs/plans/2026-03-03-reciting-task-state-evaluation-ticket.md`
 
-**Goal:** Transition from a monolithic `todo.md` to a directory-based state machine for robust task tracking and fix the Gemini command registration.
+**Goal:** Transition the `reciting-task-state` skill from a monolithic `todo.md` file to a directory-based state machine for improved reliability and token efficiency.
 
-**Architecture:** A file-system state machine using `tasks/pending/`, `tasks/current/`, and `tasks/done/` directories. Tasks are individual files moved between directories using atomic `mv` commands.
+**Architecture:** Use a directory structure (`tasks/pending/`, `tasks/current/`, `tasks/done/`) where each task is a separate Markdown file. Transitions are performed via atomic `mv` operations.
 
-**Tech Stack:** TypeScript (for installer validation), Markdown (for skill instructions).
+**Tech Stack:** Markdown (Instructions), Bash (Operations).
+
+**Branch:** `feature/reciting-task-state-redesign`
 
 ---
 
-### Task 1: Update SKILL.md with new Architecture
+### Task 1: Update SKILL.md Header and Purpose
 
 **Files:**
-- Modify: `skills/reciting-task-state/SKILL.md`
+- Modify: `skills/reciting-task-state/SKILL.md:1-20`
 
-**Step 1: Rewrite SKILL.md to use directory-based state machine**
+**Step 1: Write the failing test**
 
-**Content to replace/update:**
-- **Purpose**: Mention directory-based tracking.
-- **Format**: Individual markdown files in directories.
-- **Process**: `mkdir -p tasks/{pending,current,done}`, `mv tasks/pending/X tasks/current/X`, `mv tasks/current/X tasks/done/X`.
-- **Rules**: Exactly one file in `tasks/current/`.
-
-**Step 2: Verify instructions**
-Ensure the instructions are self-consistent and strictly mandate the new structure.
-
-**Step 3: Commit**
 ```bash
-git add skills/reciting-task-state/SKILL.md
-git commit -m "feat(reciting-task-state): transition to directory-based state machine architecture"
-```
-
----
-
-### Task 2: Fix Gemini Command Registration
-
-**Files:**
-- Modify: `skills/reciting-task-state/skill.yaml`
-
-**Step 1: Add missing command configuration**
-Ensure it matches the `installer` requirement for Gemini commands.
-
-```yaml
-platforms: [gemini]
-install_as: command
-command: true
-command_name: reciting-task-state
-include:
-  - SKILL.md
-```
-
-**Step 2: Commit**
-```bash
-git add skills/reciting-task-state/skill.yaml
-git commit -m "fix(reciting-task-state): add command registration for Gemini CLI"
-```
-
----
-
-### Task 3: Implement validation logic in Installer (Phase 3)
-
-**Files:**
-- Modify: `installer/src/installer.ts`
-- Create: `installer/src/__tests__/reciting-task-state-validation.test.ts`
-
-**Step 1: Write failing test for skill validation**
-
-```typescript
-import { installSkill } from '../installer';
-import { DiscoveredSkill } from '../scanner';
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { describe, it, expect, vi } from 'vitest';
-
-describe('reciting-task-state validation', () => {
-  it('should throw error if reciting-task-state/SKILL.md lacks directory markers', () => {
-    const skill: DiscoveredSkill = {
-      name: 'reciting-task-state',
-      dir: '/tmp/skill',
-      skillFilePath: '/tmp/skill/SKILL.md',
-      description: 'Test skill',
-      manifest: { platforms: ['gemini'], include: ['SKILL.md'], install_as: 'command' }
-    };
-    // Invalid content (monolithic style)
-    vi.mocked(readFileSync).mockReturnValue('todo.md: - [ ] Task');
-
-    expect(() => installSkill(skill, 'gemini', '/tmp/out')).toThrow(/must use directory-based structure/);
-  });
-});
+# tests/verify_purpose.sh
+grep -q "directory-based state machine" skills/reciting-task-state/SKILL.md || exit 1
 ```
 
 **Step 2: Run test to verify it fails**
-Run: `cd installer && npx vitest run src/__tests__/reciting-task-state-validation.test.ts`
+
+Run: `bash tests/verify_purpose.sh`
 Expected: FAIL
 
-**Step 3: Implement validation logic in `installSkill`**
+**Step 3: Write minimal implementation**
 
-Add check for skill name and content.
+```markdown
+# Reciting Task State
 
-```typescript
-// inside installSkill
-if (skill.name === 'reciting-task-state' && !body.includes('tasks/pending')) {
-  throw new Error(`Skill "reciting-task-state" must use directory-based structure (tasks/pending not found in SKILL.md)`);
-}
+## Purpose
+
+When your platform provides no task-tracking tool, you act as the task tool by maintaining a directory-based state machine of task files. This keeps the active task in the highest-attention part of context, prevents task drift, and ensures atomic state transitions.
 ```
 
 **Step 4: Run test to verify it passes**
-Run: `cd installer && npx vitest run src/__tests__/reciting-task-state-validation.test.ts`
+
+Run: `bash tests/verify_purpose.sh`
 Expected: PASS
 
 **Step 5: Review, refactor, and verify**
-1. Review: Launch `code-reviewer` agent.
-2. Refactor: Ensure the validation is robust.
-3. Verify: `npm test`.
+
+1. **Review**: Launch `code-reviewer` agent.
+2. **Refactor**: Apply improvements.
+3. **Verify**: `bash tests/verify_purpose.sh`
 
 **Step 6: Commit**
+
 ```bash
-git add installer/src/installer.ts installer/src/__tests__/reciting-task-state-validation.test.ts
-git commit -m "feat(installer): add validation for reciting-task-state architecture"
+git add skills/reciting-task-state/SKILL.md
+git commit -m "docs: update reciting-task-state purpose for directory-based state"
+```
+
+---
+
+### Task 2: Redesign Format Section
+
+**Files:**
+- Modify: `skills/reciting-task-state/SKILL.md:40-60`
+
+**Step 1: Write the failing test**
+
+```bash
+# tests/verify_format.sh
+grep -q "tasks/pending" skills/reciting-task-state/SKILL.md || exit 1
+grep -q "tasks/current" skills/reciting-task-state/SKILL.md || exit 1
+grep -q "tasks/done" skills/reciting-task-state/SKILL.md || exit 1
+```
+
+**Step 2: Run test to verify it fails**
+
+Run: `bash tests/verify_format.sh`
+Expected: FAIL
+
+**Step 3: Write minimal implementation**
+
+```markdown
+## Format
+
+Each task is a separate Markdown file within the following directory structure:
+
+- `tasks/pending/`: Tasks waiting to be started.
+- `tasks/current/`: The SINGLE active task (LIMIT 1 file).
+- `tasks/done/`: Completed tasks.
+
+### Task File Content
+Filename: `<id>-<slug>.md` (e.g., `01-setup-auth.md`)
+
+```markdown
+# <Task Title>
+- [ ] Sub-task 1
+- [ ] Sub-task 2
+
+Notes:
+<Detailed implementation notes>
+```
+```
+
+**Step 4: Run test to verify it passes**
+
+Run: `bash tests/verify_format.sh`
+Expected: PASS
+
+**Step 5: Review, refactor, and verify**
+
+1. **Review**: Launch `code-reviewer` agent.
+2. **Refactor**: Apply improvements.
+3. **Verify**: `bash tests/verify_format.sh`
+
+**Step 6: Commit**
+
+```bash
+git add skills/reciting-task-state/SKILL.md
+git commit -m "docs: define directory-based task format"
+```
+
+---
+
+### Task 3: Update Process Section for Atomic Moves
+
+**Files:**
+- Modify: `skills/reciting-task-state/SKILL.md:65-100`
+
+**Step 1: Write the failing test**
+
+```bash
+# tests/verify_process.sh
+grep -q "mkdir -p tasks" skills/reciting-task-state/SKILL.md || exit 1
+grep -q "mv tasks/pending" skills/reciting-task-state/SKILL.md || exit 1
+grep -q "mv tasks/current" skills/reciting-task-state/SKILL.md || exit 1
+```
+
+**Step 2: Run test to verify it fails**
+
+Run: `bash tests/verify_process.sh`
+Expected: FAIL
+
+**Step 3: Write minimal implementation**
+
+```markdown
+## Process
+
+### 1. Setup
+1. Create the directory structure: `mkdir -p <project-tmp-dir>/<session-uuid>/tasks/{pending,current,done}`.
+2. Create initial task files in `tasks/pending/`.
+
+### 2. Every active turn
+1. **List** `tasks/current/` to find the active task.
+2. **Read** the active task file at turn start.
+3. If no file is in `tasks/current/`, list `tasks/pending/` and move the next task to `current/`.
+
+### 3. Task State Transitions
+1. **Start Task**: `mv tasks/pending/<task>.md tasks/current/`
+2. **Update Task**: Overwrite the file in `tasks/current/` with updated notes/sub-tasks.
+3. **Complete Task**: `mv tasks/current/<task>.md tasks/done/`
+
+### 4. Skill Handoff
+1. Ensure `tasks/current/` is empty (all tasks moved to `done/`).
+2. New skill tasks are initialized in `tasks/pending/`.
+```
+
+**Step 4: Run test to verify it passes**
+
+Run: `bash tests/verify_process.sh`
+Expected: PASS
+
+**Step 5: Review, refactor, and verify**
+
+1. **Review**: Launch `code-reviewer` agent.
+2. **Refactor**: Apply improvements.
+3. **Verify**: `bash tests/verify_process.sh`
+
+**Step 6: Commit**
+
+```bash
+git add skills/reciting-task-state/SKILL.md
+git commit -m "docs: update process for atomic task moves"
+```
+
+---
+
+### Task 4: Update Safety and Guardrails
+
+**Files:**
+- Modify: `skills/reciting-task-state/SKILL.md:110-140`
+
+**Step 1: Write the failing test**
+
+```bash
+# tests/verify_guardrails.sh
+grep -q "Exactly one file in tasks/current" skills/reciting-task-state/SKILL.md || exit 1
+```
+
+**Step 2: Run test to verify it fails**
+
+Run: `bash tests/verify_guardrails.sh`
+Expected: FAIL
+
+**Step 3: Write minimal implementation**
+
+```markdown
+## Safety / Guardrails
+
+- **Single Active Task**: Exactly one file may exist in `tasks/current/` at any time.
+- **Atomic Moves**: Always use `mv` for state transitions to prevent data loss.
+- **No Repository Pollution**: Never create `tasks/` inside the project repository.
+- **Turn-Start Sync**: Always list `tasks/current/` and read the file at the start of an active turn.
+- **Path Integrity**: Only use `<project-tmp-dir>/<session-uuid>/tasks/`.
+```
+
+**Step 4: Run test to verify it passes**
+
+Run: `bash tests/verify_guardrails.sh`
+Expected: PASS
+
+**Step 5: Review, refactor, and verify**
+
+1. **Review**: Launch `code-reviewer` agent.
+2. **Refactor**: Apply improvements.
+3. **Verify**: `bash tests/verify_guardrails.sh`
+
+**Step 6: Commit**
+
+```bash
+git add skills/reciting-task-state/SKILL.md
+git commit -m "docs: add guardrails for directory-based state"
+```
+
+---
+
+### Task 5: Final Verification and Cleanup
+
+**Step 1: Run all verification tests**
+
+```bash
+bash tests/verify_purpose.sh
+bash tests/verify_format.sh
+bash tests/verify_process.sh
+bash tests/verify_guardrails.sh
+```
+
+**Step 2: Remove test scripts**
+
+```bash
+rm -rf tests/
+```
+
+**Step 3: Commit final state**
+
+```bash
+git add skills/reciting-task-state/SKILL.md
+git commit -m "docs: finalize reciting-task-state redesign"
 ```
