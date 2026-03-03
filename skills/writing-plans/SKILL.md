@@ -118,24 +118,19 @@ git commit -m "feat: add specific feature"
 
 ## Execution Handoff
 
-After saving the plan, guide user on how to implement with the plan
+**1. Set-up worktree:** Invoke `using-git-worktrees` skill to set-up worktree for this plan
 
-**REQUIRED:** Guide use git worktree. You MUST invoke `using-git-worktrees` skill to decide the proper git worktree path
-
-**Guide Template:**
+**2. Guide the user on how to implement:**
 
 ```
-**"Plan complete and saved to `docs/plans/<filename>.md`. To implement:**
-**1. Create git worktree:**
-   ``` shell
-   git worktree add <worktree-path> -b <branch>
-   ```
+Plan complete
+---
 
-**2. Go to worktree:**
-   ``` shell
-   cd <worktree-path>
-   ```
+Plan file: `docs/plans/<filename>.md`
+Git worktree:
+- branch: `<branch-name>`
+- path: `<worktree-path>`
 
-**3. Implement with `implementing-plans` skill in the new session**
+Open new session and use `implementing-plans` skill with the plan file
 ```
 
