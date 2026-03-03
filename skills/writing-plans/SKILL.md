@@ -118,21 +118,8 @@ git commit -m "feat: add specific feature"
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice{{tool.ask_user}}:
+After saving the plan, guide them to open a new session:
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+**"Plan complete and saved to `docs/plans/<filename>.md`. Open a new session and use the `implementing-plans` skill to implement."**
 
-**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
-
-**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
-
-**Which approach?"**
-
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use subagent-driven-development
-- Stay in this session
-- Fresh subagent per task + code review
-
-**If Parallel Session chosen:**
-- Guide them to open new session in worktree
-- **REQUIRED SUB-SKILL:** New session uses executing-plans
+- **REQUIRED SUB-SKILL:** New session uses implementing-plans
