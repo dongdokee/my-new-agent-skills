@@ -1,38 +1,28 @@
 ---
 name: using-git-worktrees
-description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - creates isolated git worktrees with smart directory selection and safety verification
+description: Use when preparing an isolated implementation workspace in the same repository, especially before executing approved plans or feature tasks. Enforces `.worktrees/` single-location policy, mandatory ignore verification, collision-safe `git worktree add` flow, and clean-baseline setup/test checks before coding.
 ---
 
 # Using Git Worktrees
 
-## Overview
+## Core Contract
 
-Git worktrees create isolated workspaces sharing the same repository, allowing work on multiple branches simultaneously without switching.
+- Use `.worktrees/` at repository root as the only worktree location.
+- Never use `worktrees/`, `~/.worktrees/...`, or directory hints from `{{tool.project_config}}`.
+- Run `git check-ignore -q .worktrees` before creating any worktree.
+- If ignore verification cannot pass, stop and report before any `git worktree add`.
 
-**Core principle:** Single directory policy + safety verification = reliable isolation.
+## Operational Checklist
 
-**Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
-
-## Directory Policy
-
-Always use `.worktrees/` at the repository root.
-
-Do not use:
-- `worktrees/`
-- `~/.worktrees/...`
-- directory preferences from `{{tool.project_config}}`
-
-## Safety Verification
-
-**MUST verify `.worktrees/` is ignored before creating worktree:**
+### 1) Verify ignore status
 
 ```bash
 git check-ignore -q .worktrees
 ```
 
-**If NOT ignored:**
+### 2) If not ignored, ask once and apply
 
-1. Ask the user one question{{tool.ask_user}}:
+Ask the user one question{{tool.ask_user}}:
 
 ```text
 `.worktrees/` is not ignored yet. Where should I add it?
@@ -42,8 +32,6 @@ git check-ignore -q .worktrees
 
 Which should I use?
 ```
-
-2. Add `.worktrees/` based on the user's choice.
 
 If user chooses `.git/info/exclude`:
 
@@ -57,156 +45,114 @@ If user chooses `.gitignore`:
 ```bash
 touch .gitignore
 grep -qxF ".worktrees/" .gitignore || printf ".worktrees/\n" >> .gitignore
-git add .gitignore
-git commit -m "chore: ignore .worktrees directory"
 ```
 
-3. Re-verify (required):
+Re-verify:
 
 ```bash
 git check-ignore -q .worktrees
 ```
 
-If re-verification fails, stop and report before creating any worktree.
+If re-verification fails, stop and report. Do not create a worktree.
 
-**Why critical:** Prevents accidentally committing worktree contents to repository.
-
-## Creation Steps
-
-### 1. Prepare Directory and Path
+### 3) Prepare target path
 
 ```bash
 mkdir -p .worktrees
 path=".worktrees/$BRANCH_NAME"
 ```
 
-### 2. Create Worktree
+### 4) Resolve collisions and create worktree
+
+Check branch/path first:
 
 ```bash
-# Create worktree with new branch
-git worktree add "$path" -b "$BRANCH_NAME"
-cd "$path"
+branch_exists=0
+path_exists=0
+
+git show-ref --verify --quiet "refs/heads/$BRANCH_NAME" && branch_exists=1
+[ -e "$path" ] && path_exists=1
 ```
 
-### 3. Run Project Setup
+If `path_exists=1`, ask how to proceed before continuing:
 
-Auto-detect and run appropriate setup:
+- reuse existing path
+- choose a different `path`
+- remove existing path and recreate
+
+If user chooses `reuse existing path`, do not run `git worktree add`. Re-enter and verify:
+
+```bash
+cd "$path"
+current_branch="$(git branch --show-current)"
+[ "$current_branch" = "$BRANCH_NAME" ] || {
+  echo "Existing path is on '$current_branch', expected '$BRANCH_NAME'."
+  exit 1
+}
+```
+
+If user chooses `choose a different path`, update `path` and re-check:
+
+```bash
+path=".worktrees/$NEW_PATH_NAME"
+[ -e "$path" ] && echo "Path already exists; ask again." && exit 1
+```
+
+If user chooses `remove existing path and recreate`, require explicit approval before deletion, then create.
+
+Create new worktree when reuse is not selected:
+
+```bash
+if [ "$branch_exists" -eq 1 ]; then
+  git worktree add "$path" "$BRANCH_NAME"
+  cd "$path"
+else
+  git worktree add "$path" -b "$BRANCH_NAME"
+  cd "$path"
+fi
+```
+
+### 5) Run project setup
+
+Run the setup command that matches the project stack.
+The commands below are language-specific examples. Do not run all lines sequentially.
 
 ```bash
 # Node.js
-if [ -f package.json ]; then npm install; fi
+npm install
 
 # Rust
-if [ -f Cargo.toml ]; then cargo build; fi
+cargo build
 
-# Python
-if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-if [ -f pyproject.toml ]; then poetry install; fi
+# Python (pip)
+pip install -r requirements.txt
+
+# Python (poetry)
+poetry install
 
 # Go
-if [ -f go.mod ]; then go mod download; fi
+go mod download
 ```
 
-### 4. Verify Clean Baseline
+### 6) Verify clean baseline
 
-Run tests to ensure worktree starts clean:
+- Run the project's standard test command first.
+- If standard command is unclear, ask for one baseline command{{tool.ask_user}}.
+- If tests fail, summarize failures and ask whether to stop, investigate, or continue with explicit approval.
 
-```bash
-# Examples - use project-appropriate command
-npm test
-cargo test
-pytest
-go test ./...
-```
+### 7) Report ready status
 
-**If tests fail:** Report failures, ask whether to proceed or investigate.
-
-**If tests pass:** Report ready.
-
-### 5. Report Location
-
-```
+```text
 Worktree ready at <full-path>
-Tests passing (<N> tests, 0 failures)
+Baseline check: <command> -> <result>
 Ready to implement <feature-name>
 ```
 
-## Quick Reference
+## Failure Handling
 
-| Situation | Action |
-|-----------|--------|
-| Start worktree setup | Use `.worktrees/` only |
-| `.worktrees/` not ignored | Ask user{{tool.ask_user}}: `.git/info/exclude` vs `.gitignore` |
-| User chose `.git/info/exclude` | Add line there, then re-verify |
-| User chose `.gitignore` | Add line + commit, then re-verify |
-| Tests fail during baseline | Report failures + ask |
-| No package.json/Cargo.toml | Skip dependency install |
-
-## Common Mistakes
-
-### Skipping ignore verification
-
-- **Problem:** Worktree contents get tracked, pollute git status
-- **Fix:** Always run `git check-ignore -q .worktrees` before creating worktree
-
-### Using unsupported directory locations
-
-- **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Always create worktrees under `.worktrees/` only
-
-### Proceeding with failing tests
-
-- **Problem:** Can't distinguish new bugs from pre-existing issues
-- **Fix:** Report failures, get explicit permission to proceed
-
-### Hardcoding setup commands
-
-- **Problem:** Breaks on projects using different tools
-- **Fix:** Auto-detect from project files (package.json, etc.)
-
-## Example Workflow
-
-```
-You: I'm using the using-git-worktrees skill to set up an isolated workspace.
-
-[Run git check-ignore -q .worktrees - not ignored]
-[Ask user: add to .git/info/exclude or .gitignore]
-[User chose .gitignore]
-[Add .worktrees/ to .gitignore and commit]
-[Re-verify: git check-ignore -q .worktrees]
-[Create worktree: git worktree add .worktrees/auth -b feature/auth]
-[Run npm install]
-[Run npm test - 47 passing]
-
-Worktree ready at /Users/jesse/myproject/.worktrees/auth
-Tests passing (47 tests, 0 failures)
-Ready to implement auth feature
-```
-
-## Red Flags
-
-**Never:**
-- Create worktree without verifying `.worktrees/` is ignored
-- Skip baseline test verification
-- Proceed with failing tests without asking
-- Use `worktrees/` or `~/.worktrees/...`
-- Skip re-verification after adding ignore rule
-
-**Always:**
-- Use `.worktrees/` as the only worktree location
-- Verify `.worktrees/` ignore status before creation
-- Ask user{{tool.ask_user}} where to add ignore rule when missing
-- Re-verify ignore status after adding the rule
-- Auto-detect and run project setup
-- Verify clean test baseline
-
-## Integration
-
-**Called by:**
-- **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows
-- **subagent-driven-development** - REQUIRED before executing any tasks
-- **executing-plans** - REQUIRED before executing any tasks
-- Any skill needing isolated workspace
-
-**Pairs with:**
-- **finishing-a-development-branch** - REQUIRED for cleanup after work complete
+- Ignore check fails after remediation: stop immediately and report blocker.
+- Worktree path collision unresolved: do not create worktree until user chooses resolution.
+- Reused path is not a valid target branch: report mismatch and ask whether to retarget or recreate.
+- Setup command fails: report command + error summary, then ask whether to debug or proceed.
+- Baseline test fails: do not assume clean state; ask for explicit direction.
+- `.gitignore` path chosen: adding ignore line is enough by default. Commit only if user explicitly requests it.
