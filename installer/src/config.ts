@@ -68,6 +68,8 @@ export interface AgentManifest {
   body: string;
 }
 
+const FRONTMATTER_REGEX = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/;
+
 function dedupeTools(tools: string[]): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
@@ -125,8 +127,8 @@ export function loadSkillManifest(skillDir: string): SkillManifest | null {
 export function parseSkillFrontmatter(skillFilePath: string): SkillFrontmatter | null {
   if (!existsSync(skillFilePath)) return null;
 
-  const raw = readFileSync(skillFilePath, "utf-8");
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  const raw = readFileSync(skillFilePath, "utf-8").replace(/^\uFEFF/, "");
+  const match = raw.match(FRONTMATTER_REGEX);
   if (!match) return null;
 
   const fm = yaml.load(match[1]) as Record<string, unknown>;
@@ -140,8 +142,8 @@ export function parseSkillFrontmatter(skillFilePath: string): SkillFrontmatter |
 export function parseAgentFrontmatter(filePath: string): AgentManifest | null {
   if (!existsSync(filePath)) return null;
 
-  const raw = readFileSync(filePath, "utf-8");
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  const raw = readFileSync(filePath, "utf-8").replace(/^\uFEFF/, "");
+  const match = raw.match(FRONTMATTER_REGEX);
   if (!match) return null;
 
   const fm = yaml.load(match[1]) as Record<string, unknown>;

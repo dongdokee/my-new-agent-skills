@@ -1,4 +1,6 @@
-import { resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import ora from "ora";
 import { scanSkills } from "./scanner.js";
@@ -7,8 +9,20 @@ import { installSkill, installAgent } from "./installer.js";
 import { loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { InstallResult } from "./installer.js";
 
+function resolveProjectRoot(): string {
+  const cwdRoot = process.cwd();
+  const scriptDir = dirname(fileURLToPath(import.meta.url));
+  const scriptRoot = resolve(scriptDir, "../..");
+
+  const hasRepoLayout = (root: string): boolean =>
+    existsSync(resolve(root, "skills")) || existsSync(resolve(root, "agents"));
+
+  if (hasRepoLayout(cwdRoot)) return cwdRoot;
+  return scriptRoot;
+}
+
 async function main() {
-  const projectRoot = process.cwd();
+  const projectRoot = resolveProjectRoot();
   const allFlag = process.argv.includes("--all");
 
   console.log(chalk.bold("\n  Agent Skill Installer\n"));
