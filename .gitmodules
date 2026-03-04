@@ -25,3 +25,6 @@
 [submodule ".ref/repos/hyperpowers"]
 	path = .ref/repos/hyperpowers
 	url = https://github.com/withzombies/hyperpowers.git
+[submodule ".ref/repos/nowinandroid"]
+	path = .ref/repos/nowinandroid
+	url = https://github.com/android/nowinandroid.git
