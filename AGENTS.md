@@ -109,7 +109,7 @@ Agents not tied to any specific skill live in the top-level `agents/` directory 
 - Codex agents require two files: the agent TOML + a `[agents.<name>]` entry in `.codex/config.toml`. The installer handles both.
 - Installing `code-explorer` for Gemini automatically patches `.gemini/settings.json` to set `agents.overrides.codebase_investigator.enabled: false`, suppressing the built-in Gemini agent that overlaps in role. The installer handles this side-effect (mirrors the Codex config.toml pattern).
 - Setting `command: true` in `skill.yaml` causes the installer to generate `.gemini/commands/<command_name>.toml` when installing for Gemini. `command_name` is required when `command: true` (no fallback to skill name). Operates independently of `install_as`; omitting `command` defaults to `false`. The output path is controlled by `command_path` in the gemini section of `platforms.yaml`.
-- Install root resolution is implemented in `installer/src/index.ts` (`resolveProjectRoot()`): use `process.cwd()` only when that directory has `skills/` or `agents/`; otherwise fallback to installer script root. All `.claude/.gemini/.codex` outputs are written under that resolved root.
+- Install/output root is always `process.cwd()`. Skill/agent scanning still resolves source root in `installer/src/index.ts` (cwd with repo layout, else installer script root), but all `.claude/.gemini/.codex` outputs are written under current working directory.
 - `installer/src/` is the source of truth. `installer/dist/` is a local build artifact and may be stale until `npm run build` is run.
 - The primary language for documentation and commit messages in this project is mixed Korean/English.
 

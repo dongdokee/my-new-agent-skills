@@ -9,7 +9,7 @@ import { installSkill, installAgent } from "./installer.js";
 import { loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { InstallResult } from "./installer.js";
 
-function resolveProjectRoot(): string {
+function resolveSourceRoot(): string {
   const cwdRoot = process.cwd();
   const scriptDir = dirname(fileURLToPath(import.meta.url));
   const scriptRoot = resolve(scriptDir, "../..");
@@ -22,14 +22,15 @@ function resolveProjectRoot(): string {
 }
 
 async function main() {
-  const projectRoot = resolveProjectRoot();
+  const sourceRoot = resolveSourceRoot();
+  const installRoot = process.cwd();
   const allFlag = process.argv.includes("--all");
 
   console.log(chalk.bold("\n  Agent Skill Installer\n"));
 
   const spinner = ora("Scanning skills...").start();
-  const agentsDir = resolve(projectRoot, "agents");
-  const scanResult = scanSkills(resolve(projectRoot, "skills"), agentsDir);
+  const agentsDir = resolve(sourceRoot, "agents");
+  const scanResult = scanSkills(resolve(sourceRoot, "skills"), agentsDir);
   spinner.succeed(`Found ${scanResult.skills.length} skills, ${scanResult.agents.length} agents`);
 
   if (scanResult.skills.length === 0 && scanResult.agents.length === 0) {
@@ -58,17 +59,17 @@ async function main() {
 
   for (const pid of platforms) {
     for (const s of skills) {
-      if (s.manifest.platforms.includes(pid)) results.push(...installSkill(s, pid, projectRoot));
+      if (s.manifest.platforms.includes(pid)) results.push(...installSkill(s, pid, installRoot));
     }
     for (const a of agents) {
-      if (resolveAgentConfig(a.manifest, pid, loadPlatforms())) results.push(...installAgent(a, pid, projectRoot));
+      if (resolveAgentConfig(a.manifest, pid, loadPlatforms())) results.push(...installAgent(a, pid, installRoot));
     }
   }
   installSpinner.stop();
 
   for (const r of results) {
     const icon = r.type === "config" ? chalk.blue("⚙") : chalk.green("✓");
-    console.log(`  ${icon} ${r.name} → ${r.outputPath.replace(projectRoot + "/", "")}`);
+    console.log(`  ${icon} ${r.name} → ${r.outputPath.replace(installRoot + "/", "")}`);
   }
   console.log(chalk.bold(`\n  Done! ${results.length} items installed.\n`));
 }
