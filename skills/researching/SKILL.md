@@ -369,7 +369,7 @@ Trade-offs:
 **Ask the user if the ticket is acceptable{{tool.ask_user}}:**
 - **Approve:**
    - Save final ticket to `docs/plans/YYYY-MM-DD-<topic>-ticket.md`
-   - Ask user whether to invoke `writing-plans` skill to create a detailed implementation plan{{tool.ask_user}}
+   - Ask user whether to create a detailed implementation plan now{{tool.ask_user}}
 - **Reject with feedback** - adjust based on feedback
 
 **Checklist before completion:**

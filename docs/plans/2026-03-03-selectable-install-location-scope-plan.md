@@ -15,9 +15,9 @@
 
 **Tech Stack:** TypeScript, Node.js (`path`, `os`, `fs`), Vitest, Inquirer prompts
 
-**Branch:** `feature/selectable-install-location-scope` (worktree branch for implementing-plans + using-git-worktrees)
+**Branch:** `feature/selectable-install-location-scope` (worktree branch for using-git-worktrees)
 
-**Skill References:** `@test-driven-development` `@using-git-worktrees` `@implementing-plans`
+**Skill References:** `@test-driven-development` `@using-git-worktrees`
 
 ---
 
@@ -475,4 +475,4 @@ Git worktree:
 - branch: `feature/selectable-install-location-scope`
 - path: `<to-be-created-by-using-git-worktrees>`
 
-Open new session and use `implementing-plans` skill with the plan file.
+Open new session and execute the approved plan file directly.

@@ -119,4 +119,4 @@ Approach B (File-System State Machine) was chosen because it provides the highes
 ## 5. Next Actions
 
 - [ ] Save the ticket to `docs/plans/2026-03-03-reciting-task-state-evaluation.md`.
-- [ ] Invoke the `writing-plans` skill to create a detailed implementation plan if requested.
+- [ ] Create a detailed implementation plan if requested.

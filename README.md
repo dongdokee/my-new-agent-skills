@@ -92,7 +92,7 @@ command_name: research
 ```
 
 When `command: true`, `command_name` is required and installer outputs `.gemini/commands/<command_name>.toml` (no fallback to skill name).
-Examples: `researching -> research.toml`, `writing-plans -> write-plans.toml`.
+Examples: `researching -> research.toml`, `ticketing -> ticket.toml`.
 
 ## Multi-Platform Agent Frontmatter
 

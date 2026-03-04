@@ -1,6 +1,0 @@
-platforms: [claude, gemini, codex]
-install_as: command
-command: true
-command_name: implement-plans
-include:
-  - SKILL.md
