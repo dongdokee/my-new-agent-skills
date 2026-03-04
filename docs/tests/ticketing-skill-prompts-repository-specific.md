@@ -8,10 +8,11 @@ Each test should verify:
 
 - Set-based IDs (`<set-name>/N`) with kebab-case set names matching the topic token.
 - Splitting criteria applied (single intent, immediately verifiable, failure-traceable).
-- Each ticket contains a Spec with quality-attribute-governed fields.
+- Each ticket starts with `Provisional` status (no `Ready` promotion in `ticketing`).
+- Each ticket contains a Provisional Spec with explicit open questions.
 - `depends_on:` notation used for inter-ticket dependencies; omitted for independent tickets.
-- AC and Validation Method are 1:1 mapped.
-- Conditional fields (Constraints, Risks) appear only when justified.
+- AC and Validation Method are drafted with 1:1 mapping intent.
+- Initial wave index is present for downstream revalidation.
 
 ## Prompt 1
 
@@ -19,10 +20,10 @@ Each test should verify:
 
 ### Expected Ticket Sequence
 
-1. `scanner-async/1` `Feature` - Add recursive depth-aware skill scanning.
-2. `scanner-async/2` `Refactoring` - Convert scanner flow from sync I/O to async traversal. (depends_on: scanner-async/1)
-3. `scanner-async/3` `Documentation` - Update scanner behavior and usage guidance in SKILL-related docs. (depends_on: scanner-async/1, scanner-async/2)
-4. `scanner-async/4` `Test` - Add/adjust tests for deep path detection and async behavior stability. (depends_on: scanner-async/1, scanner-async/2)
+1. `scanner-async/1` `Feature` - Add recursive depth-aware skill scanning. (status: Provisional)
+2. `scanner-async/2` `Refactoring` - Convert scanner flow from sync I/O to async traversal. (depends_on: scanner-async/1, status: Provisional)
+3. `scanner-async/3` `Documentation` - Update scanner behavior and usage guidance in SKILL-related docs. (depends_on: scanner-async/1, scanner-async/2, status: Provisional)
+4. `scanner-async/4` `Test` - Add/adjust tests for deep path detection and async behavior stability. (depends_on: scanner-async/1, scanner-async/2, status: Provisional)
 
 ## Prompt 2
 
@@ -30,11 +31,11 @@ Each test should verify:
 
 ### Expected Ticket Sequence
 
-1. `skill-unification/1` `Feature` - Define and implement a unified command entrypoint behavior.
-2. `skill-unification/2` `Refactoring` - Restructure overlapping skill boundaries and command routing logic. (depends_on: skill-unification/1)
-3. `skill-unification/3` `Improvement` - Introduce compatibility/migration strategy for existing `audit-behavior` users. (depends_on: skill-unification/1, skill-unification/2)
-4. `skill-unification/4` `Documentation` - Update README and migration guidance. (depends_on: skill-unification/1, skill-unification/2, skill-unification/3)
-5. `skill-unification/5` `Test` - Add installer/command compatibility tests for legacy and new paths. (depends_on: skill-unification/1, skill-unification/2)
+1. `skill-unification/1` `Feature` - Define and implement a unified command entrypoint behavior. (status: Provisional)
+2. `skill-unification/2` `Refactoring` - Restructure overlapping skill boundaries and command routing logic. (depends_on: skill-unification/1, status: Provisional)
+3. `skill-unification/3` `Improvement` - Introduce compatibility/migration strategy for existing `audit-behavior` users. (depends_on: skill-unification/1, skill-unification/2, status: Provisional)
+4. `skill-unification/4` `Documentation` - Update README and migration guidance. (depends_on: skill-unification/1, skill-unification/2, skill-unification/3, status: Provisional)
+5. `skill-unification/5` `Test` - Add installer/command compatibility tests for legacy and new paths. (depends_on: skill-unification/1, skill-unification/2, status: Provisional)
 
 ## Prompt 3
 
@@ -42,11 +43,11 @@ Each test should verify:
 
 ### Expected Ticket Sequence
 
-1. `placeholder-governance/1` `Feature` - Add placeholder mapping completeness validation.
-2. `placeholder-governance/2` `Refactoring` - Integrate placeholder residue checks into transform/pipeline flow. (depends_on: placeholder-governance/1)
-3. `placeholder-governance/3` `Improvement` - Add staged enforcement mode to avoid abrupt breakage. (depends_on: placeholder-governance/1, placeholder-governance/2)
-4. `placeholder-governance/4` `Documentation` - Document placeholder governance and rollout policy. (depends_on: placeholder-governance/1, placeholder-governance/2, placeholder-governance/3)
-5. `placeholder-governance/5` `Test` - Add regression tests for missing mapping and unresolved placeholder cases. (depends_on: placeholder-governance/1, placeholder-governance/2)
+1. `placeholder-governance/1` `Feature` - Add placeholder mapping completeness validation. (status: Provisional)
+2. `placeholder-governance/2` `Refactoring` - Integrate placeholder residue checks into transform/pipeline flow. (depends_on: placeholder-governance/1, status: Provisional)
+3. `placeholder-governance/3` `Improvement` - Add staged enforcement mode to avoid abrupt breakage. (depends_on: placeholder-governance/1, placeholder-governance/2, status: Provisional)
+4. `placeholder-governance/4` `Documentation` - Document placeholder governance and rollout policy. (depends_on: placeholder-governance/1, placeholder-governance/2, placeholder-governance/3, status: Provisional)
+5. `placeholder-governance/5` `Test` - Add regression tests for missing mapping and unresolved placeholder cases. (depends_on: placeholder-governance/1, placeholder-governance/2, status: Provisional)
 
 ## Prompt 4
 
@@ -54,10 +55,10 @@ Each test should verify:
 
 ### Expected Ticket Sequence
 
-1. `installer-perf/1` `Feature` - Add parallelization and/or caching strategy for `--all` pipeline.
-2. `installer-perf/2` `Refactoring` - Rework execution orchestration to preserve deterministic logging and failure tracing. (depends_on: installer-perf/1)
-3. `installer-perf/3` `Documentation` - Update operational guidance for performance mode and failure analysis. (depends_on: installer-perf/1, installer-perf/2)
-4. `installer-perf/4` `Test` - Add tests for speed-path correctness, side-effect safety, and log traceability. (depends_on: installer-perf/1, installer-perf/2)
+1. `installer-perf/1` `Feature` - Add parallelization and/or caching strategy for `--all` pipeline. (status: Provisional)
+2. `installer-perf/2` `Refactoring` - Rework execution orchestration to preserve deterministic logging and failure tracing. (depends_on: installer-perf/1, status: Provisional)
+3. `installer-perf/3` `Documentation` - Update operational guidance for performance mode and failure analysis. (depends_on: installer-perf/1, installer-perf/2, status: Provisional)
+4. `installer-perf/4` `Test` - Add tests for speed-path correctness, side-effect safety, and log traceability. (depends_on: installer-perf/1, installer-perf/2, status: Provisional)
 
 ## Prompt 5
 
@@ -65,8 +66,8 @@ Each test should verify:
 
 ### Expected Ticket Sequence
 
-1. `frontmatter-validation/1` `Feature` - Add early frontmatter validation during scanning.
-2. `frontmatter-validation/2` `Refactoring` - Unify validation pipeline for `profile+tools` and legacy `platforms:` paths. (depends_on: frontmatter-validation/1)
-3. `frontmatter-validation/3` `Improvement` - Improve human-actionable error messaging and remediation hints. (depends_on: frontmatter-validation/1, frontmatter-validation/2)
-4. `frontmatter-validation/4` `Documentation` - Update authoring conventions for agent frontmatter. (depends_on: frontmatter-validation/1, frontmatter-validation/2, frontmatter-validation/3)
-5. `frontmatter-validation/5` `Test` - Add validation tests covering both modern and legacy formats. (depends_on: frontmatter-validation/1, frontmatter-validation/2)
+1. `frontmatter-validation/1` `Feature` - Add early frontmatter validation during scanning. (status: Provisional)
+2. `frontmatter-validation/2` `Refactoring` - Unify validation pipeline for `profile+tools` and legacy `platforms:` paths. (depends_on: frontmatter-validation/1, status: Provisional)
+3. `frontmatter-validation/3` `Improvement` - Improve human-actionable error messaging and remediation hints. (depends_on: frontmatter-validation/1, frontmatter-validation/2, status: Provisional)
+4. `frontmatter-validation/4` `Documentation` - Update authoring conventions for agent frontmatter. (depends_on: frontmatter-validation/1, frontmatter-validation/2, frontmatter-validation/3, status: Provisional)
+5. `frontmatter-validation/5` `Test` - Add validation tests covering both modern and legacy formats. (depends_on: frontmatter-validation/1, frontmatter-validation/2, status: Provisional)

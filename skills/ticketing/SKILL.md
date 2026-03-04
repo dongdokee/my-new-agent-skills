@@ -1,276 +1,175 @@
 ---
 name: ticketing
 description: >-
-  Decompose ambiguous or mixed user requests into dependency-ordered, single-type
-  tickets through one-question interviews, then draft approval-gated ticket
-  artifacts. Use when requirements are unclear, conflated, or multi-step; skip
-  when the request is already implementation-ready. Trigger phrases: "break this
-  down into tickets", "create tickets for this work", "decompose this request",
-  "plan the implementation tasks", "what tickets do we need".
+  Decompose ambiguous, conflated, or multi-step requests into
+  dependency-ordered `Provisional` tickets and obtain initial set approval
+  only. Use for requests like "break this down into tickets" or
+  "plan implementation tasks". Do not use when work is already
+  implementation-ready or when immediate coding is explicitly requested.
 ---
 
 # Ticketing
 
-Convert ambiguous user requests into approved tickets with specs.
+Convert ambiguous requests into an approved **initial ticket set**.
+
+This skill ends at **initial set approval**. It does not promote tickets to
+`Ready` and it does not run implementation.
 
 ## Core Principles
 
-- Ask one question at a time{{tool.ask_user}} — multi-part questions overwhelm users and produce vague answers.
-- Keep questions decision-focused and noise-free — irrelevant details slow the process without improving ticket quality.
-- Track every phase using {{tool.task_tracking}} — visible progress prevents phase skipping and keeps both sides aligned.
-- Do not claim readiness until blocking unknowns are resolved — premature approval leads to rework during implementation.
-
-## Quick Reference
-
-1. Apply splitting criteria to decompose the request into single-intent tickets.
-2. Assign set-based IDs and determine dependency order.
-3. Author a quality-attribute-governed Spec for each ticket.
-4. Resolve blocking unknowns with targeted interview and codebase exploration.
-5. Run readiness gate (including spec quality) and request approval.
-6. Save the approved ticket artifact to `docs/tickets/`.
-
-## When to Use
-
-- The request is broad, mixed, or ambiguous.
-- The request must be split into multiple sequential tickets.
-- Scope and acceptance criteria must be explicit before implementation.
-- The user wants a ticket artifact before implementation.
-
-## When Not to Use
-
-- The request is already concrete and implementation-ready.
-- The change is trivial and does not need ticket decomposition.
-- The user asks for direct implementation without specs.
+- Ask one question at a time{{tool.ask_user}}.
+- Keep every ticket single-intent and single-type.
+- Track every phase via {{tool.task_tracking}}.
+- Keep unresolved uncertainty explicit as open questions.
 
 ## Input / Output Contract
 
-- Input: a user request that needs decomposition and requirement concretization.
-- Ticket Output: `docs/tickets/YYYY-MM-DD-<topic>-ticket.md`
-- Topic token rule: `<topic>` must be `kebab-case`.
-- Ticket IDs in a ticket file: `<topic>/1`, `<topic>/2`, `<topic>/3`, ... where set name equals the topic token.
+- Input: ambiguous request requiring decomposition and requirement shaping.
+- Output file: `docs/tickets/YYYY-MM-DD-<topic>-ticket.md`
+- Topic token: kebab-case (`<topic>`)
+- Ticket IDs: `<topic>/1`, `<topic>/2`, ...
+- Initial status for every ticket: `Provisional`
+- Each ticket has `Spec Detail Level`: `Full` or `Lean`
 
 ## Ticket Type
 
-Assign exactly one type per ticket based on primary intent.
+Assign exactly one type per ticket.
 
 | Type | Assign When |
 |------|-------------|
-| `Feature` | Adding new capability or changing existing functional behavior |
-| `Refactoring` | Restructuring code without changing observable behavior |
-| `Documentation` | Creating or updating human-readable documentation |
-| `Test` | Adding or expanding test coverage |
-| `Bug` | Correcting behavior that deviates from documented or expected behavior |
-| `Improvement` | Enhancing non-functional aspects of existing capability (performance, UX, maintainability) |
+| `Feature` | New capability or functional behavior change |
+| `Refactoring` | Internal restructuring with no observable behavior change |
+| `Documentation` | Human-facing documentation updates |
+| `Test` | New or expanded test coverage |
+| `Bug` | Fixing behavior that deviates from expected behavior |
+| `Improvement` | Non-functional enhancement (performance, UX, maintainability) |
 
-If intent spans multiple types, split into separate tickets per splitting criteria.
+If intent spans multiple types, split by type.
 
 ## Process
 
-Use {{tool.task_tracking}} for each phase and step status update — this makes progress visible and prevents accidentally skipping phases.
+Use {{tool.task_tracking}} for phase/step updates.
 
-### Phase 1: Decompose Request into Incomplete Tickets
+### Phase 1: Decompose into Incomplete Tickets
 
-**Goal:** Break the user request into the smallest set of single-intent tickets. Each ticket has only type, goal, and dependencies — full specs are deferred to Phase 3.
+**Goal:** produce the smallest dependency-ordered ticket set.
 
-**Steps:**
-
-1. **Derive the topic token.** Extract the central theme as a 2-3 word kebab-case slug (domain noun + action/quality). This becomes the set name and file name fragment.
-   - Example: "search API performance" → `search-performance`
-2. **Identify intents and assign types.** Parse the request for distinct intents. Map each to exactly one ticket type. If a sentence spans multiple types, split it.
-3. **Establish dependencies.** For each ticket, determine which other tickets must complete before it can start. List only direct `depends-on` entries. The resulting graph must be a DAG (no cycles).
-4. **Order by dependency and assign IDs.** Topologically sort the tickets so no ticket depends on a higher-numbered one. Number sequentially: `<topic>/1`, `<topic>/2`, ...
-5. **Apply splitting criteria.** Validate every ticket against the splitting criteria below. Split or merge if any criterion fails.
-6. **Present the incomplete ticket list to the user{{tool.ask_user}}:** topic token, each ticket (ID, type, goal, depends-on), and dependency graph (Mermaid `graph TD`). Ask for confirmation before proceeding.
+1. Derive topic token (`2-3` words, kebab-case).
+2. Identify intents and assign one type per ticket.
+3. Establish direct dependencies only.
+4. Topologically sort and assign IDs.
+5. Apply splitting criteria.
+6. Present list for confirmation{{tool.ask_user}}:
+   - topic token
+   - each ticket (`ID`, `type`, `goal`, `depends-on`)
+   - Mermaid dependency graph (skip graph when single-ticket case)
 
 #### Splitting Criteria
 
-A Ticket can remain as a single unit only if **ALL THREE** conditions hold. These criteria ensure each ticket can be independently implemented, verified, and debugged.
+A ticket is valid only if all three hold:
 
-- **Single Intent** — one ticket type, one goal; describable as "this ticket does X".
-- **Immediately Verifiable** — a validation method exists at completion time.
-- **Failure Cause Identifiable** — failure is traceable within this ticket alone.
+- **Single Intent**: one type, one goal.
+- **Immediately Verifiable**: completion can be validated.
+- **Failure Cause Identifiable**: failure source is traceable to this ticket.
 
 If any criterion fails, split or merge.
 
-**Single-ticket case:** If decomposition yields only one ticket, skip the dependency graph in the presentation. Still proceed to Phase 2 to check for missing work items.
-
-#### Example
-
-**User Request:** "Our web and mobile onboarding flows are functionally similar but implemented separately, which is expensive to maintain. I want users to see one consistent experience, while keeping existing legacy signup links working. Include migration guidance, documentation updates, and test automation scope in the decomposition."
-
-**Incomplete Tickets:**
-- `onboarding-unify/1`:
-  - type: feature
-  - goal: "Define and implement a unified onboarding behavior across web and mobile."
-- `onboarding-unify/2`:
-  - type: refactoring
-  - goal: "Extract duplicated onboarding logic into shared components/services."
-  - depends-on: `onboarding-unify/1`
-- `onboarding-unify/3`:
-  - type: improvement
-  - goal: "Add backward-compatible routing and migration handling for legacy signup links."
-  - depends-on: `onboarding-unify/1`, `onboarding-unify/2`
-- `onboarding-unify/4`:
-  - type: documentation
-  - goal: "Update product and engineering docs with migration guidance."
-  - depends-on: `onboarding-unify/1`, `onboarding-unify/2`, `onboarding-unify/3`
-- `onboarding-unify/5`:
-  - type: test
-  - goal: "Add end-to-end and compatibility tests for legacy and unified onboarding paths."
-  - depends-on: `onboarding-unify/1`, `onboarding-unify/2`
-
-**Dependency Graph:**
-
-```mermaid
-graph TD
-  T1["onboarding-unify/1<br/>(feature)<br/>Unified onboarding behavior"]
-  T2["onboarding-unify/2<br/>(refactoring)<br/>Extract duplicated onboarding logic"]
-  T3["onboarding-unify/3<br/>(improvement)<br/>Legacy signup link routing/migration handling"]
-  T4["onboarding-unify/4<br/>(documentation)<br/>Migration guidance docs update"]
-  T5["onboarding-unify/5<br/>(test)<br/>E2E + compatibility tests"]
-
-  T1 --> T2
-  T1 --> T3
-  T2 --> T3
-  T1 --> T4
-  T2 --> T4
-  T3 --> T4
-  T1 --> T5
-  T2 --> T5
-```
-
-**Transition:** User confirms the ticket list → proceed to Phase 2.
-
 ### Phase 2: Identify Missing Tickets
 
-**Goal:** Review the decomposed ticket set for implicit or overlooked work items that the user did not explicitly request but are necessary for a complete, deliverable outcome.
+**Goal:** capture implied but missing work.
 
-**Steps:**
+1. Compare current ticket set vs request and repo context.
+2. Draft candidate missing tickets.
+3. Present candidates{{tool.ask_user}} and request add/no-add decision.
+4. Reassign IDs by dependency order and re-run splitting criteria.
 
-1. **Scan for gaps.** Compare the ticket set against the original request and the codebase context. Look for work items that are implied but not captured — such as missing test coverage for new behavior, documentation for changed interfaces, migration paths for breaking changes, or cleanup of obsoleted code.
-2. **Draft missing tickets.** For each gap found, prepare a candidate ticket with type, goal, and depends-on — same format as Phase 1 output.
-3. **Present gaps to the user{{tool.ask_user}}.** Show the candidate tickets and ask for approval to add them to the set. If no gaps are found, state that explicitly and ask for confirmation to proceed.
-4. **Update the ticket list.** Integrate approved tickets, reassign IDs to maintain dependency order, and re-validate splitting criteria.
+### Phase 3: Draft Provisional Specs
 
-**Transition:** User confirms gap analysis (added or no gaps) → proceed to Phase 3.
+**Goal:** capture sufficient provisional detail without over-specifying far
+waves.
 
-### Phase 3: Author Ticket Specs
+Detail level rules:
 
-**Goal:** For each incomplete ticket, interview the user to populate all Spec fields. Continue interviewing until every field meets its quality attributes and all blocking unknowns are resolved.
+- Wave 1 tickets: `Full`
+- Wave 2+ tickets: `Lean`
 
-**Steps:**
+Use `Full` for execution-near tickets and `Lean` for far-future tickets.
 
-1. **Select the next ticket.** Process tickets in dependency order (lowest ID first). Mark the current ticket as in-progress via {{tool.task_tracking}}.
-2. **Explore the codebase.** Search for files, modules, and functions relevant to the ticket's goal. Narrow down to 2-5 concrete file paths that will populate the In-Scope list. Stop exploring once you can name the specific locations to change. If no existing codebase exists, derive In-Scope items from the planned architecture or user description instead of file paths.
-3. **Draft the Spec.** Fill in each field using codebase findings and the original request. Use placeholder markers for fields that require user input.
-4. **Interview for each incomplete field{{tool.ask_user}}.** Ask one targeted, decision-focused question per turn until every field meets its quality attributes. Follow the field order below.
+For each ticket in dependency order:
 
-#### Interview Example
+1. Mark ticket as in-progress in {{tool.task_tracking}}.
+2. Explore codebase enough to identify concrete likely in-scope targets.
+3. Set `Spec Detail Level`:
+   - `Full` if ticket is in Wave 1
+   - `Lean` if ticket is in Wave 2+
+4. Draft fields by level:
+   - `Full`:
+     - Objective
+     - In-Scope (Provisional)
+     - Out-of-Scope
+     - Acceptance Criteria (Draft)
+     - Validation Method (Draft)
+     - Open Questions (`Blocking` / `Non-blocking`)
+   - `Lean`:
+     - Objective
+     - depends_on summary
+     - Tentative In-Scope
+     - Blocking Open Questions
+5. Ask focused questions{{tool.ask_user}} only when required to remove ambiguity in
+   provisional fields.
+6. Mark ticket status as `Provisional` and assign initial wave candidate.
 
-**Ticket:** `search-performance/1` (Feature)
-**Incomplete field:** Acceptance Criteria
+Notes:
 
-> "What should happen when a search query returns zero results — should the API return an empty array, a 404 status, or a specific error message?"
+- `Blocking` open questions may remain at this stage.
+- Record unknowns explicitly; do not hide uncertainty.
 
-5. **Validate quality attributes.** After user answers, verify the field against its quality attributes. If it fails, ask a follow-up question to sharpen the answer.
-6. **Classify open questions.** Mark each unresolved item as `Blocking` or `Non-blocking`. Any `Blocking` item must be resolved before moving to the next ticket.
-7. **Present completed Spec for confirmation{{tool.ask_user}}.** Show the full Spec to the user. Proceed to the next ticket only after confirmation. If the user requests changes, return to Step 4.
-8. **Repeat for all tickets.** Return to Step 1 for the next ticket.
+### Phase 4: Review and Approve Initial Set
 
-#### Spec Fields Reference
+**Goal:** approve ticket set baseline before execution workflows.
 
-Each field has required quality attributes. Do not accept a field value that fails its attributes.
+1. Run Initial Set Gate (below).
+2. Present review package:
+   - summary table (`ID`, `type`, `goal`, `status`, `wave`)
+   - dependency graph
+   - provisional spec summaries
+3. Request decision{{tool.ask_user}}:
+   - `Approve`: save using `references/ticket-template.md`
+   - `Revise`: revise selected tickets and repeat Phase 4
+   - `Stop`: end and report current status
 
-**Objective** — Specific, Testable, Singular
+### Initial Set Gate
 
-The ticket's purpose and expected result in one sentence. Must correspond to a single ticket type.
-Place `depends_on:` notation between the heading and body when dependencies exist; omit when there are none.
+Set is acceptable only when all checks pass:
 
-> Good: "Add a `ValidationError` return when required fields are missing in the config file."
-> Bad: "Improve input validation."
+1. Every ticket passes splitting criteria.
+2. Dependency graph is acyclic.
+3. Every ticket has required provisional fields for its detail level.
+4. Open questions are classified (`Blocking` / `Non-blocking`).
+5. Every ticket status is `Provisional`.
 
-**In-Scope** — Enumerable, Locatable, Bounded
+## Status Model (for downstream skills)
 
-Items to change or create, listed at path/module/function level.
+This skill only writes `Provisional`.
 
-> Good: "`src/auth/login.ts`: `validateToken()` function; `src/auth/types.ts`: type definitions"
-> Bad: "Authentication-related files"
-
-**Out-of-Scope** — Negative, Firm, Relevant
-
-Items explicitly excluded. Only list items plausibly confused as in-scope.
-
-> Good: "The existing `exportToCsv()` function is not modified."
-> Bad: "Database schema is not changed." (no DB exists)
-
-**Acceptance Criteria** — Binary, Observable, Complete
-
-Conditions that determine ticket completion. Cover happy path and key edge cases.
-
-> Good: "1) Valid input -> JSON output 2) Empty input -> empty object 3) Invalid field -> error"
-> Bad: "JSON is generated correctly." (happy path only)
-
-**Validation Method** — Executable, Reproducible, Mapped
-
-Concrete verification means for each AC. Must map 1:1 to AC items.
-
-> Good: "AC1 -> `test_valid_output` / AC2 -> `test_empty_input`"
-> Bad: "Run the full test suite." (unclear which AC is verified)
-
-**Constraints** (conditional) — Explicit, Actionable, Prioritized
-
-Technical restrictions on implementation. Include only when meaningful constraints exist.
-
-> Good: "No external library additions; stdlib only. Backward compat > perf optimization."
-> Bad: "Minimize dependencies."
-
-**Risks** (conditional) — Causal, Mitigatable, Scoped
-
-Technical risks within In-Scope range. Include only when non-trivial risks are identified.
-
-> Good: "Locale-dependent date parsing breaks CSV sort order -> enforce ISO 8601 + locale-agnostic test."
-> Bad: "Date parsing might be tricky."
-
-#### Readiness Gate
-
-A ticket set is ready only if all checks pass:
-
-1. Each Objective is single-intent, verifiable, and failure-traceable.
-2. Each Spec field satisfies its quality attributes.
-3. Acceptance Criteria and Validation Methods are 1:1 mapped.
-4. Dependency graph has no cycles.
-5. No blocking open question remains.
-
-Open question policy:
-
-- Classify each item as `Blocking` or `Non-blocking`.
-- Any remaining `Blocking` item prevents approval.
-
-**Transition:** All ticket Specs complete and user-confirmed → proceed to Phase 4.
-
-### Phase 4: Review and Approve
-
-**Goal:** Validate the complete ticket set against the readiness gate and obtain user approval before saving artifacts.
-
-**Steps:**
-
-1. **Run readiness gate.** Verify all checks pass (see Readiness Gate section). If any check fails, return to Phase 3 for the affected ticket.
-2. **Present the complete ticket set for review.** Show a summary table (ID, type, objective one-liner, status) plus the dependency graph. Include full specs only for tickets revised since last confirmation.
-3. **Request decision{{tool.ask_user}}:**
-   - `Approve`: load `references/ticket-template.md` and save each ticket artifact to `docs/tickets/` using that template.
-   - `Revise`: ask which ticket(s) to revise, then return to Phase 3 for those tickets only.
-   - `Stop`: end workflow with current status summary.
+- `Provisional` -> managed here
+- `Ready` -> managed by `ticket-revalidation`
+- `In-Progress`, `Implemented` -> user implementation phase
+- `Integrated`, `Closed` -> `finishing-ticket-implementation`
 
 ## Anti-Patterns
 
-- Collecting details that do not affect ticket decisions.
-- Writing provider-specific output syntax into artifacts.
-- Out-of-scope items that are not plausibly confused as in-scope.
-- Keeping tickets that fail splitting criteria without splitting them.
-- Re-presenting full specs already confirmed in Phase 3 — use summary table instead.
-- Asking multiple questions in a single turn — one question per interaction.
-- Skipping codebase exploration and guessing file paths for In-Scope.
+- Treating provisional specs as final execution specs.
+- Marking tickets `Ready` inside this skill.
+- Hiding unresolved unknowns instead of recording them.
+- Mixing multiple ticket types into one ticket.
+- Skipping codebase exploration and guessing in-scope targets.
+- Asking multi-part questions in one turn.
 
 ## Checklist Before Finishing
 
-Verify all items in the Readiness Gate (Phase 3) pass, then confirm the ticket artifact is saved under `docs/tickets/`.
+- [ ] Initial set gate passes.
+- [ ] All ticket statuses are `Provisional`.
+- [ ] Dependency graph and wave index are present.
+- [ ] Open questions are fully classified.
+- [ ] Artifact saved to `docs/tickets/`.

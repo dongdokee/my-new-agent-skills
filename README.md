@@ -11,8 +11,29 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 | Skill | Description |
 |-------|-------------|
 | `auditing-behaviors` | Behavior-contract audit workflow: User Story/Acceptance Criteria/User Journey extraction + test/entry-point mapping + gap tracking in `docs/behavior-contract.md` |
-| `ticketing` | Ticket-first workflow: request decomposition → splitting-criteria-based ticketing → quality-attribute-governed spec authoring → approval-gated artifact |
+| `ticketing` | Initial ticket-set workflow: request decomposition → dependency graph → provisional specs → initial set approval |
+| `ticket-revalidation` | Wave-entry workflow: promote dependency-ready provisional tickets to ready tickets with drift-aware revalidation |
+| `finishing-ticket-implementation` | Ticket-exit workflow: validate implemented ticket evidence, merge to integration branch, close ticket status |
+| `using-git-worktrees` | Worktree preparation workflow with `.worktrees/` policy, collision handling, and clean baseline verification |
+| `test-driven-development` | RED-GREEN-REFACTOR execution discipline for implementation work |
+| `finishing-a-development-branch` | Final topic-level branch completion (merge/PR/cleanup) after all ticket closures |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
+
+## Ticket Wave Workflow
+
+Use the ticket workflow in this order:
+
+1. `ticketing` to create and approve initial provisional ticket set.
+2. `ticket-revalidation` to promote next-wave tickets to `Ready`.
+3. User implements ready tickets manually (parallel allowed).
+4. `finishing-ticket-implementation` per implemented ticket to integrate/close.
+5. `finishing-a-development-branch` after all tickets are closed.
+
+Recommended naming:
+
+- Integration branch: `feat/<topic>-integration`
+- Ticket branch: `feat/<topic>-tN`
+- Worktree: `.worktrees/<topic>-tN`
 
 ## Installation
 
@@ -91,7 +112,11 @@ command_name: ticket
 ```
 
 When `command: true`, `command_name` is required and installer outputs `.gemini/commands/<command_name>.toml` (no fallback to skill name).
-Examples: `ticketing -> ticket.toml`, `auditing-behaviors -> audit-behavior.toml`.
+Examples:
+- `ticketing -> ticket.toml`
+- `ticket-revalidation -> ticket-revalidate.toml`
+- `finishing-ticket-implementation -> finish-ticket.toml`
+- `auditing-behaviors -> audit-behavior.toml`
 
 ## Multi-Platform Agent Frontmatter
 

@@ -12,6 +12,16 @@ description: Use when preparing an isolated implementation workspace in the same
 - Run `git check-ignore -q .worktrees` before creating any worktree.
 - If ignore verification cannot pass, stop and report before any `git worktree add`.
 
+## Standard Naming (Ticket Workflow)
+
+When ticket-based wave execution is used, apply these names:
+
+- Integration branch: `feat/<topic>-integration`
+- Ticket branch: `feat/<topic>-tN`
+- Worktree path: `.worktrees/<topic>-tN`
+
+Keep the naming stable across all waves.
+
 ## Operational Checklist
 
 ### 1) Verify ignore status

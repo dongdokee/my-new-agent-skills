@@ -7,11 +7,20 @@ description: Use when implementation is complete, all tests pass, and you need t
 
 ## Overview
 
-Guide completion of development work by presenting clear options and handling chosen workflow.
+Guide completion of topic-level development work by presenting clear options and
+handling chosen workflow.
 
 **Core principle:** Verify tests → Present options → Execute choice → Clean up.
 
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
+
+## Scope Boundary
+
+This skill is for **final topic closure** only.
+
+- Use after ticket-level completion is done.
+- Do not use this skill to close individual tickets.
+- Expected prerequisite: all tickets in the topic are already `Closed`.
 
 ## The Process
 
@@ -214,8 +223,7 @@ git worktree remove <worktree-path>
 
 **Called by:**
 - **subagent-driven-development** (Step 7) - After all tasks complete
-- **executing-plans** (Step 5) - After all batches complete
+- **ticket-based wave workflow** - After all ticket closures complete
 
 **Pairs with:**
 - **using-git-worktrees** - Cleans up worktree created by that skill
-
