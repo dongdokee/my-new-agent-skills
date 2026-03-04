@@ -12,7 +12,6 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 |-------|-------------|
 | `auditing-behaviors` | Behavior-contract audit workflow: User Story/Acceptance Criteria/User Journey extraction + test/entry-point mapping + gap tracking in `docs/behavior-contract.md` |
 | `ticketing` | Ticket-first workflow: request decomposition → splitting-criteria-based ticketing → quality-attribute-governed spec authoring → approval-gated artifact |
-| `researching` | Unified research workflow: intent discovery → codebase exploration → design synthesis → ticket authoring |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
 
 ## Installation
@@ -88,11 +87,11 @@ For Gemini custom commands, set both fields in `skill.yaml`:
 
 ```yaml
 command: true
-command_name: research
+command_name: ticket
 ```
 
 When `command: true`, `command_name` is required and installer outputs `.gemini/commands/<command_name>.toml` (no fallback to skill name).
-Examples: `researching -> research.toml`, `ticketing -> ticket.toml`.
+Examples: `ticketing -> ticket.toml`, `auditing-behaviors -> audit-behavior.toml`.
 
 ## Multi-Platform Agent Frontmatter
 

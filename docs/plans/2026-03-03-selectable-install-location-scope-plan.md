@@ -238,16 +238,16 @@ git commit -m "feat(installer): add workspace/user scope selection to interactiv
 // pipeline.test.ts 에 추가
 it("supports writing same skill to workspace and user roots in one run shape", () => {
   const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-  const researching = skills.find((s) => s.name === "researching")!;
+  const ticketing = skills.find((s) => s.name === "ticketing")!;
 
   const workspaceRoot = resolve(TEST_ROOT, "workspace-root");
   const userRoot = resolve(TEST_ROOT, "user-root");
 
-  installSkill(researching, "claude", workspaceRoot);
-  installSkill(researching, "claude", userRoot);
+  installSkill(ticketing, "claude", workspaceRoot);
+  installSkill(ticketing, "claude", userRoot);
 
-  expect(existsSync(resolve(workspaceRoot, ".claude/skills/researching/SKILL.md"))).toBe(true);
-  expect(existsSync(resolve(userRoot, ".claude/skills/researching/SKILL.md"))).toBe(true);
+  expect(existsSync(resolve(workspaceRoot, ".claude/skills/ticketing/SKILL.md"))).toBe(true);
+  expect(existsSync(resolve(userRoot, ".claude/skills/ticketing/SKILL.md"))).toBe(true);
 });
 ```
 

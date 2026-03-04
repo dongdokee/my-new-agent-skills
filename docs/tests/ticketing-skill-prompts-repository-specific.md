@@ -26,13 +26,13 @@ Each test should verify:
 
 ## Prompt 2
 
-`researching`과 `ticketing` 역할이 사용자 입장에서 겹쳐 보여. 실행 진입점은 하나처럼 보이게 하고 싶고, 기존에 `research` 명령 쓰던 사용자도 깨지지 않았으면 해. README, installer 테스트, Gemini command, migration 안내까지 어디를 자동화할지 포함해서 설계부터 작업 단위로 쪼개줘.
+`auditing-behaviors`와 `ticketing` 역할이 사용자 입장에서 겹쳐 보여. 실행 진입점은 하나처럼 보이게 하고 싶고, 기존에 `audit-behavior` 명령 쓰던 사용자도 깨지지 않았으면 해. README, installer 테스트, Gemini command, migration 안내까지 어디를 자동화할지 포함해서 설계부터 작업 단위로 쪼개줘.
 
 ### Expected Ticket Sequence
 
 1. `skill-unification/1` `Feature` - Define and implement a unified command entrypoint behavior.
 2. `skill-unification/2` `Refactoring` - Restructure overlapping skill boundaries and command routing logic. (depends_on: skill-unification/1)
-3. `skill-unification/3` `Improvement` - Introduce compatibility/migration strategy for existing `research` users. (depends_on: skill-unification/1, skill-unification/2)
+3. `skill-unification/3` `Improvement` - Introduce compatibility/migration strategy for existing `audit-behavior` users. (depends_on: skill-unification/1, skill-unification/2)
 4. `skill-unification/4` `Documentation` - Update README and migration guidance. (depends_on: skill-unification/1, skill-unification/2, skill-unification/3)
 5. `skill-unification/5` `Test` - Add installer/command compatibility tests for legacy and new paths. (depends_on: skill-unification/1, skill-unification/2)
 

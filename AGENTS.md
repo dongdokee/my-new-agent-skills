@@ -65,7 +65,7 @@ Agents not tied to any specific skill live in the top-level `agents/` directory 
 
 ### Skill Interdependencies
 
-`researching` → uses `{{tool.task_tracking}}` (platform-adaptive) for task tracking → spawns `code-explorer` agent for codebase exploration.
+Inter-skill coupling is intentionally minimal; prefer keeping each skill independently installable.
 - Example placeholder patterns are platform-aware and must stay in `tool` namespace (for example `{{tool.ask_user}}` for user prompts, `{{tool.project_config}}` for the project config filename).
 
 ### Reference Projects
