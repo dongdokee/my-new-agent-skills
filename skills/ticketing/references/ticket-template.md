@@ -78,6 +78,11 @@ When `Spec Detail Level` is `Lean`, fill only Lean fields.
 
 ## 5. Wave Index (Initial)
 
+Wave assignment rule:
+- if no dependencies, `wave(t) = 1`
+- otherwise, `wave(t) = 1 + max(wave(dep))`
+- therefore, for every dependency edge `dep -> t`, `wave(t) > wave(dep)`
+
 | Wave | Tickets | Entry Condition |
 |------|---------|-----------------|
 | 1 | <topic>/1 | No unresolved predecessor |
@@ -86,6 +91,7 @@ When `Spec Detail Level` is `Lean`, fill only Lean fields.
 ## 6. Initial Set Readiness Gate
 - [ ] Each ticket satisfies splitting criteria
 - [ ] Dependency graph has no cycles
+- [ ] For each dependency edge `dep -> t`, wave assignment satisfies `wave(t) > wave(dep)`
 - [ ] Every ticket satisfies required fields for its detail level
 - [ ] Open questions are classified (Blocking/Non-blocking)
 - [ ] Every ticket status is Provisional

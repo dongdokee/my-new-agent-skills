@@ -37,12 +37,22 @@ Assign exactly one type per ticket.
 
 | Type | Assign When |
 |------|-------------|
-| `Feature` | New capability or functional behavior change |
-| `Refactoring` | Internal restructuring with no observable behavior change |
+| `Feature` | Adds or changes capability, contract, or functional behavior |
+| `Refactoring` | Internal restructuring while preserving capability, contracts, and observable behavior |
 | `Documentation` | Human-facing documentation updates |
 | `Test` | New or expanded test coverage |
 | `Bug` | Fixing behavior that deviates from expected behavior |
 | `Improvement` | Non-functional enhancement (performance, UX, maintainability) |
+
+`Observable behavior` includes externally visible outcomes at system boundaries,
+not only UI changes (for example, API/schema/repository contracts, persisted data
+semantics, and user-visible behavior).
+
+Classification gates:
+
+1. If a ticket adds/changes/removes capability or contract, classify it as `Feature`.
+2. If a ticket only restructures implementation and preserves capability/contract/behavior, classify it as `Refactoring`.
+3. If both happen in one scope, split into separate tickets by type.
 
 If intent spans multiple types, split by type.
 
@@ -83,6 +93,15 @@ If any criterion fails, split or merge.
 3. Present candidates{{tool.ask_user}} and request add/no-add decision.
 4. Reassign IDs by dependency order and re-run splitting criteria.
 
+### Wave Assignment Rules
+
+Compute waves from the dependency graph, not from implementation stage labels.
+
+- Base case: if a ticket has no direct dependencies, `wave(t) = 1`.
+- Recursive case: if a ticket has dependencies, `wave(t) = 1 + max(wave(dep))`.
+- Invariant: for every dependency edge `dep -> t`, `wave(t) > wave(dep)`.
+- Tickets may share a wave only when no dependency path exists between them.
+
 ### Phase 3: Draft Provisional Specs
 
 **Goal:** capture sufficient provisional detail without over-specifying far
@@ -95,11 +114,17 @@ Detail level rules:
 
 Use `Full` for execution-near tickets and `Lean` for far-future tickets.
 
+Before drafting per-ticket specs:
+
+1. Compute initial wave candidates for all tickets using the Wave Assignment
+   Rules.
+2. Verify no ticket violates `wave(t) > wave(dep)`.
+
 For each ticket in dependency order:
 
 1. Mark ticket as in-progress in {{tool.task_tracking}}.
 2. Explore codebase enough to identify concrete likely in-scope targets.
-3. Set `Spec Detail Level`:
+3. Set `Spec Detail Level` from computed wave:
    - `Full` if ticket is in Wave 1
    - `Lean` if ticket is in Wave 2+
 4. Draft fields by level:
@@ -144,9 +169,11 @@ Set is acceptable only when all checks pass:
 
 1. Every ticket passes splitting criteria.
 2. Dependency graph is acyclic.
-3. Every ticket has required provisional fields for its detail level.
-4. Open questions are classified (`Blocking` / `Non-blocking`).
-5. Every ticket status is `Provisional`.
+3. For every dependency edge `dep -> t`, `wave(t) > wave(dep)`.
+4. Wave index entries match computed wave assignments.
+5. Every ticket has required provisional fields for its detail level.
+6. Open questions are classified (`Blocking` / `Non-blocking`).
+7. Every ticket status is `Provisional`.
 
 ## Status Model (for downstream skills)
 
@@ -163,6 +190,8 @@ This skill only writes `Provisional`.
 - Marking tickets `Ready` inside this skill.
 - Hiding unresolved unknowns instead of recording them.
 - Mixing multiple ticket types into one ticket.
+- Classifying capability/contract changes as `Refactoring` only because there is no immediate UI change.
+- Grouping dependency-linked tickets into the same wave by implementation phase labels.
 - Skipping codebase exploration and guessing in-scope targets.
 - Asking multi-part questions in one turn.
 
@@ -171,5 +200,6 @@ This skill only writes `Provisional`.
 - [ ] Initial set gate passes.
 - [ ] All ticket statuses are `Provisional`.
 - [ ] Dependency graph and wave index are present.
+- [ ] Wave assignments satisfy `wave(t) > wave(dep)` for all dependencies.
 - [ ] Open questions are fully classified.
 - [ ] Artifact saved to `docs/tickets/`.

@@ -28,6 +28,8 @@ describe("skill content contracts", () => {
     expect(body).toContain("`Spec Detail Level`");
     expect(body).toContain("Wave 1 tickets: `Full`");
     expect(body).toContain("Wave 2+ tickets: `Lean`");
+    expect(body).toContain("`wave(t) = 1 + max(wave(dep))`");
+    expect(body).toContain("`wave(t) > wave(dep)`");
     expect(body).toContain("This skill only writes `Provisional`.");
   });
 
@@ -35,5 +37,7 @@ describe("skill content contracts", () => {
     const body = read("skills/ticketing/references/ticket-template.md");
     expect(body).toContain("Spec Detail Level");
     expect(body).toContain("Lean Fields (only for Lean)");
+    expect(body).toContain("`wave(t) = 1 + max(wave(dep))`");
+    expect(body).toContain("`wave(t) > wave(dep)`");
   });
 });
