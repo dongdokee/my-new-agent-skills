@@ -4,3 +4,4 @@ command: true
 command_name: ticket
 include:
   - SKILL.md
+  - references/
