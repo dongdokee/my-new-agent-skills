@@ -10,6 +10,7 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 
 | Skill | Description |
 |-------|-------------|
+| `auditing-behaviors` | Behavior-contract audit workflow: User Story/Acceptance Criteria/User Journey extraction + test/entry-point mapping + gap tracking in `docs/behavior-contract.md` |
 | `ticketing` | Ticket-first workflow: request decomposition → splitting-criteria-based ticketing → quality-attribute-governed spec authoring → approval-gated artifact |
 | `researching` | Unified research workflow: intent discovery → codebase exploration → design synthesis → ticket authoring |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
