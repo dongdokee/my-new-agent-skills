@@ -10,7 +10,7 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 
 | Skill | Description |
 |-------|-------------|
-| `ticketing` | Ticket-first workflow: request decomposition → requirement concretization → ticket approval → implementation plan approval |
+| `ticketing` | Ticket-first workflow: request decomposition → splitting-criteria-based ticketing → quality-attribute-governed spec authoring → approval-gated artifact |
 | `researching` | Unified research workflow: intent discovery → codebase exploration → design synthesis → ticket authoring |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
 
