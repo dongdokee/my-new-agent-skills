@@ -9,90 +9,80 @@ description: Use when starting feature work that needs isolation from current wo
 
 Git worktrees create isolated workspaces sharing the same repository, allowing work on multiple branches simultaneously without switching.
 
-**Core principle:** Systematic directory selection + safety verification = reliable isolation.
+**Core principle:** Single directory policy + safety verification = reliable isolation.
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
 
-## Directory Selection Process
+## Directory Policy
 
-Follow this priority order:
+Always use `.worktrees/` at the repository root.
 
-### 1. Check Existing Directories
-
-```bash
-# Check in priority order
-ls -d .worktrees 2>/dev/null     # Preferred (hidden)
-ls -d worktrees 2>/dev/null      # Alternative
-```
-
-**If found:** Use that directory. If both exist, `.worktrees` wins.
-
-### 2. Check {{tool.project_config}}
-
-```bash
-grep -i "worktree.*director" {{tool.project_config}} 2>/dev/null
-```
-
-**If preference specified:** Use it without asking.
-
-### 3. Ask User
-
-If no directory exists and no {{tool.project_config}} preference:
-
-```
-No worktree directory found. Where should I create worktrees?
-
-1. .worktrees/ (project-local, hidden)
-2. ~/.worktrees/<project-name>/ (global location)
-
-Which would you prefer?
-```
+Do not use:
+- `worktrees/`
+- `~/.worktrees/...`
+- directory preferences from `{{tool.project_config}}`
 
 ## Safety Verification
 
-### For Project-Local Directories (.worktrees or worktrees)
-
-**MUST verify directory is ignored before creating worktree:**
+**MUST verify `.worktrees/` is ignored before creating worktree:**
 
 ```bash
-# Check if directory is ignored (respects local, global, and system gitignore)
-git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
+git check-ignore -q .worktrees
 ```
 
 **If NOT ignored:**
 
-Per Jesse's rule "Fix broken things immediately":
-1. Add appropriate line to .gitignore
-2. Commit the change
-3. Proceed with worktree creation
+1. Ask the user one question{{tool.ask_user}}:
+
+```text
+`.worktrees/` is not ignored yet. Where should I add it?
+
+1. `.git/info/exclude` (local-only, not committed)
+2. `.gitignore` (shared, committed)
+
+Which should I use?
+```
+
+2. Add `.worktrees/` based on the user's choice.
+
+If user chooses `.git/info/exclude`:
+
+```bash
+touch .git/info/exclude
+grep -qxF ".worktrees/" .git/info/exclude || printf ".worktrees/\n" >> .git/info/exclude
+```
+
+If user chooses `.gitignore`:
+
+```bash
+touch .gitignore
+grep -qxF ".worktrees/" .gitignore || printf ".worktrees/\n" >> .gitignore
+git add .gitignore
+git commit -m "chore: ignore .worktrees directory"
+```
+
+3. Re-verify (required):
+
+```bash
+git check-ignore -q .worktrees
+```
+
+If re-verification fails, stop and report before creating any worktree.
 
 **Why critical:** Prevents accidentally committing worktree contents to repository.
 
-### For Global Directory (~/.worktrees)
-
-No .gitignore verification needed - outside project entirely.
-
 ## Creation Steps
 
-### 1. Detect Project Name
+### 1. Prepare Directory and Path
 
 ```bash
-project=$(basename "$(git rev-parse --show-toplevel)")
+mkdir -p .worktrees
+path=".worktrees/$BRANCH_NAME"
 ```
 
 ### 2. Create Worktree
 
 ```bash
-# Determine full path
-case $LOCATION in
-  .worktrees|worktrees)
-    path="$LOCATION/$BRANCH_NAME"
-    ;;
-  ~/.worktrees/*)
-    path="~/.worktrees/$project/$BRANCH_NAME"
-    ;;
-esac
-
 # Create worktree with new branch
 git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
@@ -145,11 +135,10 @@ Ready to implement <feature-name>
 
 | Situation | Action |
 |-----------|--------|
-| `.worktrees/` exists | Use it (verify ignored) |
-| `worktrees/` exists | Use it (verify ignored) |
-| Both exist | Use `.worktrees/` |
-| Neither exists | Check {{tool.project_config}} → Ask user |
-| Directory not ignored | Add to .gitignore + commit |
+| Start worktree setup | Use `.worktrees/` only |
+| `.worktrees/` not ignored | Ask user{{tool.ask_user}}: `.git/info/exclude` vs `.gitignore` |
+| User chose `.git/info/exclude` | Add line there, then re-verify |
+| User chose `.gitignore` | Add line + commit, then re-verify |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
 
@@ -158,12 +147,12 @@ Ready to implement <feature-name>
 ### Skipping ignore verification
 
 - **Problem:** Worktree contents get tracked, pollute git status
-- **Fix:** Always use `git check-ignore` before creating project-local worktree
+- **Fix:** Always run `git check-ignore -q .worktrees` before creating worktree
 
-### Assuming directory location
+### Using unsupported directory locations
 
 - **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Follow priority: existing > {{tool.project_config}} > ask
+- **Fix:** Always create worktrees under `.worktrees/` only
 
 ### Proceeding with failing tests
 
@@ -180,8 +169,11 @@ Ready to implement <feature-name>
 ```
 You: I'm using the using-git-worktrees skill to set up an isolated workspace.
 
-[Check .worktrees/ - exists]
-[Verify ignored - git check-ignore confirms .worktrees/ is ignored]
+[Run git check-ignore -q .worktrees - not ignored]
+[Ask user: add to .git/info/exclude or .gitignore]
+[User chose .gitignore]
+[Add .worktrees/ to .gitignore and commit]
+[Re-verify: git check-ignore -q .worktrees]
 [Create worktree: git worktree add .worktrees/auth -b feature/auth]
 [Run npm install]
 [Run npm test - 47 passing]
@@ -194,15 +186,17 @@ Ready to implement auth feature
 ## Red Flags
 
 **Never:**
-- Create worktree without verifying it's ignored (project-local)
+- Create worktree without verifying `.worktrees/` is ignored
 - Skip baseline test verification
 - Proceed with failing tests without asking
-- Assume directory location when ambiguous
-- Skip {{tool.project_config}} check
+- Use `worktrees/` or `~/.worktrees/...`
+- Skip re-verification after adding ignore rule
 
 **Always:**
-- Follow directory priority: existing > {{tool.project_config}} > ask
-- Verify directory is ignored for project-local
+- Use `.worktrees/` as the only worktree location
+- Verify `.worktrees/` ignore status before creation
+- Ask user{{tool.ask_user}} where to add ignore rule when missing
+- Re-verify ignore status after adding the rule
 - Auto-detect and run project setup
 - Verify clean test baseline
 
@@ -216,4 +210,3 @@ Ready to implement auth feature
 
 **Pairs with:**
 - **finishing-a-development-branch** - REQUIRED for cleanup after work complete
-
