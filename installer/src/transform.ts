@@ -56,13 +56,6 @@ export function updateGeminiSettings(settingsPath: string): string {
     existing = JSON.parse(readFileSync(settingsPath, "utf-8"));
   }
 
-  // Deep-merge: agents.overrides.codebase_investigator.enabled = false
-  if (!existing.agents || typeof existing.agents !== "object") existing.agents = {};
-  const agents = existing.agents as Record<string, unknown>;
-  if (!agents.overrides || typeof agents.overrides !== "object") agents.overrides = {};
-  const overrides = agents.overrides as Record<string, unknown>;
-  overrides.codebase_investigator = { enabled: false };
-
   // Deep-merge: context.fileName includes shared context files.
   if (!existing.context || typeof existing.context !== "object") existing.context = {};
   const context = existing.context as Record<string, unknown>;

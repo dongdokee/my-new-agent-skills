@@ -77,7 +77,7 @@ export function installAgent(agent: DiscoveredAgent, platformId: string, project
     writeOutput(outputPath, buildMarkdownAgent(agent.name, agent.manifest.description, platformId, platformConfig, body));
     results.push({ type: "agent", name: agent.name, outputPath });
 
-    // Post-install side-effect for Gemini + code-explorer
+    // Post-install side-effect for Gemini + code-explorer: shared context defaults
     if (platformId === "gemini" && agent.name === "code-explorer") {
       const settingsPath = resolve(projectRoot, ".gemini/settings.json");
       writeOutput(settingsPath, updateGeminiSettings(settingsPath));

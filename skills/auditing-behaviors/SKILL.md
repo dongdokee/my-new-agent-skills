@@ -15,9 +15,13 @@ document updated at `docs/behavior-contract.md`.
 
 Build and maintain one behavior contract from repository evidence:
 
-- User Stories + entry points
+- User Stories + boundary entry points (inbound and outbound)
 - Acceptance Criteria + acceptance test mapping
 - User Journeys + E2E test mapping
+
+Treat repository layout as an implementation detail: first identify one
+integrated behavior system (all modules/packages/components that participate in
+the same user-facing flow), then audit behavior using that system's boundaries.
 
 This skill has two run modes:
 
@@ -29,6 +33,17 @@ This skill has two run modes:
 1. Do not claim a story, criterion, or journey without evidence.
 2. Missing evidence must be recorded explicitly as `None` or `Insufficient evidence`.
 3. Keep exactly one SSOT contract file under `docs/`: `docs/behavior-contract.md`.
+
+## Boundary Terms
+
+- Inbound boundary entry points: routes, UI handlers, CLI commands, API
+  endpoints, webhook/event triggers
+- Outbound boundary entry points: database/persistence operations, external API
+  clients, queue/event publish-consume paths, storage adapters, third-party
+  integrations
+- Story `Entry Points` value format: `IN: <inbound-list> || OUT:
+  <outbound-list>`
+  - Use `None` for a missing side (example: `IN: route:/health || OUT: None`)
 
 ## When to Use
 
@@ -68,6 +83,12 @@ Select one mode before scanning:
 - `bootstrap`: no prior contract, or contract is stale/invalid
 - `delta-audit`: contract exists and you only need re-validation for changed behavior
 
+Before scanning, define audit scope with repository-layout-agnostic rules:
+
+1. Identify all modules/packages/components participating in each user-facing flow.
+2. Treat those parts as one integrated behavior system for auditing.
+3. Build a boundary map using the `Boundary Terms` above.
+
 For `delta-audit`, determine scope with deterministic rules:
 
 1. Determine a base revision:
@@ -76,7 +97,7 @@ For `delta-audit`, determine scope with deterministic rules:
 2. Build changed file set from `git diff --name-only <base>...HEAD`.
 3. Classify impacted files into:
    - behavior docs (`README`, `docs/**`)
-   - entry points (routes/UI handlers/CLI/API/webhook trigger files)
+   - boundary entry points (inbound/outbound)
    - tests (`e2e/**`, integration tests, acceptance-like suites)
 4. Re-audit only impacted stories/AC/journeys plus directly linked rows.
 5. Fallback to `bootstrap` if:
@@ -92,15 +113,20 @@ For `delta-audit`, determine scope with deterministic rules:
 2. Read tests second:
    - prioritize E2E/integration tests for acceptance evidence
    - if missing, record `Acceptance test: None` or `E2E test: None`
-3. Trace entry points third:
-   - routes, menus/buttons, CLI commands, API endpoints, webhooks/triggers
-   - follow UI event or trigger -> state change -> domain/repository/external integration
+3. Trace boundary entry points third:
+   - identify inbound and outbound boundary entry points using `Boundary Terms`
+   - follow inbound trigger -> state change -> domain/service -> outbound effects
 
 ### Step 3: Dispatch subagents in parallel
 
-Launch all of the following in parallel:
+Launch required subagents in parallel with a strict concurrency cap:
 
-- `story-extractor`: extract stories + entry points + evidence
+- At most 3 subagents may run at the same time.
+- If additional passes are needed, run them in later waves after an active subagent completes.
+
+Required subagents:
+
+- `story-extractor`: extract stories + boundary entry points + evidence
 - `ac-test-mapper`: map acceptance criteria to acceptance/integration tests
 - `journey-e2e-mapper`: map journeys to E2E tests and completion conditions
 
@@ -133,7 +159,7 @@ Render all sections in English only.
 
 Minimum row requirements:
 
-- Every story row must include `Entry Points` or `None`.
+- Every story row must include `Entry Points` in format `IN: <...> || OUT: <...>`, or `None` when no boundary evidence exists.
 - Every AC row must include `Acceptance test` link or `None`.
 - Every journey row must include `E2E test` link or `None`.
 - Every unresolved or missing item must be listed in `Gap Backlog`.
@@ -172,9 +198,10 @@ Append one `Change Log` entry with:
 
 - [ ] Used docs as the first evidence source
 - [ ] Used tests as primary AC/Journey evidence source
-- [ ] Traced entry points through call chains
-- [ ] Ran all three subagents in parallel
+- [ ] Traced inbound and outbound boundary entry points through call chains
+- [ ] Ran required subagents in parallel within cap (`<=3`)
+- [ ] Story rows used `Entry Points` format (`IN: <...> || OUT: <...>`) or `None`
 - [ ] Updated only `docs/behavior-contract.md` as behavior SSOT
-- [ ] Explicitly wrote `None` for missing test/entry-point links
+- [ ] Explicitly wrote `None` for missing test/entry-point/boundary links
 - [ ] Added all uncertain items to `Gap Backlog`
 - [ ] Added a `Change Log` entry

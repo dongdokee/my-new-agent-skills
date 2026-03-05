@@ -334,15 +334,15 @@ describe("installer integration", () => {
     );
   });
 
-  // Side-effect test: code-explorer for Gemini disables codebase_investigator
-  it("code-explorer for Gemini disables codebase_investigator", () => {
+  // Side-effect test: code-explorer for Gemini updates shared context defaults only
+  it("code-explorer for Gemini updates settings without injecting codebase_investigator override", () => {
     const explorer = agents.find((a) => a.name === "code-explorer");
     if (!explorer) return;
     const results = installAgent(explorer, "gemini", TEST_ROOT);
     const configResult = results.find((r) => r.type === "config");
     expect(configResult).toBeDefined();
     const settings = JSON.parse(readFileSync(configResult!.outputPath, "utf-8"));
-    expect(settings.agents.overrides.codebase_investigator.enabled).toBe(false);
+    expect(settings.agents?.overrides?.codebase_investigator).toBeUndefined();
     expect(settings.context.fileName).toEqual(["AGENTS.md", "CONTEXT.md", "GEMINI.md"]);
   });
 
@@ -360,6 +360,29 @@ describe("installer integration", () => {
 
     installAgent(explorer, "gemini", TEST_ROOT);
     const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
+    expect(settings.context.fileName).toEqual(["README.md", "AGENTS.md", "CONTEXT.md", "GEMINI.md"]);
+  });
+
+  it("code-explorer for Gemini keeps existing codebase_investigator override untouched", () => {
+    const explorer = agents.find((a) => a.name === "code-explorer");
+    if (!explorer) return;
+
+    const settingsPath = resolve(TEST_ROOT, ".gemini/settings.json");
+    mkdirSync(resolve(TEST_ROOT, ".gemini"), { recursive: true });
+    writeFileSync(settingsPath, JSON.stringify({
+      agents: {
+        overrides: {
+          codebase_investigator: { enabled: true },
+        },
+      },
+      context: {
+        fileName: ["README.md"],
+      },
+    }, null, 2));
+
+    installAgent(explorer, "gemini", TEST_ROOT);
+    const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
+    expect(settings.agents.overrides.codebase_investigator.enabled).toBe(true);
     expect(settings.context.fileName).toEqual(["README.md", "AGENTS.md", "CONTEXT.md", "GEMINI.md"]);
   });
 });

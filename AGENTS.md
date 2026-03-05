@@ -40,7 +40,7 @@ agents/<name>.md (shared)
 
 - `config.ts` — loads `platforms.yaml` (tool mappings, output paths, `agent_tool_map`, `profiles`) and parses `skill.yaml` manifests, `SKILL.md` frontmatter, + agent frontmatter; `resolveAgentConfig()` translates profile+tools → per-platform config
 - `scanner.ts` — walks `skills/` to find installable skills (by `skill.yaml` presence) and agents (from manifest `agents:` field); also scans top-level `agents/` for shared agents not tied to any skill
-- `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML agent, Codex config.toml registration, Gemini settings.json patching, Gemini command TOML generation)
+- `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML agent, Codex config.toml registration, Gemini settings.json context defaults patching, Gemini command TOML generation)
 - `installer.ts` — orchestrates transform → write → copy references
 - `prompts.ts` — 4-step interactive TUI (platform → skills → agents → confirm)
 - `index.ts` — CLI entry point
@@ -107,7 +107,7 @@ Inter-skill coupling is intentionally minimal; prefer keeping each skill indepen
 - If a platform has no equivalent tool, use empty-string mapping in `installer/platforms.yaml` (for example, Codex) so the phrase remains natural without placeholder residue.
 - Mappings are defined in `installer/platforms.yaml`; every new `{{tool.<key>}}` used in source content must be added to each relevant platform or explicitly documented as intentionally missing.
 - Codex agents require two files: the agent TOML + a `[agents.<name>]` entry in `.codex/config.toml`. The installer handles both.
-- Installing `code-explorer` for Gemini automatically patches `.gemini/settings.json` to set `agents.overrides.codebase_investigator.enabled: false`, suppressing the built-in Gemini agent that overlaps in role. The installer handles this side-effect (mirrors the Codex config.toml pattern).
+- Installing `code-explorer` for Gemini automatically patches `.gemini/settings.json` to merge default `context.fileName` entries (`AGENTS.md`, `CONTEXT.md`, `GEMINI.md`). The installer does not modify `agents.overrides.codebase_investigator`.
 - Setting `command: true` in `skill.yaml` causes the installer to generate `.gemini/commands/<command_name>.toml` when installing for Gemini. `command_name` is required when `command: true` (no fallback to skill name). Operates independently of `install_as`; omitting `command` defaults to `false`. The output path is controlled by `command_path` in the gemini section of `platforms.yaml`.
 - Install/output root is always `process.cwd()`. Skill/agent scanning still resolves source root in `installer/src/index.ts` (cwd with repo layout, else installer script root), but all `.claude/.gemini/.codex` outputs are written under current working directory.
 - `installer/src/` is the source of truth. `installer/dist/` is a local build artifact and may be stale until `npm run build` is run.
