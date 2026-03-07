@@ -181,8 +181,21 @@ cmd_update() {
 
     local changed=0
     for pair in "$@"; do
+        if [[ "$pair" != *=* ]]; then
+            echo "Error: expected field=value, got: '$pair'. Example: status=in_progress" >&2
+            rm -f "$tmp"
+            exit 1
+        fi
+
         local field="${pair%%=*}"
         local value="${pair#*=}"
+
+        local valid_statuses="pending in_progress completed deleted"
+        if [[ "$field" == "status" && " $valid_statuses " != *" $value "* ]]; then
+            echo "Error: invalid status '$value'. Valid values: $valid_statuses" >&2
+            rm -f "$tmp"
+            exit 1
+        fi
 
         if [[ "$field" == "status" && "$value" == "deleted" ]]; then
             # Remove entire section
