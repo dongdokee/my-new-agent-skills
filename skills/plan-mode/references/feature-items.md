@@ -1,12 +1,70 @@
-# Items in the Plan File for `Feature` Type
+# Plan: `<title>`
 
-## 1) Context (3 lines)
+## Context
 
-- **Objective:** What capability changes?
-- **Necessity:** Why now?
-- **Audience:** Who benefits first?
+- **Objective:** <WHAT is the objective?>
+- **Necessity:** <WHY now?>
+- **Audience:** <WHO benefits first?>
+- **Expected Output:** <WHAT success looks like in business?>
 
-## 2) Scope
+## Specifications
+
+### Requirements
+
+<!-- if requirements can be described as user story and acceptance criteria -->
+- US-01: `As a <role>, I can <capability> so that <receive benefit>`
+  - AC-01:
+  ```
+  Feature: <feature>
+  Scenario: <scenario>
+    Given: <given>
+    When: <when>
+    Then: <then>
+  ```
+- US-02: ...
+
+<!--
+otherwise, use Easy Approach to Requirements Syntax (EARS):
+- Ubiquitous (always true): `R1: The <system> shall <response>.`
+- State-driven: `R2: While <precondition(s)>, the <system> shall <response>.`
+- Event-driven: `R3: When <trigger>, the <system> shall <response>.`
+- Optional feature/scope: `R4: Where <feature/scope applies>, the <system> shall <response>.`
+- Unwanted behavior: `R5: If <unwanted condition>, then the <system> shall <mitigation>.`
+- Complex: `R6: While <precondition(s)>, when <trigger>, the <system> shall <response>.`
+-->
+
+- R1: <requirement in EARS>
+- R2: ...
+  
+### Success Criteria
+
+<!--
+How to check success of meeting requirements?:
+- acceptance criteria: write acceptance test
+
+아 머리아파 ㅋㅋ
+-->
+
+- 
+
+- Use binary checklist items with IDs (`SC1`, `SC2`, ...).
+- Each `SC` must reference one or more requirement IDs.
+
+Example:
+- `SC1`: [ ] User can request export for a selected date range (`FR1`).
+
+### Assumptions
+
+- Assumption: <falsifiable statement> | If wrong: <consequence and mitigation>
+- Assumption: <falsifiable statement> | If wrong: <consequence and mitigation>
+
+### Risks
+
+### Constraints
+
+### Architectural Decision Records
+
+## Implementation Plan
 
 ### In-Scope
 
@@ -17,20 +75,7 @@
 
 - List explicit exclusions to prevent scope creep.
 
-## 3) Requirements
-
-- Write testable requirements with IDs (`FR1`, `FR2`, ...).
-- Add non-functional requirements only if relevant (`NFR1`, ...).
-
-## 4) Success Criteria
-
-- Use binary checklist items with IDs (`SC1`, `SC2`, ...).
-- Each `SC` must reference one or more requirement IDs.
-
-Example:
-- `SC1`: [ ] User can request export for a selected date range (`FR1`).
-
-## 5) Decision-Ready Implementation Plan
+## Decision-Ready Implementation Plan
 
 For each step, keep only these fields:
 - **Step:** action + target
@@ -39,35 +84,10 @@ For each step, keep only these fields:
 
 Keep steps concrete enough that implementation can start immediately.
 
-## 6) Verification
+## Verification
 
 - Map every `SC` to at least one reproducible check.
 - Checks can be test command, automated test, or clear manual procedure.
 
 Example:
 - `SC1` -> integration test `export_controller_spec`.
-
-## 7) Open Questions
-
-### Blocking
-
-- Questions that must be resolved before implementation.
-
-### Non-blocking
-
-- Questions that can be resolved during implementation.
-
-## Quality Gate
-
-- [ ] In-Scope and Out-of-Scope do not conflict.
-- [ ] At least one success criterion exist.
-- [ ] Every success criterion maps to verification.
-- [ ] Implementation steps are concrete and executable.
-- [ ] Blocking questions are resolved or explicitly accepted.
-
-## Optional Items
-
-Add extra sections (`Assumptions`, `Risks`, `Constraints`, `ADRs`) only if one of these is true:
-- The feature has architectural trade-offs.
-- There is notable rollout or reliability risk.
-- Major assumptions can change design choices.
