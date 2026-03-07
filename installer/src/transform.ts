@@ -74,18 +74,18 @@ export function mergeGeminiHooks(settingsPath: string, snippetPath: string): str
   }
 
   const snippet = JSON.parse(readFileSync(snippetPath, "utf-8")) as {
-    hooks?: Array<{ name: string; [k: string]: unknown }>;
+    hooks?: Record<string, unknown[]>;
   };
-  const snippetHooks = snippet.hooks ?? [];
+  const snippetHooks = snippet.hooks ?? {};
 
-  if (!Array.isArray(existing.hooks)) existing.hooks = [];
-  const existingHooks = existing.hooks as Array<{ name: string; [k: string]: unknown }>;
+  if (!existing.hooks || typeof existing.hooks !== "object" || Array.isArray(existing.hooks)) {
+    existing.hooks = {};
+  }
+  const existingHooks = existing.hooks as Record<string, unknown[]>;
 
-  // snippet 항목이 기존 동명 항목을 덮어씀 (업데이트 지원)
-  for (const h of snippetHooks) {
-    const idx = existingHooks.findIndex((e) => e.name === h.name);
-    if (idx >= 0) existingHooks[idx] = h;
-    else existingHooks.push(h);
+  // snippet의 각 이벤트 key를 기존에 덮어씀 (idempotent 재설치 지원)
+  for (const [event, matchers] of Object.entries(snippetHooks)) {
+    existingHooks[event] = matchers;
   }
 
   return JSON.stringify(existing, null, 2) + "\n";

@@ -389,10 +389,13 @@ describe("installer integration", () => {
       const settingsPath = resolve(TEST_ROOT, ".gemini/settings.json");
       expect(existsSync(settingsPath)).toBe(true);
       const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
-      expect(Array.isArray(settings.hooks)).toBe(true);
-      const hook = settings.hooks.find((h: { name: string }) => h.name === "task-context");
+      // hooks는 이벤트명을 key로 갖는 object 형식
+      expect(typeof settings.hooks).toBe("object");
+      expect(Array.isArray(settings.hooks)).toBe(false);
+      expect(Array.isArray(settings.hooks["BeforeModel"])).toBe(true);
+      const innerHooks = settings.hooks["BeforeModel"][0].hooks as Array<{ name: string }>;
+      const hook = innerHooks.find((h) => h.name === "task-context");
       expect(hook).toBeDefined();
-      expect(hook.event).toBe("BeforeModel");
     });
 
     it("deduplicates hook entries by name on repeated install", () => {
@@ -403,8 +406,9 @@ describe("installer integration", () => {
 
       const settingsPath = resolve(TEST_ROOT, ".gemini/settings.json");
       const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
-      const taskContextHooks = settings.hooks.filter((h: { name: string }) => h.name === "task-context");
-      expect(taskContextHooks).toHaveLength(1);
+      // BeforeModel 이벤트 key가 중복 없이 하나만 존재해야 함
+      expect(Array.isArray(settings.hooks["BeforeModel"])).toBe(true);
+      expect(settings.hooks["BeforeModel"]).toHaveLength(1);
     });
   });
 
