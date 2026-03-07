@@ -21,14 +21,21 @@ Status values: `pending` | `in_progress` | `completed` | `deleted`
 ### Step 2. Call task-manager.sh
 
 ```bash
-# Single field
-bash .gemini/hooks/task-manager.sh update <id> status=in_progress
+# Start a task (set status to in_progress)
+bash .gemini/hooks/task-manager.sh start <id>
 
-# Multiple fields
-bash .gemini/hooks/task-manager.sh update <id> status=completed subject="New title"
+# Complete a task (set status to completed)
+bash .gemini/hooks/task-manager.sh done <id>
 
-# Delete task (removes section from file)
-bash .gemini/hooks/task-manager.sh update <id> status=deleted
+# Delete a task (removes section from file)
+bash .gemini/hooks/task-manager.sh delete <id>
+
+# Update status using shorthand
+bash .gemini/hooks/task-manager.sh update <id> pending
+
+# Update other fields or multiple fields
+bash .gemini/hooks/task-manager.sh update <id> subject="New title" description="New desc"
+bash .gemini/hooks/task-manager.sh update <id> in_progress subject="Started work"
 ```
 
 ### Step 3. Report result

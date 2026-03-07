@@ -7,7 +7,10 @@
 #   create "<subject>" "<description>" "<activeform>" "<blockedby>" "<blocks>"
 #   get <id>
 #   list [status]
-#   update <id> field=value [field=value ...]
+#   start <id>                         (alias for update <id> in_progress)
+#   done <id>                          (alias for update <id> completed)
+#   delete <id>                        (alias for update <id> deleted)
+#   update <id> [field=]value [field=value ...]
 #   output <id> [--wait]
 #   stop <id|pid>
 #
@@ -156,7 +159,7 @@ cmd_list() {
 }
 
 # ---------------------------------------------------------------------------
-# update <id> field=value [field=value ...]
+# update <id> [field=]value [field=value ...]
 # ---------------------------------------------------------------------------
 cmd_update() {
     local id="${1:-}"
@@ -181,25 +184,27 @@ cmd_update() {
 
     local changed=0
     for pair in "$@"; do
-        if [[ "$pair" != *=* ]]; then
-            echo "Error: expected field=value, got: '$pair'. Example: status=in_progress" >&2
-            rm -f "$tmp"
-            exit 1
-        fi
-
-        local field="${pair%%=*}"
-        local value="${pair#*=}"
-
-        local valid_statuses="pending in_progress completed deleted"
-        if [[ "$field" == "status" && " $valid_statuses " != *" $value "* ]]; then
-            echo "Error: invalid status '$value'. Valid values: $valid_statuses" >&2
-            rm -f "$tmp"
-            exit 1
+        local field value
+        if [[ "$pair" == *=* ]]; then
+            field="${pair%%=*}"
+            value="${pair#*=}"
+        else
+            # Shorthand: if it matches a valid status, treat as status=value
+            local valid_statuses="pending in_progress completed deleted"
+            if [[ " $valid_statuses " == *" $pair "* ]]; then
+                field="status"
+                value="$pair"
+            else
+                echo "Error: expected field=value or a valid status, got: '$pair'" >&2
+                rm -f "$tmp"
+                exit 1
+            fi
         fi
 
         if [[ "$field" == "status" && "$value" == "deleted" ]]; then
             # Remove entire section
             awk -v id="$id" '
+                BEGIN { skip = 0 }
                 /^## #/ { skip = ($0 == "## #"id) }
                 !skip { print }
             ' "$tmp" > "${tmp}.new"
@@ -315,11 +320,14 @@ case "${1:-}" in
     create) shift; cmd_create "$@" ;;
     get)    shift; cmd_get    "$@" ;;
     list)   shift; cmd_list   "$@" ;;
+    start)  shift; cmd_update "${1:-}" "in_progress" ;;
+    done)   shift; cmd_update "${1:-}" "completed" ;;
+    delete) shift; cmd_update "${1:-}" "deleted" ;;
     update) shift; cmd_update "$@" ;;
     output) shift; cmd_output "$@" ;;
     stop)   shift; cmd_stop   "$@" ;;
     *)
-        echo "Usage: task-manager.sh <create|get|list|update|output|stop> [args...]" >&2
+        echo "Usage: task-manager.sh <create|get|list|start|done|delete|update|output|stop> [args...]" >&2
         exit 1
         ;;
 esac
