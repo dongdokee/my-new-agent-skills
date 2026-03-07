@@ -363,6 +363,51 @@ describe("installer integration", () => {
     expect(settings.context.fileName).toEqual(["README.md", "AGENTS.md", "CONTEXT.md", "GEMINI.md"]);
   });
 
+  describe("Gemini hook installation (task-tools)", () => {
+    const scanResult = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+
+    it("copies .sh hook files to .gemini/hooks/", () => {
+      const taskToolsSkill = scanResult.skills.find((s) => s.name === "task-tools");
+      if (!taskToolsSkill) return;
+      const results = installSkill(taskToolsSkill, "gemini", TEST_ROOT);
+
+      const managerResult = results.find((r) => r.name === "task-manager.sh");
+      const injectResult  = results.find((r) => r.name === "inject-tasks.sh");
+
+      expect(managerResult).toBeDefined();
+      expect(injectResult).toBeDefined();
+      expect(existsSync(managerResult!.outputPath)).toBe(true);
+      expect(existsSync(injectResult!.outputPath)).toBe(true);
+      expect(managerResult!.outputPath).toContain(".gemini/hooks");
+    });
+
+    it("merges hook entry into .gemini/settings.json", () => {
+      const taskToolsSkill = scanResult.skills.find((s) => s.name === "task-tools");
+      if (!taskToolsSkill) return;
+      installSkill(taskToolsSkill, "gemini", TEST_ROOT);
+
+      const settingsPath = resolve(TEST_ROOT, ".gemini/settings.json");
+      expect(existsSync(settingsPath)).toBe(true);
+      const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
+      expect(Array.isArray(settings.hooks)).toBe(true);
+      const hook = settings.hooks.find((h: { name: string }) => h.name === "task-context");
+      expect(hook).toBeDefined();
+      expect(hook.event).toBe("BeforeModel");
+    });
+
+    it("deduplicates hook entries by name on repeated install", () => {
+      const taskToolsSkill = scanResult.skills.find((s) => s.name === "task-tools");
+      if (!taskToolsSkill) return;
+      installSkill(taskToolsSkill, "gemini", TEST_ROOT);
+      installSkill(taskToolsSkill, "gemini", TEST_ROOT);
+
+      const settingsPath = resolve(TEST_ROOT, ".gemini/settings.json");
+      const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
+      const taskContextHooks = settings.hooks.filter((h: { name: string }) => h.name === "task-context");
+      expect(taskContextHooks).toHaveLength(1);
+    });
+  });
+
   it("code-explorer for Gemini keeps existing codebase_investigator override untouched", () => {
     const explorer = agents.find((a) => a.name === "code-explorer");
     if (!explorer) return;

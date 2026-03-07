@@ -67,6 +67,30 @@ export function updateGeminiSettings(settingsPath: string): string {
   return JSON.stringify(existing, null, 2) + "\n";
 }
 
+export function mergeGeminiHooks(settingsPath: string, snippetPath: string): string {
+  let existing: Record<string, unknown> = {};
+  if (existsSync(settingsPath)) {
+    existing = JSON.parse(readFileSync(settingsPath, "utf-8"));
+  }
+
+  const snippet = JSON.parse(readFileSync(snippetPath, "utf-8")) as {
+    hooks?: Array<{ name: string; [k: string]: unknown }>;
+  };
+  const snippetHooks = snippet.hooks ?? [];
+
+  if (!Array.isArray(existing.hooks)) existing.hooks = [];
+  const existingHooks = existing.hooks as Array<{ name: string; [k: string]: unknown }>;
+
+  // snippet 항목이 기존 동명 항목을 덮어씀 (업데이트 지원)
+  for (const h of snippetHooks) {
+    const idx = existingHooks.findIndex((e) => e.name === h.name);
+    if (idx >= 0) existingHooks[idx] = h;
+    else existingHooks.push(h);
+  }
+
+  return JSON.stringify(existing, null, 2) + "\n";
+}
+
 export function buildGeminiCommand(skillName: string, description: string): string {
   const obj: TOML.JsonMap = {
     description,

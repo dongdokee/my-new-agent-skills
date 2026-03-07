@@ -41,6 +41,7 @@ export interface SkillManifest {
   agents?: string[];
   command?: boolean;
   command_name?: string;
+  hooks?: string[];   // Gemini 전용: 설치할 hook 파일 상대 경로 목록
 }
 
 export interface SkillFrontmatter {

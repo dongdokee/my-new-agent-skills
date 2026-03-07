@@ -1,8 +1,8 @@
 ---
 name: capturing-intent-before-researching
 description: >-
-  Use this skill first in Plan Mode before any codebase research to decompose
-  user requests into explicit sub-intents and categorize.
+  Use this skill as the first step in every Plan Mode turn before any codebase
+  research to decompose user requests into explicit sub-intents and categorize.
 ---
 
 # Capture Intent Before Researching
@@ -21,23 +21,24 @@ planning until decomposition and categorization are complete.
 
 ## Decomposition Guidance
 
-Decompose only what the user explicitly requested into sub-intent.
+Split only what the user explicitly requested.
 
 Preserve intent and key terms from the user request. Normalize wording only
 when it improves clarity without changing meaning.
 
 Decomposition criteria:
 
-- Keep Each sub-intent focused on one actionable and verifiable goal
+- Keep each sub-intent focused on one actionable and verifiable goal.
 
 ## Intent Taxonomy
 
 Use exactly one category per sub-intent:
 
 - `Feature`: Add or change user-facing or system capability.
-- `Refactoring`: Enhance maintainability (simplification, readability, modularity)
-- `Security`: Enhance security (hardening, vulnerability reduction, access/control protection)
-- `Performance`: Enhance performance (latency, throughput, memory, CPU, scalability efficiency)
+- `Improvement`: Enhance quality. Use a subtype: `Improvement/<Subtype>`
+  - `Maintainability` (`Improvement/Maintainability`): Simplification, readability, modularity.
+  - `Security` (`Improvement/Security`): Hardening, vulnerability reduction, access/control protection.
+  - `Performance` (`Improvement/Performance`): Latency, throughput, memory, CPU, scalability efficiency.
 - `Others`: Any intent that does not fit the above categories.
 
 ## Classification Guidance
@@ -52,6 +53,8 @@ Use judgment instead of a rigid sequence:
 - Continue with research/planning after categories are stable.
 
 ## Output Contract
+
+Output language must be English.
 
 Use this structure:
 
@@ -101,7 +104,7 @@ Output:
 ```text
 Intent Breakdown
 - (Feature: Create a reporting dashboard)
-- (Performance: Improve load speed)
+- (Improvement/Performance: Improve load speed)
 ```
 
 **Example 4 (feature + others)**

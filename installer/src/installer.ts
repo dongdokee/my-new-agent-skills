@@ -1,8 +1,8 @@
-import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, chmodSync } from "node:fs";
+import { resolve, dirname, basename } from "node:path";
 import { getPlatform, loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { DiscoveredSkill, DiscoveredAgent } from "./scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings, buildGeminiCommand } from "./transform.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings, buildGeminiCommand, mergeGeminiHooks } from "./transform.js";
 
 export interface InstallResult {
   type: "skill" | "agent" | "config";
@@ -48,6 +48,25 @@ export function installSkill(skill: DiscoveredSkill, platformId: string, project
     const cmdPath = resolve(projectRoot, platform.command_path, `${commandName}.toml`);
     writeOutput(cmdPath, buildGeminiCommand(commandName, skill.description));
     results.push({ type: "config", name: `${commandName}.toml`, outputPath: cmdPath });
+  }
+
+  if (platformId === "gemini" && skill.manifest.hooks?.length) {
+    const hooksDir = resolve(projectRoot, ".gemini", "hooks");
+    mkdirSync(hooksDir, { recursive: true });
+    for (const hookRelPath of skill.manifest.hooks) {
+      const src = resolve(skill.dir, hookRelPath);
+      const name = basename(hookRelPath);
+      if (name === "settings-snippet.json") {
+        const settingsPath = resolve(projectRoot, ".gemini", "settings.json");
+        writeOutput(settingsPath, mergeGeminiHooks(settingsPath, src));
+        results.push({ type: "config", name: "settings.json", outputPath: settingsPath });
+      } else if (hookRelPath.endsWith(".sh")) {
+        const dest = resolve(hooksDir, name);
+        cpSync(src, dest);
+        chmodSync(dest, 0o755);
+        results.push({ type: "config", name, outputPath: dest });
+      }
+    }
   }
 
   return results;
