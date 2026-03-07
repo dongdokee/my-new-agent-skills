@@ -103,3 +103,43 @@ Load the appropriate items based on the sub-intents. Use these items to research
 
 **Feature:** Read `references/feature-items.md`
 **Else:** Read `references/general-items.md`
+
+## Ask Clarification Questions until All Gaps are filled
+
+**Iron Law:**
+> Do not assume. Interview the user until every blocking gap is resolved.
+
+There may be critical gaps between the request and a decision-complete plan. Do
+not proceed to design or planning while blocking gaps remain open.
+
+**Question Guidance:**
+- Keep asking clarification questions until all blocking gaps are resolved.
+- Do not ask open-ended questions. Use close-ended formats only:
+  single-selection or multiple-selection.
+- Ask one focused question at a time{{tool.ask_user}}.
+- For every question, provide a recommended option, concise reasoning, and
+  trade-offs for non-recommended options.
+
+In the following cases, ALWAYS ask clarification questions to the user.
+
+### Pattern 1. Before Research
+
+If any missing detail blocks efficient codebase research (entrypoint, target
+area, environment, or constraints), ask the user before starting research.
+
+### Pattern 2. After Research, Before Design
+
+If any missing detail blocks design decisions (requirements, scope boundaries,
+compatibility constraints, or priorities), ask the user before drafting the
+design.
+
+**Example concerns:**
+
+- Technical implementation direction
+- UI & UX concerns
+- Design trade-offs
+
+### Pattern 3. During design
+
+Always present 2-3 viable approaches with explicit trade-offs, recommend one
+approach, and ask the user to choose before finalizing the plan.
