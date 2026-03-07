@@ -1,8 +1,7 @@
 ---
-name: planning-guideline
+name: plan-mode
 description: >-
-  Provides formatting, structure, and constraints for writing implementation
-  plans. Use this skill ALWAYS when operating in Plan Mode, drafting an
+  Use this skill ALWAYS when operating in Plan Mode, drafting an
   implementation plan, or preparing to exit Plan Mode. Activates on any
   planning activity including "make a plan", "design the approach", or
   "how should we implement this".
@@ -10,46 +9,42 @@ description: >-
 
 # Planning Guideline
 
-Write decision-complete, evidence-grounded implementation plans that leave
-zero ambiguity for the implementor.
+This skill provides guidance for plan-mode.
 
-## Purpose
+## Capture Intent Before Starting Researching Codebase
 
-A plan that says "handle edge cases" or "TBD" is not a plan - it is a wish
-list. Incomplete plans cause implementors to guess, backtrack, and produce
-wrong results. This skill enforces structure and completeness so that
-every plan can be executed mechanically without further clarification.
+Start by understanding the user's intent.
 
-## When to Use
+### User's intent category
 
-- Entering Plan Mode or drafting any implementation plan
-- Responding to "make a plan", "design the approach", "how should we implement"
-- Preparing to exit Plan Mode (validate plan completeness first)
+**Feature:**
+[TBD]
 
-## When NOT to Use
+**Improvement:**
+- Maintainability (alias Refactoring)
+- Security
+- Performance
 
-- Quick bug fixes with obvious single-file changes
-- Tasks the user explicitly says to just do without planning
-- Pure Q&A or code explanation requests
+**Others:** [TBD]
 
-## Iron Laws
+### Process
 
-These three rules are non-negotiable. Violating any one of them means the
-plan is not finished.
+#### Step 1. Identify if the user's intent can be decomposed into sub-intents
 
-1. **No TBD.** Every section must contain concrete, actionable content. If
-   you cannot fill a section, investigate with {{tool.search}} and
-   {{tool.file_read}} until you can. If information is truly unavailable,
-   escalate to the user{{tool.ask_user}} - do not write "TBD".
+[TBD: Examples]
 
-2. **Decision-Complete.** Every implementation step must specify exact file
-   paths, function names, and the nature of the change. An implementor
-   must never need to make design decisions while executing the plan.
 
-3. **Evidence-Grounded.** Every claim about existing code (behavior,
-   structure, dependencies) must be verified by reading the actual source.
-   Do not rely on assumptions or memory. Use {{tool.file_discovery}} and
-   {{tool.search}} to confirm facts before writing them into the plan.
+#### Step 2: Identify what to research intensively
+
+**Feature:**
+
+
+
+## Filling the Gaps After Researching Codebase
+
+[TBD: about asking clarifying questions]
+
+
 
 ## Required Sections
 

@@ -9,6 +9,25 @@ function read(pathFromRoot: string): string {
 }
 
 describe("skill content contracts", () => {
+  it("capturing-intent-before-researching enforces baseline taxonomy and explicit-only decomposition", () => {
+    const body = read("skills/capturing-intent-before-researching/SKILL.md");
+    expect(body).toContain("`Feature`");
+    expect(body).toContain("`Improvement`");
+    expect(body).toContain("`Maintainability`");
+    expect(body).toContain("`Security`");
+    expect(body).toContain("`Performance`");
+    expect(body).toContain("`Others`");
+    expect(body).toContain("Split only what the user explicitly requested.");
+    expect(body).toContain("first step in every Plan Mode turn");
+    expect(body).not.toContain("whenever the request could contain multiple goals");
+    expect(body).toContain("Output language must be English");
+    expect(body).toContain("Improvement/<Subtype>");
+    expect(body).toContain("Improvement/Performance: Improve load speed");
+    expect(body).toContain("Create a reporting dashboard and add CSV export");
+    expect(body).toContain("Create a reporting dashboard and improve load speed");
+    expect(body).toContain("Create a reporting dashboard and write a quick-start guide");
+  });
+
   it("ticket-revalidation uses strict dependency gate wording", () => {
     const body = read("skills/ticket-revalidation/SKILL.md");
     expect(body).toContain("`Integrated` or `Closed`");
