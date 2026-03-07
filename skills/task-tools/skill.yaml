@@ -1,0 +1,3 @@
+platforms: [gemini]
+include:
+  - SKILL.md
