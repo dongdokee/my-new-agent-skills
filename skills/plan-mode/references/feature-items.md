@@ -1,75 +1,73 @@
-# Items in the Plan File for `Feature` type
+# Items in the Plan File for `Feature` Type
 
-## Context
+## 1) Context (3 lines)
 
-[TBD: summary]
+- **Objective:** What capability changes?
+- **Necessity:** Why now?
+- **Audience:** Who benefits first?
 
-- **Objective:** WHAT is the objective?
-- **Necessity:** WHY is this `feature` necessary?
-- **Audience:** WHO benefits?
+## 2) Scope
 
-## In-Scope
+### In-Scope
 
-[TBD: summary]
+- List concrete changes with clear targets.
+- Use direct verbs: Add / Modify / Remove / Create.
 
-[TBD: list] 
+### Out-of-Scope
 
-## Out-of-Scope
+- List explicit exclusions to prevent scope creep.
 
-[TBD: summary]
+## 3) Requirements
 
-[TBD: list]
+- Write testable requirements with IDs (`FR1`, `FR2`, ...).
+- Add non-functional requirements only if relevant (`NFR1`, ...).
 
-## Assumptions
+## 4) Success Criteria
 
-[TBD: summary]
+- Use binary checklist items with IDs (`SC1`, `SC2`, ...).
+- Each `SC` must reference one or more requirement IDs.
 
-[TBD: list]
+Example:
+- `SC1`: [ ] User can request export for a selected date range (`FR1`).
 
-## Risks 
+## 5) Decision-Ready Implementation Plan
 
-[TBD: summary]
+For each step, keep only these fields:
+- **Step:** action + target
+- **Files/Areas:** where changes happen
+- **Expected Change:** what will be implemented
 
-[TBD: list]
+Keep steps concrete enough that implementation can start immediately.
 
-## Constraints
+## 6) Verification
 
-[TBD: summary]
+- Map every `SC` to at least one reproducible check.
+- Checks can be test command, automated test, or clear manual procedure.
 
-[TBD: list]
+Example:
+- `SC1` -> integration test `export_controller_spec`.
 
-## Requirements
+## 7) Open Questions
 
-[TBD: summary]
+### Blocking
 
-[TBD: list]
+- Questions that must be resolved before implementation.
 
-## Success Criteria
+### Non-blocking
 
-[TBD: summary]
+- Questions that can be resolved during implementation.
 
-[TBD: list]
+## Quality Gate
 
-## Architectural Decision Records (ADRs)
+- [ ] In-Scope and Out-of-Scope do not conflict.
+- [ ] At least one success criterion exist.
+- [ ] Every success criterion maps to verification.
+- [ ] Implementation steps are concrete and executable.
+- [ ] Blocking questions are resolved or explicitly accepted.
 
-[TBD: summary]
+## Optional Items
 
-[TBD: list]
-
-## Decision-Complete Implementation Plan
-
-[TBD: summary]
-
-[TBD: list]
-
-## Verification
-
-[TBD: summary]
-
-[TBD: list]
-
-## Open Qeustions
-
-[TBD: summary]
-
-[TBD: lists]
+Add extra sections (`Assumptions`, `Risks`, `Constraints`, `ADRs`) only if one of these is true:
+- The feature has architectural trade-offs.
+- There is notable rollout or reliability risk.
+- Major assumptions can change design choices.
