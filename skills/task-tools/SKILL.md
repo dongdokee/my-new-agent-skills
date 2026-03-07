@@ -8,36 +8,61 @@ description: >-
 
 # Task Tools Overview (Gemini CLI)
 
-Claude Code's Task tools (TaskCreate, TaskGet, TaskUpdate, TaskList, TaskOutput, TaskStop) are not built into Gemini CLI. This skill set emulates the same workflow using a file-based task store at `.tasks/tasks.md`.
+Task management is handled by a shell script (`task-manager.sh`) and a `BeforeModel` hook that auto-injects the current task list at the start of every AI turn.
 
-## Data Store
+## Architecture
 
-**Location**: `.tasks/tasks.md` (project root)
+- **`task-manager.sh`** — shell script for task CRUD; all reads/writes go through it
+- **`inject-tasks.sh`** — `BeforeModel` hook; reads the session tasks file and injects a task table + usage guide into the model context each turn
+- **Tasks file** — `$GEMINI_PROJECT_DIR/.tasks/$GEMINI_SESSION_ID.md` (one file per session, auto-created on first write)
 
-**Format**:
+## Hook Behavior
 
-```markdown
-# Tasks
+When `inject-tasks.sh` runs before each model call:
+- If there are active tasks → prepends a markdown task table + management instructions to the context
+- If no tasks exist → injects empty string (no overhead)
 
-| ID | Subject | Status | BlockedBy | Blocks |
-|----|---------|--------|-----------|--------|
-| 1  | Do X    | pending | - | - |
+The injected guide instructs the AI: *"If there are active tasks, briefly summarize their status at the start of your response."*
 
----
+## task-manager.sh Command Reference
 
-## #1
+All commands read/write `$GEMINI_PROJECT_DIR/.tasks/$GEMINI_SESSION_ID.md`.
 
-**Subject**: Do X
-**Status**: pending
-**Description**: Full description here
-**ActiveForm**: Doing X
-**BlockedBy**: []
-**Blocks**: []
+```bash
+# Create a task
+bash .gemini/hooks/task-manager.sh create "<subject>" "<description>" "<activeform>" "<blockedby>" "<blocks>"
+
+# Get task details
+bash .gemini/hooks/task-manager.sh get <id>
+
+# List tasks (optionally filter by status)
+bash .gemini/hooks/task-manager.sh list [pending|in_progress|completed]
+
+# Update task fields
+bash .gemini/hooks/task-manager.sh update <id> status=in_progress
+bash .gemini/hooks/task-manager.sh update <id> subject="New title" description="New desc"
+bash .gemini/hooks/task-manager.sh update <id> status=deleted
+
+# Read background process output
+bash .gemini/hooks/task-manager.sh output <id> [--wait]
+
+# Stop a running process
+bash .gemini/hooks/task-manager.sh stop <id|pid>
 ```
 
-- **Summary table** (top): quick scan of all tasks — ID, subject, status, dependencies.
-- **Detail sections** (bottom): one `## #<ID>` section per task with all fields.
-- **ID**: auto-incremented (max existing ID + 1). IDs of deleted tasks are never reused.
+## Task File Format
+
+```
+# Tasks
+
+## #1
+subject: Do X
+status: pending
+description: Full description
+activeform: Doing X
+blockedby: []
+blocks: []
+```
 
 ## Status Values
 
@@ -46,21 +71,14 @@ Claude Code's Task tools (TaskCreate, TaskGet, TaskUpdate, TaskList, TaskOutput,
 | `pending` | Not yet started |
 | `in_progress` | Currently being worked on |
 | `completed` | Finished |
-| `deleted` | Removed (section deleted from file) |
+| `deleted` | Section removed from file |
 
-## When to Use Each Skill
+## Installation
 
-| Skill | When to use | Claude Code equivalent |
-|-------|-------------|----------------------|
-| `task-create` | Add a new task | TaskCreate |
-| `task-list` | View all tasks | TaskList |
-| `task-get` | View details of a specific task | TaskGet |
-| `task-update` | Change task status or content | TaskUpdate |
-| `task-output` | Read background process output | TaskOutput |
-| `task-stop` | Stop a running process | TaskStop |
-
-## Dependency Fields
-
-- **BlockedBy**: IDs of tasks that must be completed before this task can start. Example: `[2, 3]`
-- **Blocks**: IDs of tasks that cannot start until this task is completed. Example: `[5]`
-- Use `[]` or `-` when there are no dependencies.
+```bash
+mkdir -p .gemini/hooks
+cp skills/task-tools/hooks/task-manager.sh .gemini/hooks/
+cp skills/task-tools/hooks/inject-tasks.sh .gemini/hooks/
+chmod +x .gemini/hooks/*.sh
+# Merge hooks/settings-snippet.json into .gemini/settings.json
+```

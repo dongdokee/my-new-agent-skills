@@ -1,0 +1,11 @@
+{
+  "hooks": [
+    {
+      "type": "event",
+      "name": "task-context",
+      "event": "BeforeModel",
+      "command": "bash .gemini/hooks/inject-tasks.sh",
+      "timeout": 5000
+    }
+  ]
+}

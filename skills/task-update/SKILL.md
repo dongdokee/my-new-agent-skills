@@ -6,90 +6,41 @@ description: >-
   in_progress", "delete task", "complete task N".
 ---
 
-# TaskUpdate (file-based)
-
-Emulates Claude Code's `TaskUpdate` by modifying `.tasks/tasks.md`.
+# TaskUpdate
 
 ## Procedure
 
 ### Step 1. Collect update target
 
-Determine the following from the user's message:
-
+Determine:
 - **Task ID** (required)
-- **Fields to change** (one or more):
-  - `status`: `pending` / `in_progress` / `completed` / `deleted`
-  - `subject`: new title
-  - `description`: new description
-  - `activeForm`: new in-progress display phrase
-  - `addBlockedBy`: IDs to add to BlockedBy
-  - `addBlocks`: IDs to add to Blocks
-  - `removeBlockedBy`: IDs to remove from BlockedBy
-  - `removeBlocks`: IDs to remove from Blocks
+- **Fields to change**: `status`, `subject`, `description`, `activeform`, `blockedby`, `blocks`
 
-Ask for any missing information.
+Status values: `pending` | `in_progress` | `completed` | `deleted`
 
-### Step 2. Read the file
+### Step 2. Call task-manager.sh
 
-Read `.tasks/tasks.md` with `read_file`.
+```bash
+# Single field
+bash .gemini/hooks/task-manager.sh update <id> status=in_progress
 
-If the task ID does not exist: output "Task #<ID> not found." and stop.
+# Multiple fields
+bash .gemini/hooks/task-manager.sh update <id> status=completed subject="New title"
 
-### Step 3. Handle status: deleted
-
-When `status: deleted`:
-1. Remove the corresponding row from the summary table
-2. Remove the entire `## #<ID>` section (up to the next `## #` or end of file)
-3. Save with `write_file`
-4. Output "Task #<ID> deleted." and stop
-
-### Step 4. Update general fields
-
-**Summary table row**: update the changed fields (subject, status, blockedBy, blocks) in the row matching the ID.
-
-**Detail section**: replace the value of each changed field in the `## #<ID>` section.
-
-Example — changing status to `in_progress`:
-- Table row: `| 2 | Fixing auth bug | in_progress | - | - |`
-- Section: `**Status**: in_progress`
-
-Save the changed portions with `replace`.
-
-### Step 5. Report result
-
-```
-Task #<ID> updated:
-  status: pending → in_progress
+# Delete task (removes section from file)
+bash .gemini/hooks/task-manager.sh update <id> status=deleted
 ```
 
-List only the fields that changed.
+### Step 3. Report result
 
-## Examples
-
-**Example 1: Status change**
-
-User: "Set task 2 to in_progress"
+Show the script output:
 
 ```
-Task #2 updated:
-  status: pending → in_progress
+Task #<ID> updated.
 ```
 
-**Example 2: Mark complete**
-
-User: "Mark task 1 as done"
+or
 
 ```
-Task #1 updated:
-  status: in_progress → completed
+Task #<ID> deleted.
 ```
-
-**Example 3: Delete**
-
-User: "Delete task 3"
-
-```
-Task #3 deleted.
-```
-
-(Both the table row and the `## #3` section are removed)
