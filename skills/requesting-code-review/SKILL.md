@@ -31,7 +31,7 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 **2. Dispatch code-reviewer subagent:**
 
-Use your platform's subagent dispatch mechanism{{tool.subagent_dispatch_code_review}}, then fill template at `code-reviewer.md`
+Use your platform's subagent dispatch mechanism{{tool.subagent_dispatch_code_review}}, then fill template at `assets/code-reviewer.md`
 
 **Placeholders:**
 - `{WHAT_WAS_IMPLEMENTED}` - What you just built
@@ -102,4 +102,4 @@ You: [Fix progress indicators]
 - Show code/tests that prove it works
 - Request clarification
 
-See template at: requesting-code-review/code-reviewer.md
+See template at: `assets/code-reviewer.md`
