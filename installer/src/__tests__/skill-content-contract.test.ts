@@ -32,4 +32,14 @@ describe("skill content contracts", () => {
     expect(body).toContain("Never write `todo.md` inside the project repository.");
     expect(body).toContain("Exactly one task may be marked `[~]`");
   });
+
+  it("using-superpowers stays platform-neutral with placeholders", () => {
+    const body = read("skills/using-superpowers/SKILL.md");
+    expect(body).toContain("{{tool.enter_plan_mode}}");
+    expect(body).toContain("{{tool.skill_activation}}");
+    expect(body).toContain("{{tool.task_tracking}}");
+    expect(body).not.toMatch(/\bEnterPlanMode\b/);
+    expect(body).not.toContain("Skill tool");
+    expect(body).not.toContain("TodoWrite");
+  });
 });

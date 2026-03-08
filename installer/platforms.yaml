@@ -11,6 +11,8 @@ platforms:
       task_create: "TaskCreate"
       task_update: "TaskUpdate"
       task_tracking: "Task tools (`TaskCreate`, `TaskGet`, `TaskUpdate`, `TaskList`)"
+      enter_plan_mode: " using `EnterPlanMode` tool"
+      skill_activation: " using `Skill` tool"
       ask_user: " using `AskUserQuestion` tool"
       project_config: "CLAUDE.md"
   gemini:
@@ -26,6 +28,8 @@ platforms:
       task_create: "`reciting-task-state` skill"
       task_update: "`reciting-task-state` skill"
       task_tracking: "`reciting-task-state` skill"
+      enter_plan_mode: " using `enter_plan_mode` tool"
+      skill_activation: " using `activate_skill` tool"
       ask_user: " using `ask_user` tool"
       project_config: "AGENTS.md"
   codex:
@@ -41,6 +45,8 @@ platforms:
       task_create: "update_plan"
       task_update: "update_plan"
       task_tracking: "`update_plan` tool"
+      enter_plan_mode: ""
+      skill_activation: " by naming the skill and loading its `SKILL.md` instructions before responding"
       ask_user: ""
       project_config: "AGENTS.md"
 
