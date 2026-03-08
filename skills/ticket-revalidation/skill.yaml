@@ -1,7 +1,0 @@
-platforms: [claude, gemini, codex]
-install_as: command
-command: true
-command_name: ticket-revalidate
-include:
-  - SKILL.md
-  - references/

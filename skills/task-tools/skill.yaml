@@ -1,7 +1,0 @@
-platforms: [gemini]
-include:
-  - SKILL.md
-hooks:
-  - hooks/task-manager.sh
-  - hooks/inject-tasks.sh
-  - hooks/settings-snippet.json

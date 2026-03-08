@@ -11,29 +11,23 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 | Skill | Description |
 |-------|-------------|
 | `auditing-behaviors` | Behavior-contract audit workflow: User Story/Acceptance Criteria/User Journey extraction + test/entry-point mapping + gap tracking in `docs/behavior-contract.md` |
-| `ticketing` | Initial ticket-set workflow: request decomposition → dependency graph → provisional specs → initial set approval |
-| `ticket-revalidation` | Wave-entry workflow: promote dependency-ready provisional tickets to ready tickets with drift-aware revalidation |
-| `finishing-ticket-implementation` | Ticket-exit workflow: validate implemented ticket evidence, merge to integration branch, close ticket status |
-| `using-git-worktrees` | Worktree preparation workflow with `.worktrees/` policy, collision handling, and clean baseline verification |
-| `test-driven-development` | RED-GREEN-REFACTOR execution discipline for implementation work |
-| `finishing-a-development-branch` | Final topic-level branch completion (merge/PR/cleanup) after all ticket closures |
+| `brainstorming` | Discovery and design workflow for creative or behavior-changing requests before implementation |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
+| `test-driven-development` | RED-GREEN-REFACTOR execution discipline for implementation work |
+| `using-git-worktrees` | Worktree preparation workflow with `.worktrees/` policy, collision handling, and clean baseline verification |
+| `writing-plans` | Detailed implementation-plan authoring from approved requirements/specs |
+| `writing-repro-test-before-fixing` | Regression-first bugfix workflow: write repro test, make it fail, then implement fix |
 
-## Ticket Wave Workflow
+## Suggested Workflow
 
-Use the ticket workflow in this order:
+For feature work, use this order when applicable:
 
-1. `ticketing` to create and approve initial provisional ticket set.
-2. `ticket-revalidation` to promote next-wave tickets to `Ready`.
-3. User implements ready tickets manually (parallel allowed).
-4. `finishing-ticket-implementation` per implemented ticket to integrate/close.
-5. `finishing-a-development-branch` after all tickets are closed.
-
-Recommended naming:
-
-- Integration branch: `feat/<topic>-integration`
-- Ticket branch: `feat/<topic>-tN`
-- Worktree: `.worktrees/<topic>-tN`
+1. `brainstorming` to converge on design and constraints.
+2. `writing-plans` to produce an actionable implementation plan.
+3. `using-git-worktrees` to prepare isolated execution workspace.
+4. `test-driven-development` for planned implementation steps.
+5. `writing-repro-test-before-fixing` for defect-fix iterations.
+6. `auditing-behaviors` to validate behavior contract coverage after changes.
 
 ## Installation
 
@@ -108,14 +102,11 @@ For Gemini custom commands, set both fields in `skill.yaml`:
 
 ```yaml
 command: true
-command_name: ticket
+command_name: audit-behavior
 ```
 
 When `command: true`, `command_name` is required and installer outputs `.gemini/commands/<command_name>.toml` (no fallback to skill name).
 Examples:
-- `ticketing -> ticket.toml`
-- `ticket-revalidation -> ticket-revalidate.toml`
-- `finishing-ticket-implementation -> finish-ticket.toml`
 - `auditing-behaviors -> audit-behavior.toml`
 
 ## Multi-Platform Agent Frontmatter

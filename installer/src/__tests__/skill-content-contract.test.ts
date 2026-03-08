@@ -9,54 +9,27 @@ function read(pathFromRoot: string): string {
 }
 
 describe("skill content contracts", () => {
-  it("capturing-intent-before-researching enforces baseline taxonomy and explicit-only decomposition", () => {
-    const body = read("skills/capturing-intent-before-researching/SKILL.md");
-    expect(body).toContain("`Feature`");
-    expect(body).toContain("`Improvement`");
-    expect(body).toContain("`Maintainability`");
-    expect(body).toContain("`Security`");
-    expect(body).toContain("`Performance`");
-    expect(body).toContain("`Others`");
-    expect(body).toContain("Split only what the user explicitly requested.");
-    expect(body).toContain("first step in every Plan Mode turn");
-    expect(body).not.toContain("whenever the request could contain multiple goals");
-    expect(body).toContain("Output language must be English");
-    expect(body).toContain("Improvement/<Subtype>");
-    expect(body).toContain("Improvement/Performance: Improve load speed");
-    expect(body).toContain("Create a reporting dashboard and add CSV export");
-    expect(body).toContain("Create a reporting dashboard and improve load speed");
-    expect(body).toContain("Create a reporting dashboard and write a quick-start guide");
+  it("brainstorming enforces hard gate and writing-plans handoff", () => {
+    const body = read("skills/brainstorming/SKILL.md");
+    expect(body).toContain("<HARD-GATE>");
+    expect(body).toContain("Do NOT invoke any implementation skill");
+    expect(body).toContain("{{tool.task_tracking}}");
+    expect(body).toContain("The ONLY skill you invoke after brainstorming is writing-plans");
   });
 
-  it("ticket-revalidation uses strict dependency gate wording", () => {
-    const body = read("skills/ticket-revalidation/SKILL.md");
-    expect(body).toContain("`Integrated` or `Closed`");
-    expect(body).not.toMatch(/implemented or\s+integrated/i);
+  it("auditing-behaviors defines ssot target and boundary entry-point format", () => {
+    const body = read("skills/auditing-behaviors/SKILL.md");
+    expect(body).toContain("docs/behavior-contract.md");
+    expect(body).toContain("Story `Entry Points` value format:");
+    expect(body).toContain("At most 3 subagents may run at the same time.");
+    expect(body).toContain("Status values:");
+    expect(body).toContain("`Insufficient evidence`");
   });
 
-  it("finishing-ticket-implementation defines deterministic merge rollback flow", () => {
-    const body = read("skills/finishing-ticket-implementation/SKILL.md");
-    expect(body).toContain("git merge --no-ff --no-edit");
-    expect(body).toContain("git merge --abort");
-    expect(body).toContain("git revert --no-edit -m 1 HEAD");
-    expect(body).toContain("Never use `git reset --hard`");
-  });
-
-  it("ticketing declares spec detail level model", () => {
-    const body = read("skills/ticketing/SKILL.md");
-    expect(body).toContain("`Spec Detail Level`");
-    expect(body).toContain("Wave 1 tickets: `Full`");
-    expect(body).toContain("Wave 2+ tickets: `Lean`");
-    expect(body).toContain("`wave(t) = 1 + max(wave(dep))`");
-    expect(body).toContain("`wave(t) > wave(dep)`");
-    expect(body).toContain("This skill only writes `Provisional`.");
-  });
-
-  it("ticket template includes detail-level fields", () => {
-    const body = read("skills/ticketing/references/ticket-template.md");
-    expect(body).toContain("Spec Detail Level");
-    expect(body).toContain("Lean Fields (only for Lean)");
-    expect(body).toContain("`wave(t) = 1 + max(wave(dep))`");
-    expect(body).toContain("`wave(t) > wave(dep)`");
+  it("reciting-task-state enforces temp-path-only todo tracking", () => {
+    const body = read("skills/reciting-task-state/SKILL.md");
+    expect(body).toContain("<project-tmp-dir>/<session-uuid>/todo.md");
+    expect(body).toContain("Never write `todo.md` inside the project repository.");
+    expect(body).toContain("Exactly one task may be marked `[~]`");
   });
 });

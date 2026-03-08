@@ -1,3 +1,0 @@
-platforms: [claude, gemini, codex]
-include:
-  - SKILL.md
