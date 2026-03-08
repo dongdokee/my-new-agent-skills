@@ -11,34 +11,36 @@ description: >-
 
 # Task Tools (Gemini CLI)
 
-All commands use `bash .gemini/hooks/task-manager.sh <subcommand>`.
-Tasks are stored in `$GEMINI_PROJECT_DIR/.tasks/$GEMINI_SESSION_ID.md`.
+All commands use `bash .gemini/hooks/task-manager.sh --session <session_id> <subcommand>`.
+Tasks are stored in `~/.gemini/tasks/<session_id>.md` (outside project tree).
+
+The `inject-tasks` hook automatically extracts `session_id` from the Gemini CLI stdin JSON and injects it into the model context. The model then passes it via `--session <session_id>` when calling task-manager.sh.
 
 ## Quick Reference
 
 ```bash
 # Create a task
-bash .gemini/hooks/task-manager.sh create "<subject>" "<description>" "<activeform>" "<blockedby>" "<blocks>"
+bash .gemini/hooks/task-manager.sh --session <session_id> create "<subject>" "<description>" "<activeform>" "<blockedby>" "<blocks>"
 
 # Get task details
-bash .gemini/hooks/task-manager.sh get <id>
+bash .gemini/hooks/task-manager.sh --session <session_id> get <id>
 
 # List tasks (optionally filter by status)
-bash .gemini/hooks/task-manager.sh list [pending|in_progress|completed]
+bash .gemini/hooks/task-manager.sh --session <session_id> list [pending|in_progress|completed]
 
 # Update task status (preferred aliases)
-bash .gemini/hooks/task-manager.sh start <id>    # → in_progress
-bash .gemini/hooks/task-manager.sh done <id>     # → completed
-bash .gemini/hooks/task-manager.sh delete <id>   # → removed
+bash .gemini/hooks/task-manager.sh --session <session_id> start <id>    # → in_progress
+bash .gemini/hooks/task-manager.sh --session <session_id> done <id>     # → completed
+bash .gemini/hooks/task-manager.sh --session <session_id> delete <id>   # → removed
 
 # Update other fields
-bash .gemini/hooks/task-manager.sh update <id> subject="New title" description="New desc"
+bash .gemini/hooks/task-manager.sh --session <session_id> update <id> subject="New title" description="New desc"
 
 # Read background process output
-bash .gemini/hooks/task-manager.sh output <id> [--wait]
+bash .gemini/hooks/task-manager.sh --session <session_id> output <id> [--wait]
 
 # Stop a running process
-bash .gemini/hooks/task-manager.sh stop <id|pid>
+bash .gemini/hooks/task-manager.sh --session <session_id> stop <id|pid>
 ```
 
 ## Usage Notes
@@ -62,5 +64,12 @@ Use `output <id>` to read results, `stop <id>` to terminate.
 ### Lifecycle rules
 
 1. **Always `start` before `done`** -- the inject-tasks hook marks in_progress tasks in the status table so the user and model can see what is actively running. Skipping `start` breaks the dependency chain (`blockedby`/`blocks`) and leaves the status table stale.
-2. **Summarize task status at response start** -- the hook instructs the model to print a one-line status summary (e.g. `Tasks: #1 ✅ #2 🔄 ...`) at the top of every response. This acts as a checkpoint so task state survives context compression and long conversations.
+2. **Summarize task status at response start** -- the hook instructs the model to print a TaskList-style status summary at the top of every response:
+   ```
+   > Tasks:
+   > #1 [completed] Fix type errors in src/auth/
+   > #2 [in_progress] Add auth module
+   > #3 [pending] Write tests (blocked by [1, 2])
+   ```
+   This acts as a checkpoint so task state survives context compression and long conversations.
 3. **Status values**: `pending` → `in_progress` → `completed`. `delete` removes the task entirely.

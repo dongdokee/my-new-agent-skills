@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # task-manager.sh — Session-based task CRUD
 #
-# Usage: task-manager.sh <subcommand> [args...]
+# Usage: task-manager.sh [--session <id>] <subcommand> [args...]
 #
 # Subcommands:
 #   create "<subject>" "<description>" "<activeform>" "<blockedby>" "<blocks>"
@@ -13,18 +13,22 @@
 #   update <id> [field=]value [field=value ...]
 #   output <id> [--wait]
 #   stop <id|pid>
-#
-# Environment:
-#   GEMINI_PROJECT_DIR  — project root (defaults to cwd)
-#   GEMINI_SESSION_ID   — session identifier (defaults to "default")
 
 set -euo pipefail
 
-TASKS_FILE="${GEMINI_PROJECT_DIR:-$(pwd)}/.tasks/${GEMINI_SESSION_ID:-default}.md"
+# Parse --session flag
+SESSION_ID="default"
+if [[ "${1:-}" == "--session" ]]; then
+    SESSION_ID="${2:-default}"
+    shift 2
+fi
+
+TASKS_DIR="${HOME}/.gemini/tasks"
+TASKS_FILE="${TASKS_DIR}/${SESSION_ID}.md"
 
 _ensure_file() {
     if [[ ! -f "$TASKS_FILE" ]]; then
-        mkdir -p "$(dirname "$TASKS_FILE")"
+        mkdir -p "$TASKS_DIR"
         printf '# Tasks\n' > "$TASKS_FILE"
     fi
 }
@@ -336,7 +340,7 @@ case "${1:-}" in
     output) shift; cmd_output "$@" ;;
     stop)   shift; cmd_stop   "$@" ;;
     *)
-        echo "Usage: task-manager.sh <create|get|list|start|done|delete|update|output|stop> [args...]" >&2
+        echo "Usage: task-manager.sh [--session <id>] <create|get|list|start|done|delete|update|output|stop> [args...]" >&2
         exit 1
         ;;
 esac
