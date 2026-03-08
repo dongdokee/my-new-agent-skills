@@ -48,4 +48,14 @@ describe("skill content contracts", () => {
     expect(body).toContain("{{tool.project_config}}");
     expect(body).not.toContain("CLAUDE.md");
   });
+
+  it("subagent dispatch skills stay platform-neutral for dispatch tool naming", () => {
+    const dispatchBody = read("skills/dispatching-parallel-agents/SKILL.md");
+    expect(dispatchBody).toContain("{{tool.subagent_dispatch_parallel}}");
+    expect(dispatchBody).not.toMatch(/\bTask\(/);
+
+    const reviewBody = read("skills/requesting-code-review/SKILL.md");
+    expect(reviewBody).toContain("{{tool.subagent_dispatch_code_review}}");
+    expect(reviewBody).not.toContain("Use Task tool with code-reviewer type");
+  });
 });
