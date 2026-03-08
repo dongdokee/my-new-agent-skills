@@ -1,57 +1,41 @@
-# Design Doc: Add 'Kotlin Multiplatform' Topic to Now in Android
+# Design Doc: Adding 'Kotlin Multiplatform' Topic to Now in Android
 
 ## Overview
-This design outlines the process of adding a new topic, 'Kotlin Multiplatform' (KMP), to the Now in Android (NiA) application. The goal is to provide users with a dedicated section for KMP-related news and resources.
+This design outlines the addition of a new topic, "Kotlin Multiplatform" (KMP), to the Now in Android (NiA) application. The goal is to provide users with a dedicated feed for KMP-related news, reflecting its growing importance in the Android ecosystem.
 
-## Objectives
-- Add 'Kotlin Multiplatform' to the list of available topics.
-- Connect at least one news resource to the new topic to verify it appears correctly in the UI.
+## Goals
+- Add "Kotlin Multiplatform" as a selectable topic in the app.
+- Populate the KMP feed with realistic, high-quality news items.
+- Ensure integration with existing topics (e.g., Compose).
 
 ## Proposed Changes
 
-### 1. Data Layer: Asset Update
-The NiA app uses static JSON files as a mock network data source for its demo flavor. We need to update these files to include the new topic and a related news item.
+### 1. Data Layer (Demo Flavor)
+Since the app uses static JSON files for its "demo" flavor (which is the primary target for this addition), we will modify the following assets in `nowinandroid/core/network/src/main/assets/`:
 
-#### `nowinandroid/core/network/src/main/assets/topics.json`
-Add the following entry to the end of the list:
-```json
-{
-  "id": "20",
-  "name": "Kotlin Multiplatform",
-  "shortDescription": "Build for multiple platforms with Kotlin",
-  "longDescription": "All the latest news on Kotlin Multiplatform (KMP) - allowing you to share code between Android, iOS, web, and desktop while keeping the benefits of native development.",
-  "imageUrl": "https://firebasestorage.googleapis.com/v0/b/now-in-android.appspot.com/o/img%2Fic_topic_Kotlin.svg?alt=media&token=bdc73380-e80d-47df-8954-d9b61cccacd2",
-  "url": ""
-}
-```
-*Note: We are temporarily using the Kotlin topic icon for KMP.*
+#### `topics.json`
+Add a new topic entry for KMP.
+- **ID:** `20`
+- **Name:** `Kotlin Multiplatform`
+- **Short Description:** (empty, consistent with most topics)
+- **Long Description:** `The latest news on Kotlin Multiplatform (KMP), allowing you to share code across platforms like Android, iOS, web, and desktop.`
+- **Image URL:** Reusing the Kotlin topic icon for consistency.
 
-#### `nowinandroid/core/network/src/main/assets/news.json`
-Add a new news item referencing the new topic (ID: 20):
-```json
-{
-  "id": "1000",
-  "title": "Get started with Kotlin Multiplatform 🚀",
-  "content": "Learn how to build your first multiplatform app with Kotlin and share code across platforms.",
-  "url": "https://kotlinlang.org/docs/multiplatform.html",
-  "headerImageUrl": "https://kotlinlang.org/docs/images/multiplatform-banner.png",
-  "publishDate": "2026-03-08T00:00:00.000Z",
-  "type": "Article 📝",
-  "topics": [
-    "20"
-  ],
-  "authors": [
-    "1"
-  ]
-}
-```
+#### `news.json`
+Add two new news items to ensure the topic is not empty upon discovery.
+1. **News ID 312:** "Kotlin Multiplatform is Stable and Ready for Production"
+   - Linked to Topic 20.
+2. **News ID 313:** "Compose Multiplatform for iOS is in Alpha"
+   - Linked to Topics 3 (Compose) and 20 (KMP).
 
-## Verification Plan
-1. **Build and Run**: Build the `demoDebug` variant of the app.
-2. **Topic Selection**: Navigate to the 'For You' or 'Interests' screen and verify that 'Kotlin Multiplatform' is listed.
-3. **Follow Topic**: Follow the 'Kotlin Multiplatform' topic.
-4. **Feed Verification**: Check the 'For You' feed to see if the new news item ("Get started with Kotlin Multiplatform") appears.
-5. **Topic Detail**: Navigate to the topic detail screen for KMP and verify the descriptions and connected news.
+### 2. UI & Interaction
+No changes to UI code are required as the app dynamically renders topics and news from the data layer. The new topic will automatically appear in the "Interests" screen and can be followed by users.
 
-## Rollback Plan
-- Revert the changes to `topics.json` and `news.json` in `nowinandroid/core/network/src/main/assets/`.
+## Testing Strategy
+- **Manual Verification:** Build and run the app (demo variant) to ensure the "Kotlin Multiplatform" topic appears in the Interests list.
+- **Functional Check:** Verify that following the topic populates the "For You" feed with the newly added news items.
+- **Data Integrity:** Ensure the JSON files remain valid and well-formatted.
+
+## Alternatives Considered
+1. **Placeholder Only:** Adding a generic news item. Rejected in favor of realistic data to provide immediate value.
+2. **Topic Only:** Adding the topic without news. Rejected as it would result in an "empty state" experience for the user.
