@@ -1,39 +1,57 @@
-# Design: Add Kotlin Multiplatform Topic to Now in Android
+# Design Doc: Add 'Kotlin Multiplatform' Topic to Now in Android
 
 ## Overview
-This design outlines the addition of a new topic, "Kotlin Multiplatform" (KMP), to the Now in Android (NIA) application. The goal is to provide users with news and resources specifically related to sharing code across multiple platforms.
+This design outlines the process of adding a new topic, 'Kotlin Multiplatform' (KMP), to the Now in Android (NiA) application. The goal is to provide users with a dedicated section for KMP-related news and resources.
 
-## Goals
-- Add "Kotlin Multiplatform" as a selectable topic in the NIA app.
-- Ensure the new topic is available in the demo flavor of the app.
-- Maintain consistency across testing environments by updating test data.
+## Objectives
+- Add 'Kotlin Multiplatform' to the list of available topics.
+- Connect at least one news resource to the new topic to verify it appears correctly in the UI.
 
-## Detailed Design
+## Proposed Changes
 
-### 1. Update Demo Assets
-The NIA app uses a JSON file as a static data source for its demo flavor. We will append the new topic to this file.
+### 1. Data Layer: Asset Update
+The NiA app uses static JSON files as a mock network data source for its demo flavor. We need to update these files to include the new topic and a related news item.
 
-- **File**: `nowinandroid/core/network/src/main/assets/topics.json`
-- **New Topic Data**:
-  ```json
-  {
-    "id": "20",
-    "name": "Kotlin Multiplatform",
-    "shortDescription": "Share logic across Android, iOS, and Desktop",
-    "longDescription": "Learn how to use Kotlin Multiplatform (KMP) to share business logic, networking, and data storage across different platforms including Android, iOS, and desktop applications.",
-    "imageUrl": "https://firebasestorage.googleapis.com/v0/b/now-in-android.appspot.com/o/img%2Fic_topic_Architecture.svg?alt=media&token=e69ed228-fa91-49ae-9017-c8b7331f4269",
-    "url": ""
-  }
-  ```
-  *Note: Using the Architecture topic's icon as a placeholder for now.*
+#### `nowinandroid/core/network/src/main/assets/topics.json`
+Add the following entry to the end of the list:
+```json
+{
+  "id": "20",
+  "name": "Kotlin Multiplatform",
+  "shortDescription": "Build for multiple platforms with Kotlin",
+  "longDescription": "All the latest news on Kotlin Multiplatform (KMP) - allowing you to share code between Android, iOS, web, and desktop while keeping the benefits of native development.",
+  "imageUrl": "https://firebasestorage.googleapis.com/v0/b/now-in-android.appspot.com/o/img%2Fic_topic_Kotlin.svg?alt=media&token=bdc73380-e80d-47df-8954-d9b61cccacd2",
+  "url": ""
+}
+```
+*Note: We are temporarily using the Kotlin topic icon for KMP.*
 
-### 2. Update Testing Data
-To ensure that unit tests and instrumented tests that rely on sample data continue to pass and correctly reflect the app's state, we will update the test data provider.
+#### `nowinandroid/core/network/src/main/assets/news.json`
+Add a new news item referencing the new topic (ID: 20):
+```json
+{
+  "id": "1000",
+  "title": "Get started with Kotlin Multiplatform 🚀",
+  "content": "Learn how to build your first multiplatform app with Kotlin and share code across platforms.",
+  "url": "https://kotlinlang.org/docs/multiplatform.html",
+  "headerImageUrl": "https://kotlinlang.org/docs/images/multiplatform-banner.png",
+  "publishDate": "2026-03-08T00:00:00.000Z",
+  "type": "Article 📝",
+  "topics": [
+    "20"
+  ],
+  "authors": [
+    "1"
+  ]
+}
+```
 
-- **File**: `nowinandroid/core/testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/data/TopicsTestData.kt`
-- **Change**: Add a new `Topic` instance to the `topicsTestData` list matching the JSON structure above.
+## Verification Plan
+1. **Build and Run**: Build the `demoDebug` variant of the app.
+2. **Topic Selection**: Navigate to the 'For You' or 'Interests' screen and verify that 'Kotlin Multiplatform' is listed.
+3. **Follow Topic**: Follow the 'Kotlin Multiplatform' topic.
+4. **Feed Verification**: Check the 'For You' feed to see if the new news item ("Get started with Kotlin Multiplatform") appears.
+5. **Topic Detail**: Navigate to the topic detail screen for KMP and verify the descriptions and connected news.
 
-## Validation Strategy
-1. **Unit Tests**: Run tests in `OfflineFirstTopicsRepositoryTest.kt` and `TopicsTestData.kt` related tests to ensure the new data is correctly mapped and retrieved.
-2. **Data Integrity**: Use `grep` to verify that the ID "20" and the name "Kotlin Multiplatform" are present in both the JSON asset and the Kotlin test file.
-3. **Build Verification**: Run `./gradlew assembleDemoDebug` (if feasible in the environment) to ensure no serialization issues were introduced.
+## Rollback Plan
+- Revert the changes to `topics.json` and `news.json` in `nowinandroid/core/network/src/main/assets/`.

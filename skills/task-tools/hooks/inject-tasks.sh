@@ -47,7 +47,13 @@ content=$(printf '%s\n%s\n%s\n%s\n\n%s' \
 
 content="${content}
 
-**Task Management**: Run \`bash .gemini/hooks/task-manager.sh <subcommand>\` to manage tasks (create/get/list/update/output/stop). If there are active (in_progress or pending) tasks, briefly summarize their status at the start of your response."
+**Task Management**: Run \`bash .gemini/hooks/task-manager.sh <subcommand>\` to manage tasks.
+Aliases: \`start <id>\` (→ in_progress), \`done <id>\` (→ completed), \`delete <id>\` (→ removed).
+
+**REQUIRED**: Start every response with a one-line task status summary:
+> Tasks: #1 ✅ #2 🔄 Asking clarifying questions #3–6 ⏳
+
+Use ✅ completed, 🔄 in_progress, ⏳ pending. Omit completed tasks after the first response."
 
 # JSON-encode the content string
 if command -v jq &>/dev/null; then
