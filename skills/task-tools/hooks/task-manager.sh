@@ -178,6 +178,9 @@ cmd_update() {
         echo "Task #${id} not found." >&2; exit 1
     fi
 
+    local current_status
+    current_status=$(echo "$content" | awk '/^status: / { print substr($0,9); exit }')
+
     local tmp
     tmp=$(mktemp)
     cp "$TASKS_FILE" "$tmp"
@@ -199,6 +202,12 @@ cmd_update() {
                 rm -f "$tmp"
                 exit 1
             fi
+        fi
+
+        if [[ "$field" == "status" && "$value" == "completed" && "$current_status" == "pending" ]]; then
+            echo "Error: Task #${id} is still pending. Call \`start ${id}\` first." >&2
+            rm -f "$tmp"
+            exit 1
         fi
 
         if [[ "$field" == "status" && "$value" == "deleted" ]]; then

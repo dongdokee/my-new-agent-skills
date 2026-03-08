@@ -49,6 +49,7 @@ content="${content}
 
 **Task Management**: Run \`bash .gemini/hooks/task-manager.sh <subcommand>\` to manage tasks.
 Aliases: \`start <id>\` (→ in_progress), \`done <id>\` (→ completed), \`delete <id>\` (→ removed).
+**Lifecycle rule:** Call \`start <id>\` before beginning each task; call \`done <id>\` only after it completes. Never call \`done\` on a pending task.
 
 **REQUIRED**: Start every response with a one-line task status summary:
 > Tasks: #1 ✅ #2 🔄 Asking clarifying questions #3–6 ⏳
