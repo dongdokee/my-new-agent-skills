@@ -41,7 +41,13 @@ export interface SkillManifest {
   agents?: string[];
   command?: boolean;
   command_name?: string;
-  hooks?: string[];   // Gemini 전용: 설치할 hook 파일 상대 경로 목록
+}
+
+export interface HookManifest {
+  platforms: string[];
+  files: string[];
+  executable_files?: string[];
+  settings_snippets?: Record<string, string>;
 }
 
 export interface SkillFrontmatter {
@@ -123,6 +129,12 @@ export function loadSkillManifest(skillDir: string): SkillManifest | null {
   const path = resolve(skillDir, "skill.yaml");
   if (!existsSync(path)) return null;
   return yaml.load(readFileSync(path, "utf-8")) as SkillManifest;
+}
+
+export function loadHookManifest(hookDir: string): HookManifest | null {
+  const path = resolve(hookDir, "hook.yaml");
+  if (!existsSync(path)) return null;
+  return yaml.load(readFileSync(path, "utf-8")) as HookManifest;
 }
 
 export function parseSkillFrontmatter(skillFilePath: string): SkillFrontmatter | null {

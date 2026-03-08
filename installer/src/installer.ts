@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, chmodSync } from "node:fs";
-import { resolve, dirname, basename } from "node:path";
+import { resolve, dirname } from "node:path";
 import { getPlatform, loadPlatforms, resolveAgentConfig } from "./config.js";
-import type { DiscoveredSkill, DiscoveredAgent } from "./scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings, buildGeminiCommand, mergeGeminiHooks } from "./transform.js";
+import type { DiscoveredSkill, DiscoveredAgent, DiscoveredHook } from "./scanner.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings, buildGeminiCommand, mergeHookSettings } from "./transform.js";
 
 export interface InstallResult {
   type: "skill" | "agent" | "config";
@@ -50,23 +50,47 @@ export function installSkill(skill: DiscoveredSkill, platformId: string, project
     results.push({ type: "config", name: `${commandName}.toml`, outputPath: cmdPath });
   }
 
-  if (platformId === "gemini" && skill.manifest.hooks?.length) {
-    const hooksDir = resolve(projectRoot, ".gemini", "hooks");
-    mkdirSync(hooksDir, { recursive: true });
-    for (const hookRelPath of skill.manifest.hooks) {
-      const src = resolve(skill.dir, hookRelPath);
-      const name = basename(hookRelPath);
-      if (name === "settings-snippet.json") {
-        const settingsPath = resolve(projectRoot, ".gemini", "settings.json");
-        writeOutput(settingsPath, mergeGeminiHooks(settingsPath, src));
-        results.push({ type: "config", name: "settings.json", outputPath: settingsPath });
-      } else if (hookRelPath.endsWith(".sh")) {
-        const dest = resolve(hooksDir, name);
-        cpSync(src, dest);
-        chmodSync(dest, 0o755);
-        results.push({ type: "config", name, outputPath: dest });
-      }
+  return results;
+}
+
+function resolveHookDir(projectRoot: string, platformId: string): string {
+  if (platformId === "claude") return resolve(projectRoot, ".claude", "hooks");
+  if (platformId === "gemini") return resolve(projectRoot, ".gemini", "hooks");
+  throw new Error(`Unsupported hook platform: ${platformId}`);
+}
+
+function resolveSettingsPath(projectRoot: string, platformId: string): string {
+  if (platformId === "claude") return resolve(projectRoot, ".claude", "settings.json");
+  if (platformId === "gemini") return resolve(projectRoot, ".gemini", "settings.json");
+  throw new Error(`Unsupported hook platform: ${platformId}`);
+}
+
+export function installHook(hook: DiscoveredHook, platformId: string, projectRoot: string): InstallResult[] {
+  if (!hook.manifest.platforms.includes(platformId)) return [];
+
+  const results: InstallResult[] = [];
+  const hooksDir = resolveHookDir(projectRoot, platformId);
+  mkdirSync(hooksDir, { recursive: true });
+
+  for (const relPath of hook.manifest.files) {
+    const src = resolve(hook.dir, relPath);
+    const dest = resolve(hooksDir, relPath);
+    ensureDir(dest);
+    cpSync(src, dest);
+
+    if (hook.manifest.executable_files?.includes(relPath)) {
+      chmodSync(dest, 0o755);
     }
+
+    results.push({ type: "config", name: `${hook.name}/${relPath}`, outputPath: dest });
+  }
+
+  const snippetRelPath = hook.manifest.settings_snippets?.[platformId];
+  if (snippetRelPath) {
+    const snippetPath = resolve(hook.dir, snippetRelPath);
+    const settingsPath = resolveSettingsPath(projectRoot, platformId);
+    writeOutput(settingsPath, mergeHookSettings(settingsPath, snippetPath));
+    results.push({ type: "config", name: `${platformId}.settings.json`, outputPath: settingsPath });
   }
 
   return results;

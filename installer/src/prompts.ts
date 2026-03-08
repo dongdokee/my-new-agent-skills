@@ -1,12 +1,14 @@
 import { checkbox, confirm } from "@inquirer/prompts";
 import chalk from "chalk";
 import { loadPlatforms, resolveAgentConfig } from "./config.js";
-import type { DiscoveredSkill, DiscoveredAgent, ScanResult } from "./scanner.js";
+import type { DiscoveredSkill, DiscoveredAgent, DiscoveredHook, ScanResult } from "./scanner.js";
 
 export interface InstallSelections {
   platforms: string[];
   skills: DiscoveredSkill[];
   agents: DiscoveredAgent[];
+  hooks: DiscoveredHook[];
+  hookPlatforms: string[];
 }
 
 export async function runPrompts(scanResult: ScanResult): Promise<InstallSelections | null> {
@@ -22,7 +24,6 @@ export async function runPrompts(scanResult: ScanResult): Promise<InstallSelecti
       checked: id === "claude",
     })),
   });
-  if (platforms.length === 0) { console.log(chalk.yellow("No platforms selected.")); return null; }
 
   // Step 2: Skill selection
   const skillChoices = scanResult.skills
@@ -41,12 +42,34 @@ export async function runPrompts(scanResult: ScanResult): Promise<InstallSelecti
     ? await checkbox({ message: "Select agents to install:", choices: agentChoices })
     : [];
 
-  if (skills.length === 0 && agents.length === 0) {
+  // Step 4: Hook bundle selection
+  const hookChoices = scanResult.hooks
+    .map((h) => ({ name: h.name, value: h, checked: true }));
+  const hooks = hookChoices.length > 0
+    ? await checkbox({ message: "Select hooks to install:", choices: hookChoices })
+    : [];
+
+  // Step 5: Hook target platform selection
+  const hookPlatformCandidates = ["claude", "gemini"]
+    .filter((pid) => hooks.some((h) => h.manifest.platforms.includes(pid)));
+  const hookPlatforms = hooks.length > 0 && hookPlatformCandidates.length > 0
+    ? await checkbox({
+      message: "Select hook target platforms:",
+      choices: hookPlatformCandidates.map((pid) => ({
+        name: config.platforms[pid].display_name,
+        value: pid,
+        checked: true,
+      })),
+    })
+    : [];
+
+  const hasHookSelection = hooks.length > 0 && hookPlatforms.length > 0;
+  if (skills.length === 0 && agents.length === 0 && !hasHookSelection) {
     console.log(chalk.yellow("Nothing selected to install."));
     return null;
   }
 
-  // Step 4: Confirmation summary
+  // Step 6: Confirmation summary
   console.log();
   for (const pid of platforms) {
     console.log(chalk.bold(`  Platform: ${config.platforms[pid].display_name}`));
@@ -57,6 +80,13 @@ export async function runPrompts(scanResult: ScanResult): Promise<InstallSelecti
     console.log();
   }
 
+  if (hasHookSelection) {
+    console.log(chalk.bold("  Hooks"));
+    console.log(`  Bundles (${hooks.length}): ${hooks.map((h) => h.name).join(", ")}`);
+    console.log(`  Platforms (${hookPlatforms.length}): ${hookPlatforms.map((pid) => config.platforms[pid].display_name).join(", ")}`);
+    console.log();
+  }
+
   const ok = await confirm({ message: "Proceed with installation?", default: true });
-  return ok ? { platforms, skills, agents } : null;
+  return ok ? { platforms, skills, agents, hooks, hookPlatforms } : null;
 }

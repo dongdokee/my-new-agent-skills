@@ -2,13 +2,14 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdirSync, readFileSync, rmSync, existsSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { scanSkills } from "../scanner.js";
-import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, buildGeminiCommand } from "../transform.js";
-import { installSkill, installAgent } from "../installer.js";
+import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, buildGeminiCommand, mergeHookSettings } from "../transform.js";
+import { installSkill, installAgent, installHook } from "../installer.js";
 import { resolveAgentConfig, loadPlatforms } from "../config.js";
 
 const TEST_ROOT = resolve(import.meta.dirname, "../../.test-output");
 const SKILLS_ROOT = resolve(import.meta.dirname, "../../../skills");
 const AGENTS_ROOT = resolve(import.meta.dirname, "../../../agents");
+const HOOKS_ROOT = resolve(import.meta.dirname, "../../../hooks");
 
 const PLATFORMS = ["claude", "gemini", "codex"] as const;
 
@@ -48,6 +49,15 @@ describe("scanner", () => {
       const hasLegacy = !!agent.manifest.platforms;
       expect(hasNewFormat || hasLegacy).toBe(true);
     }
+  });
+
+  it("discovers superpowers hook bundle", () => {
+    const { hooks } = scanSkills(SKILLS_ROOT, AGENTS_ROOT, HOOKS_ROOT);
+    const superpowers = hooks.find((h) => h.name === "superpowers");
+    expect(superpowers).toBeDefined();
+    expect(superpowers?.manifest.platforms).toEqual(["claude", "gemini"]);
+    expect(superpowers?.manifest.settings_snippets?.claude).toBe("hooks.claude.json");
+    expect(superpowers?.manifest.settings_snippets?.gemini).toBe("hooks.gemini.json");
   });
 });
 
@@ -92,6 +102,43 @@ describe("transforms", () => {
     expect(out).toContain('prompt =');
     expect(out).toContain("Invoke the ticket skill");
     expect(out).toContain("{{args}}");
+  });
+
+  it("mergeHookSettings merges groups and dedupes by command within a matcher", () => {
+    const snippetPath = resolve(TEST_ROOT, "snippet.json");
+    const settingsPath = resolve(TEST_ROOT, "settings.json");
+    mkdirSync(TEST_ROOT, { recursive: true });
+
+    writeFileSync(settingsPath, JSON.stringify({
+      hooks: {
+        SessionStart: [
+          {
+            matcher: "startup",
+            hooks: [
+              { type: "command", command: "echo a" },
+            ],
+          },
+        ],
+      },
+    }, null, 2));
+
+    writeFileSync(snippetPath, JSON.stringify({
+      hooks: {
+        SessionStart: [
+          {
+            matcher: "startup",
+            hooks: [
+              { type: "command", command: "echo a" },
+              { type: "command", command: "echo b" },
+            ],
+          },
+        ],
+      },
+    }, null, 2));
+
+    const merged = JSON.parse(mergeHookSettings(settingsPath, snippetPath));
+    const commands = merged.hooks.SessionStart[0].hooks.map((h: { command: string }) => h.command);
+    expect(commands).toEqual(["echo a", "echo b"]);
   });
 });
 
@@ -193,6 +240,7 @@ describe("installer integration", () => {
 
   // Dynamic: all agents x all platforms
   const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+  const { hooks } = scanSkills(SKILLS_ROOT, AGENTS_ROOT, HOOKS_ROOT);
   const platforms = loadPlatforms();
 
   for (const agent of agents) {
@@ -316,5 +364,42 @@ describe("installer integration", () => {
     const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
     expect(settings.agents.overrides.codebase_investigator.enabled).toBe(true);
     expect(settings.context.fileName).toEqual(["README.md", "AGENTS.md", "CONTEXT.md", "GEMINI.md"]);
+  });
+
+  it("installs superpowers hook bundle for Gemini into .gemini/hooks and merges settings", () => {
+    const superpowers = hooks.find((h) => h.name === "superpowers");
+    expect(superpowers).toBeDefined();
+    if (!superpowers) return;
+
+    const results = installHook(superpowers, "gemini", TEST_ROOT);
+    expect(results.length).toBeGreaterThan(0);
+    expect(existsSync(resolve(TEST_ROOT, ".gemini/hooks/run-hook.cmd"))).toBe(true);
+    expect(existsSync(resolve(TEST_ROOT, ".gemini/hooks/session-start"))).toBe(true);
+    expect(existsSync(resolve(TEST_ROOT, ".gemini/settings.json"))).toBe(true);
+  });
+
+  it("installs superpowers hook bundle for Claude into .claude/hooks and merges settings", () => {
+    const superpowers = hooks.find((h) => h.name === "superpowers");
+    expect(superpowers).toBeDefined();
+    if (!superpowers) return;
+
+    const results = installHook(superpowers, "claude", TEST_ROOT);
+    expect(results.length).toBeGreaterThan(0);
+    expect(existsSync(resolve(TEST_ROOT, ".claude/hooks/run-hook.cmd"))).toBe(true);
+    expect(existsSync(resolve(TEST_ROOT, ".claude/hooks/session-start"))).toBe(true);
+    expect(existsSync(resolve(TEST_ROOT, ".claude/settings.json"))).toBe(true);
+  });
+
+  it("merge on install dedupes identical command entries in settings hooks", () => {
+    const superpowers = hooks.find((h) => h.name === "superpowers");
+    expect(superpowers).toBeDefined();
+    if (!superpowers) return;
+
+    installHook(superpowers, "gemini", TEST_ROOT);
+    installHook(superpowers, "gemini", TEST_ROOT);
+    const settings = JSON.parse(readFileSync(resolve(TEST_ROOT, ".gemini/settings.json"), "utf-8"));
+    const hookList = settings.hooks.SessionStart[0].hooks as Array<{ command: string }>;
+    const commands = hookList.map((h) => h.command);
+    expect(commands.length).toBe(new Set(commands).size);
   });
 });

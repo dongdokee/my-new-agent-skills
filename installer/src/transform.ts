@@ -67,7 +67,37 @@ export function updateGeminiSettings(settingsPath: string): string {
   return JSON.stringify(existing, null, 2) + "\n";
 }
 
-export function mergeGeminiHooks(settingsPath: string, snippetPath: string): string {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeMatcher(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function normalizeSequential(value: unknown): boolean {
+  return value === true;
+}
+
+function normalizeHookGroups(value: unknown): Array<Record<string, unknown>> {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is Record<string, unknown> => isRecord(entry));
+}
+
+function normalizeHooksArray(value: unknown): Array<Record<string, unknown>> {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is Record<string, unknown> => isRecord(entry));
+}
+
+function hasSameCommand(
+  existingHooks: Array<Record<string, unknown>>,
+  candidate: Record<string, unknown>,
+): boolean {
+  if (typeof candidate.command !== "string") return false;
+  return existingHooks.some((hook) => hook.command === candidate.command);
+}
+
+export function mergeHookSettings(settingsPath: string, snippetPath: string): string {
   let existing: Record<string, unknown> = {};
   if (existsSync(settingsPath)) {
     existing = JSON.parse(readFileSync(settingsPath, "utf-8"));
@@ -81,11 +111,40 @@ export function mergeGeminiHooks(settingsPath: string, snippetPath: string): str
   if (!existing.hooks || typeof existing.hooks !== "object" || Array.isArray(existing.hooks)) {
     existing.hooks = {};
   }
-  const existingHooks = existing.hooks as Record<string, unknown[]>;
+  const existingHooks = existing.hooks as Record<string, unknown>;
 
-  // snippet의 각 이벤트 key를 기존에 덮어씀 (idempotent 재설치 지원)
-  for (const [event, matchers] of Object.entries(snippetHooks)) {
-    existingHooks[event] = matchers;
+  for (const [event, snippetGroupsRaw] of Object.entries(snippetHooks)) {
+    const existingGroups = normalizeHookGroups(existingHooks[event]);
+    const snippetGroups = normalizeHookGroups(snippetGroupsRaw);
+
+    for (const snippetGroup of snippetGroups) {
+      const snippetMatcher = normalizeMatcher(snippetGroup.matcher);
+      const snippetSequential = normalizeSequential(snippetGroup.sequential);
+      const snippetHookList = normalizeHooksArray(snippetGroup.hooks);
+
+      const existingGroup = existingGroups.find((group) => (
+        normalizeMatcher(group.matcher) === snippetMatcher
+        && normalizeSequential(group.sequential) === snippetSequential
+      ));
+
+      if (existingGroup) {
+        const mergedHooks = normalizeHooksArray(existingGroup.hooks);
+        for (const hook of snippetHookList) {
+          if (hasSameCommand(mergedHooks, hook)) continue;
+          mergedHooks.push(hook);
+        }
+        existingGroup.hooks = mergedHooks;
+        if (snippetMatcher) existingGroup.matcher = snippetMatcher;
+        if (snippetSequential) existingGroup.sequential = true;
+      } else {
+        const newGroup: Record<string, unknown> = { hooks: snippetHookList };
+        if (snippetMatcher) newGroup.matcher = snippetMatcher;
+        if (snippetSequential) newGroup.sequential = true;
+        existingGroups.push(newGroup);
+      }
+    }
+
+    existingHooks[event] = existingGroups;
   }
 
   return JSON.stringify(existing, null, 2) + "\n";

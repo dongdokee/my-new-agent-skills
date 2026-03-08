@@ -31,18 +31,20 @@ skills/<name>/SKILL.md + skill.yaml
   → scanner.ts discovers skills & agents
 agents/<name>.md (shared)
   → scanner.ts discovers top-level shared agents
+hooks/<name>/hook.yaml + files
+  → scanner.ts discovers top-level hook bundles
   → transform.ts replaces {{tool.*}} placeholders per platform
   → transform.ts converts to target format (Markdown for skills, TOML for Codex agents)
-  → installer.ts writes to platform-specific paths + copies references/
+  → installer.ts writes platform outputs + merges hook settings snippets
 ```
 
 ### Installer Source (`installer/src/`)
 
 - `config.ts` — loads `platforms.yaml` (tool mappings, output paths, `agent_tool_map`, `profiles`) and parses `skill.yaml` manifests, `SKILL.md` frontmatter, + agent frontmatter; `resolveAgentConfig()` translates profile+tools → per-platform config
-- `scanner.ts` — walks `skills/` to find installable skills (by `skill.yaml` presence) and agents (from manifest `agents:` field); also scans top-level `agents/` for shared agents not tied to any skill
-- `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML agent, Codex config.toml registration, Gemini settings.json context defaults patching, Gemini command TOML generation)
-- `installer.ts` — orchestrates transform → write → copy references
-- `prompts.ts` — 4-step interactive TUI (platform → skills → agents → confirm)
+- `scanner.ts` — walks `skills/` to find installable skills (by `skill.yaml` presence) and agents (from manifest `agents:` field); scans top-level `agents/` for shared agents; scans top-level `hooks/` for hook bundles (`hook.yaml`)
+- `transform.ts` — `{{tool.*}}` placeholder substitution + output formatters (Markdown with YAML frontmatter, TOML agent, Codex config.toml registration, settings.json patch/merge for Gemini/Claude, Gemini command TOML generation)
+- `installer.ts` — orchestrates transform → write → copy references + hook files/settings merge
+- `prompts.ts` — interactive TUI (platform → skills → agents → hook bundles → hook platforms → confirm)
 - `index.ts` — CLI entry point
 
 ### Platform Output Formats
@@ -53,6 +55,10 @@ agents/<name>.md (shared)
 | Gemini CLI | `.gemini/skills/<name>/SKILL.md` (raw markdown) | `.gemini/agents/<name>.md` (YAML frontmatter: `kind: local`, `model`, `tools`, `max_turns`) | `.gemini/commands/<command_name>.toml` (when `command: true` in skill.yaml) |
 | Codex | `.codex/skills/<name>/SKILL.md` (raw markdown) | `.codex/agents/<name>.toml` (TOML: `model`, `developer_instructions`) + registration in `.codex/config.toml` | — |
 
+Hook bundles install separately (skill-independent):
+- Claude Code: `.claude/hooks/*` + merge to `.claude/settings.json`
+- Gemini CLI: `.gemini/hooks/*` + merge to `.gemini/settings.json`
+
 ### Skill Structure
 
 Each skill in `skills/<name>/` has:
@@ -62,6 +68,11 @@ Each skill in `skills/<name>/` has:
 - `agents/` — optional skill-local sub-agents with per-platform frontmatter
 
 Agents not tied to any specific skill live in the top-level `agents/` directory and are always installed regardless of which skills are selected.
+
+Hook bundles are top-level and skill-independent. Each bundle in `hooks/<name>/` has:
+- `hook.yaml` — manifest (`platforms`, `files`, `executable_files`, `settings_snippets`)
+- hook script files — copied into platform-native paths (`.claude/hooks` or `.gemini/hooks`)
+- settings snippets (optional JSON) — merged into `.claude/settings.json` or `.gemini/settings.json`
 
 ### Skill Interdependencies
 
@@ -109,7 +120,7 @@ Inter-skill coupling is intentionally minimal; prefer keeping each skill indepen
 - Codex agents require two files: the agent TOML + a `[agents.<name>]` entry in `.codex/config.toml`. The installer handles both.
 - Installing `code-explorer` for Gemini automatically patches `.gemini/settings.json` to merge default `context.fileName` entries (`AGENTS.md`, `CONTEXT.md`, `GEMINI.md`). The installer does not modify `agents.overrides.codebase_investigator`.
 - Setting `command: true` in `skill.yaml` causes the installer to generate `.gemini/commands/<command_name>.toml` when installing for Gemini. `command_name` is required when `command: true` (no fallback to skill name). Operates independently of `install_as`; omitting `command` defaults to `false`. The output path is controlled by `command_path` in the gemini section of `platforms.yaml`.
-- Install/output root is always `process.cwd()`. Skill/agent scanning still resolves source root in `installer/src/index.ts` (cwd with repo layout, else installer script root), but all `.claude/.gemini/.codex` outputs are written under current working directory.
+- Install/output root is always `process.cwd()`. Skill/agent/hook scanning still resolves source root in `installer/src/index.ts` (cwd with repo layout, else installer script root), and all `.claude/.gemini/.codex` outputs are written under current working directory.
 - `installer/src/` is the source of truth. `installer/dist/` is a local build artifact and may be stale until `npm run build` is run.
 - The primary language for documentation and commit messages in this project is mixed Korean/English.
 

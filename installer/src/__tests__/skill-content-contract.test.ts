@@ -42,4 +42,10 @@ describe("skill content contracts", () => {
     expect(body).not.toContain("Skill tool");
     expect(body).not.toContain("TodoWrite");
   });
+
+  it("receiving-code-review stays platform-neutral for project config naming", () => {
+    const body = read("skills/receiving-code-review/SKILL.md");
+    expect(body).toContain("{{tool.project_config}}");
+    expect(body).not.toContain("CLAUDE.md");
+  });
 });

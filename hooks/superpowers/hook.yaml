@@ -1,0 +1,9 @@
+platforms: [claude, gemini]
+files:
+  - run-hook.cmd
+  - session-start
+executable_files:
+  - session-start
+settings_snippets:
+  claude: hooks.claude.json
+  gemini: hooks.gemini.json
