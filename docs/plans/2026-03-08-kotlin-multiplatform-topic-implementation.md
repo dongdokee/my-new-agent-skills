@@ -1,101 +1,61 @@
-# Add Kotlin Multiplatform Topic Implementation Plan
+# Kotlin Multiplatform Topic Addition Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add a new "Kotlin Multiplatform" topic to the Now in Android app by updating core assets, news data, and test data.
+**Goal:** Add 'Kotlin Multiplatform' as a followable topic in the Now in Android demo data.
 
-**Architecture:** Update static JSON assets in the network module and Kotlin test data in the testing module.
+**Architecture:** Append a new `NetworkTopic` object to the `topics.json` asset file which is consumed by `DemoNiaNetworkDataSource`.
 
-**Tech Stack:** JSON, Kotlin, Android.
+**Tech Stack:** JSON, Android (Kotlin), Gradle
 
 ---
 
-### Task 1: Update topics.json Asset
+### Task 1: Add Kotlin Multiplatform Topic to assets
 
 **Files:**
 - Modify: `nowinandroid/core/network/src/main/assets/topics.json`
 
-**Step 1: Add the new topic entry**
-Append the following JSON object to the end of the array in `nowinandroid/core/network/src/main/assets/topics.json`.
+**Step 1: Append the new topic object**
+
+Add the following JSON object to the end of the array in `topics.json`, ensuring proper comma placement for the preceding element.
 
 ```json
   {
     "id": "20",
     "name": "Kotlin Multiplatform",
-    "shortDescription": "Share code between different platforms (e.g., Android, iOS, Web)",
-    "longDescription": "Learn how to share your business logic, data layers, and more between Android, iOS, Web, and desktop apps using Kotlin Multiplatform.",
+    "shortDescription": "Kotlin code sharing",
+    "longDescription": "Share code between Android, iOS, Web, and Desktop using Kotlin Multiplatform.",
     "imageUrl": "https://firebasestorage.googleapis.com/v0/b/now-in-android.appspot.com/o/img%2Fic_topic_Kotlin.svg?alt=media&token=bdc73380-e80d-47df-8954-d9b61cccacd2",
-    "url": "https://kotlinlang.org/docs/multiplatform.html"
+    "url": ""
   }
 ```
 
-**Step 2: Commit**
+**Step 2: Verify JSON syntax**
+
+Run: `python3 -m json.tool nowinandroid/core/network/src/main/assets/topics.json > /dev/null`
+Expected: Success (No output/No error)
+
+**Step 3: Commit**
 
 ```bash
 git add nowinandroid/core/network/src/main/assets/topics.json
-git commit -m "feat(core/network): add Kotlin Multiplatform topic to topics.json"
+git commit -m "feat: add Kotlin Multiplatform topic to demo data"
 ```
 
----
-
-### Task 2: Update news.json Asset
+### Task 2: Verify topic loading in Unit Test
 
 **Files:**
-- Modify: `nowinandroid/core/network/src/main/assets/news.json`
+- Test: `nowinandroid/core/network/src/test/kotlin/com/google/samples/apps/nowinandroid/core/network/demo/DemoNiaNetworkDataSourceTest.kt`
 
-**Step 1: Update news item ID 211**
-Find the news item with `"id": "211"` and add `"20"` to its `"topics"` array.
+**Step 1: Update or add test case to verify all topics (including the new one) are loaded**
 
-```json
-    "topics": [
-      "10",
-      "20"
-    ],
-```
+Check if `DemoNiaNetworkDataSourceTest` already verifies the size or content of topics.
 
-**Step 2: Commit**
-
-```bash
-git add nowinandroid/core/network/src/main/assets/news.json
-git commit -m "feat(core/network): tag news item 211 with Kotlin Multiplatform topic"
-```
-
----
-
-### Task 3: Update TopicsTestData.kt
-
-**Files:**
-- Modify: `nowinandroid/core/testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/data/TopicsTestData.kt`
-
-**Step 1: Add the new topic to test data**
-Add the following `Topic` object to the `topicsTestData` list.
-
-```kotlin
-    Topic(
-        id = "20",
-        name = "Kotlin Multiplatform",
-        shortDescription = "Share code between different platforms (e.g., Android, iOS, Web)",
-        longDescription = "Learn how to share your business logic, data layers, and more between Android, iOS, Web, and desktop apps using Kotlin Multiplatform.",
-        imageUrl = "https://firebasestorage.googleapis.com/v0/b/now-in-android.appspot.com/o/img%2Fic_topic_Kotlin.svg?alt=media&token=bdc73380-e80d-47df-8954-d9b61cccacd2",
-        url = "https://kotlinlang.org/docs/multiplatform.html",
-    ),
-```
-
-**Step 2: Commit**
-
-```bash
-git add nowinandroid/core/testing/src/main/kotlin/com/google/samples/apps/nowinandroid/core/testing/data/TopicsTestData.kt
-git commit -m "test(core/testing): add Kotlin Multiplatform to TopicsTestData"
-```
-
----
-
-### Task 4: Verify Changes with Tests
-
-**Files:**
-- Test: `nowinandroid/core/data/src/test/kotlin/com/google/samples/apps/nowinandroid/core/data/repository/OfflineFirstTopicsRepositoryTest.kt`
-
-**Step 1: Run relevant tests**
-Run: `./gradlew :core:data:testDebugUnitTest --tests "com.google.samples.apps.nowinandroid.core.data.repository.OfflineFirstTopicsRepositoryTest"`
-
+Run: `./gradlew :core:network:test`
 Expected: PASS
+
+**Step 2: Commit**
+
+```bash
+git commit -m "test: verify demo network data source loads new topic"
+```

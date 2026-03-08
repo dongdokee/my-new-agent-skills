@@ -6,7 +6,7 @@
 
 TASKS_FILE="${GEMINI_PROJECT_DIR:-$(pwd)}/.tasks/${GEMINI_SESSION_ID:-default}.md"
 
-_empty() { printf '{"content": ""}'; exit 0; }
+_empty() { printf '{}'; exit 0; }
 
 [[ ! -f "$TASKS_FILE" ]] && _empty
 
@@ -56,11 +56,18 @@ Aliases: \`start <id>\` (→ in_progress), \`done <id>\` (→ completed), \`dele
 
 Use ✅ completed, 🔄 in_progress, ⏳ pending. Omit completed tasks after the first response."
 
-# JSON-encode the content string
+# JSON-encode the content string (jq → python3 → pure bash fallback)
 if command -v jq &>/dev/null; then
     json_val=$(printf '%s' "$content" | jq -Rs .)
-else
+elif command -v python3 &>/dev/null; then
     json_val=$(printf '%s' "$content" | python3 -c 'import sys, json; print(json.dumps(sys.stdin.read()))')
+else
+    # Pure bash JSON escaping
+    escaped="${content//\\/\\\\}"
+    escaped="${escaped//\"/\\\"}"
+    escaped="${escaped//$'\n'/\\n}"
+    escaped="${escaped//$'\t'/\\t}"
+    json_val="\"${escaped}\""
 fi
 
-printf '{"content": %s}' "$json_val"
+printf '{"hookSpecificOutput": {"hookEventName": "BeforeAgent", "additionalContext": %s}}' "$json_val"

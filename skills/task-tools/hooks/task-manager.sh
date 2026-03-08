@@ -18,7 +18,7 @@
 #   GEMINI_PROJECT_DIR  — project root (defaults to cwd)
 #   GEMINI_SESSION_ID   — session identifier (defaults to "default")
 
-set -uo pipefail
+set -euo pipefail
 
 TASKS_FILE="${GEMINI_PROJECT_DIR:-$(pwd)}/.tasks/${GEMINI_SESSION_ID:-default}.md"
 
@@ -35,7 +35,7 @@ _next_id() {
         return
     fi
     local max
-    max=$(grep -oP '(?<=^## #)\d+' "$TASKS_FILE" 2>/dev/null | sort -n | tail -1)
+    max=$(grep -oP '(?<=^## #)\d+' "$TASKS_FILE" 2>/dev/null | sort -n | tail -1 || true)
     echo $((${max:-0} + 1))
 }
 

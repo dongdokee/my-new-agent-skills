@@ -3,47 +3,47 @@
 ## #1
 subject: Explore project context
 status: completed
-description: Check files, docs, and recent commits in nowinandroid to understand how topics are structured and stored.
+description: Check files, docs, and existing topics in Now in Android
 activeform: Exploring project context
 blockedby: []
-blocks: []
+blocks: [2]
 
 ## #2
 subject: Ask clarifying questions
 status: completed
-description: Ask the user about the details of the 'Kotlin Multiplatform' topic (description, icon, etc.).
+description: Understand purpose, constraints, and success criteria for the new topic
 activeform: Asking clarifying questions
 blockedby: [1]
-blocks: []
+blocks: [3]
 
 ## #3
-subject: Propose 2-3 approaches
+subject: Propose approaches
 status: completed
-description: Propose different ways to implement the new topic with trade-offs.
-activeform: Proposing 2-3 approaches
+description: Propose 2-3 approaches with trade-offs and recommendation
+activeform: Proposing approaches
 blockedby: [2]
-blocks: []
+blocks: [4]
 
 ## #4
 subject: Present design
 status: completed
-description: Present the final design for the new topic and get user approval.
+description: Present design sections and get user approval
 activeform: Presenting design
 blockedby: [3]
-blocks: []
+blocks: [5]
 
 ## #5
 subject: Write design doc
 status: completed
-description: Save the validated design to a markdown file and commit it.
+description: Save design to docs/plans/ and commit
 activeform: Writing design doc
 blockedby: [4]
-blocks: []
+blocks: [6]
 
 ## #6
 subject: Transition to implementation
-status: in_progress
-description: Invoke writing-plans skill to create an implementation plan.
+status: completed
+description: Invoke writing-plans skill to create implementation plan
 activeform: Transitioning to implementation
 blockedby: [5]
 blocks: []
