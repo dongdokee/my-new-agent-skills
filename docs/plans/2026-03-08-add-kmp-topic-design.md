@@ -1,41 +1,26 @@
-# Design Doc: Adding 'Kotlin Multiplatform' Topic to Now in Android
+# Design Doc: Add 'Kotlin Multiplatform' Topic to Now in Android
 
 ## Overview
-This design outlines the addition of a new topic, "Kotlin Multiplatform" (KMP), to the Now in Android (NiA) application. The goal is to provide users with a dedicated feed for KMP-related news, reflecting its growing importance in the Android ecosystem.
+Now in Android 앱에 'Kotlin Multiplatform' (KMP)이라는 새로운 토픽을 추가합니다.
 
-## Goals
-- Add "Kotlin Multiplatform" as a selectable topic in the app.
-- Populate the KMP feed with realistic, high-quality news items.
-- Ensure integration with existing topics (e.g., Compose).
+## Background
+사용자가 KMP 관련 소식을 구독할 수 있도록 토픽 목록에 새로운 항목을 추가할 필요가 있습니다.
 
-## Proposed Changes
+## Design
+`nowinandroid/core/network/src/main/assets/topics.json` 파일에 새로운 토픽 데이터를 추가합니다.
 
-### 1. Data Layer (Demo Flavor)
-Since the app uses static JSON files for its "demo" flavor (which is the primary target for this addition), we will modify the following assets in `nowinandroid/core/network/src/main/assets/`:
-
-#### `topics.json`
-Add a new topic entry for KMP.
-- **ID:** `20`
-- **Name:** `Kotlin Multiplatform`
-- **Short Description:** (empty, consistent with most topics)
-- **Long Description:** `The latest news on Kotlin Multiplatform (KMP), allowing you to share code across platforms like Android, iOS, web, and desktop.`
-- **Image URL:** Reusing the Kotlin topic icon for consistency.
-
-#### `news.json`
-Add two new news items to ensure the topic is not empty upon discovery.
-1. **News ID 312:** "Kotlin Multiplatform is Stable and Ready for Production"
-   - Linked to Topic 20.
-2. **News ID 313:** "Compose Multiplatform for iOS is in Alpha"
-   - Linked to Topics 3 (Compose) and 20 (KMP).
-
-### 2. UI & Interaction
-No changes to UI code are required as the app dynamically renders topics and news from the data layer. The new topic will automatically appear in the "Interests" screen and can be followed by users.
+### New Topic Data
+```json
+{
+  "id": "21",
+  "name": "Kotlin Multiplatform",
+  "shortDescription": "Android 및 여러 플랫폼에서의 코드 공유 기술에 대한 소식입니다.",
+  "longDescription": "Kotlin Multiplatform (KMP)을 사용하여 Android, iOS, 웹, 데스크톱 등 다양한 플랫폼 간에 코드를 공유하는 최신 뉴스를 받아보세요.",
+  "imageUrl": "https://firebasestorage.googleapis.com/v0/b/now-in-android.appspot.com/o/img%2Fic_topic_Kotlin.svg?alt=media&token=bdc73380-e80d-47df-8954-d9b61cccacd2",
+  "url": ""
+}
+```
 
 ## Testing Strategy
-- **Manual Verification:** Build and run the app (demo variant) to ensure the "Kotlin Multiplatform" topic appears in the Interests list.
-- **Functional Check:** Verify that following the topic populates the "For You" feed with the newly added news items.
-- **Data Integrity:** Ensure the JSON files remain valid and well-formatted.
-
-## Alternatives Considered
-1. **Placeholder Only:** Adding a generic news item. Rejected in favor of realistic data to provide immediate value.
-2. **Topic Only:** Adding the topic without news. Rejected as it would result in an "empty state" experience for the user.
+1. `topics.json` 파일이 올바르게 수정되었는지 확인합니다.
+2. (선택 사항) 로컬 빌드를 통해 앱의 토픽 목록 화면에서 'Kotlin Multiplatform'이 나타나는지 확인합니다.
