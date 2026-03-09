@@ -1,0 +1,1 @@
+https://github.com/spences10/claude-code-toolkit/tree/e93e02b8a61e1c3739cf9c965b9eaf1134f4a05f/plugins/devops-skills/skills/techdebt-finder
