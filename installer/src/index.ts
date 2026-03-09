@@ -23,7 +23,6 @@ function resolveSourceRoot(): string {
 
 async function main() {
   const sourceRoot = resolveSourceRoot();
-  const installRoot = process.cwd();
   const allFlag = process.argv.includes("--all");
 
   console.log(chalk.bold("\n  Agent Skill Installer\n"));
@@ -44,8 +43,10 @@ async function main() {
   let agents: typeof scanResult.agents;
   let hooks: typeof scanResult.hooks;
   let hookPlatforms: string[];
+  let installRoot: string;
 
   if (allFlag) {
+    installRoot = process.cwd();
     platforms = Object.keys(loadPlatforms().platforms);
     skills = scanResult.skills;
     agents = scanResult.agents;
@@ -54,6 +55,7 @@ async function main() {
   } else {
     const selections = await runPrompts(scanResult);
     if (!selections) process.exit(0);
+    installRoot = selections.installRoot;
     platforms = selections.platforms;
     skills = selections.skills;
     agents = selections.agents;

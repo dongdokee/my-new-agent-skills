@@ -14,12 +14,18 @@ cd ..
 node installer/dist/index.js
 ```
 
-The interactive wizard walks through 4 steps:
+The interactive wizard walks through these steps:
 
-1. Select target platforms
-2. Select skills to install
-3. Select agents to install
-4. Confirm and install
+1. Select install root (`process.cwd()` or home directory)
+2. Select target platforms
+3. Select skills to install
+4. Select agents to install
+5. Select hook bundles to install
+6. Select hook target platforms
+7. Confirm and install
+
+In interactive mode, every output is written under the selected install root while preserving the existing platform-relative layout such as `.claude/`, `.gemini/`, and `.codex/`.
+With `--all`, the installer remains non-interactive and still installs under the current working directory.
 
 ## How It Works
 
