@@ -274,23 +274,35 @@ describe("installer integration", () => {
   }
 
   // Gemini command TOML tests
-  it("installs auditing-behaviors for gemini creates .gemini/commands/audit-behavior.toml", () => {
+  it.each([
+    { skillName: "auditing-behaviors", commandName: "audit-behavior" },
+    { skillName: "brainstorming", commandName: "brainstorm" },
+    { skillName: "writing-plans", commandName: "write-plan" },
+    { skillName: "executing-plans", commandName: "execute-plan" },
+    { skillName: "techdebt-finder", commandName: "techdebt" },
+  ])("installs $skillName for gemini creates .gemini/commands/$commandName.toml", ({ skillName, commandName }) => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const auditing = skills.find((s) => s.name === "auditing-behaviors")!;
-    const results = installSkill(auditing, "gemini", TEST_ROOT);
-    const cmdResult = results.find((r) => r.type === "config" && r.name === "audit-behavior.toml");
+    const skill = skills.find((s) => s.name === skillName)!;
+    const results = installSkill(skill, "gemini", TEST_ROOT);
+    const cmdResult = results.find((r) => r.type === "config" && r.name === `${commandName}.toml`);
     expect(cmdResult).toBeDefined();
-    expect(cmdResult!.outputPath).toContain(".gemini/commands/audit-behavior.toml");
+    expect(cmdResult!.outputPath).toContain(`.gemini/commands/${commandName}.toml`);
     expect(existsSync(cmdResult!.outputPath)).toBe(true);
     const content = readFileSync(cmdResult!.outputPath, "utf-8");
-    expect(content).toContain("Invoke the audit-behavior skill");
+    expect(content).toContain(`Invoke the ${commandName} skill`);
     expect(content).toContain("{{args}}");
   });
 
-  it("installs auditing-behaviors for claude does NOT create command TOML", () => {
+  it.each([
+    "auditing-behaviors",
+    "brainstorming",
+    "writing-plans",
+    "executing-plans",
+    "techdebt-finder",
+  ])("installs %s for claude does NOT create command TOML", (skillName) => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const auditing = skills.find((s) => s.name === "auditing-behaviors")!;
-    const results = installSkill(auditing, "claude", TEST_ROOT);
+    const skill = skills.find((s) => s.name === skillName)!;
+    const results = installSkill(skill, "claude", TEST_ROOT);
     const cmdResult = results.find((r) => r.type === "config");
     expect(cmdResult).toBeUndefined();
   });

@@ -1,4 +1,6 @@
 platforms: [claude, gemini, codex]
+command: true
+command_name: write-plan
 include:
   - SKILL.md
   - references/
