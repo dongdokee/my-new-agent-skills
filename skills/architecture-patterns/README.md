@@ -1,0 +1,1 @@
+https://github.com/wshobson/agents/tree/main/plugins/backend-development/skills/architecture-patterns
