@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { mkdirSync, readFileSync, rmSync, existsSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, rmSync, existsSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { scanSkills } from "../scanner.js";
 import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, buildGeminiCommand, mergeHookSettings } from "../transform.js";
@@ -13,6 +13,18 @@ const HOOKS_ROOT = resolve(import.meta.dirname, "../../../hooks");
 
 const PLATFORMS = ["claude", "gemini", "codex"] as const;
 
+function listFilesRecursive(dir: string, root: string = dir): string[] {
+  if (!existsSync(dir)) return [];
+
+  return readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => {
+      const fullPath = resolve(dir, entry.name);
+      if (entry.isDirectory()) return listFilesRecursive(fullPath, root);
+      return [fullPath.slice(root.length + 1)];
+    })
+    .sort();
+}
+
 describe("scanner", () => {
   it("finds skills with skill.yaml + SKILL.md frontmatter", () => {
     const result = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
@@ -23,19 +35,22 @@ describe("scanner", () => {
     }
   });
 
-  it("discovers auditing-behaviors as an installable command skill", () => {
-    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const auditing = skills.find((s) => s.name === "auditing-behaviors");
-    expect(auditing).toBeDefined();
-    expect(auditing?.manifest.command).toBe(true);
-    expect(auditing?.manifest.command_name).toBe("audit-behavior");
-  });
-
   it("discovers reciting-task-state as a gemini-only skill", () => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
     const reciting = skills.find((s) => s.name === "reciting-task-state");
     expect(reciting).toBeDefined();
     expect(reciting?.manifest.platforms).toEqual(["gemini"]);
+  });
+
+  it("discovers only top-level shared agents", () => {
+    const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const sharedAgentFiles = readdirSync(AGENTS_ROOT)
+      .filter((name) => name.endsWith(".md"))
+      .map((name) => name.replace(/\.md$/, ""))
+      .sort();
+
+    expect(agents.map((agent) => agent.name).sort()).toEqual(sharedAgentFiles);
+    expect(agents.every((agent) => agent.skillName === "")).toBe(true);
   });
 
   it("all agents have valid manifest structure", () => {
@@ -238,6 +253,39 @@ describe("installer integration", () => {
     expect(existsSync(results[0].outputPath)).toBe(true);
   });
 
+  it("installs each skill as a full directory copy except skill.yaml", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+
+    for (const skill of skills) {
+      installSkill(skill, "codex", TEST_ROOT);
+
+      const sourceFiles = listFilesRecursive(skill.dir).filter((path) => path !== "skill.yaml");
+      const installedDir = resolve(TEST_ROOT, ".codex/skills", skill.name);
+      const installedFiles = listFilesRecursive(installedDir);
+
+      expect(installedFiles, `installed files for ${skill.name}`).toEqual(sourceFiles);
+      expect(existsSync(resolve(installedDir, "skill.yaml")), `skill.yaml should not be installed for ${skill.name}`).toBe(false);
+    }
+  });
+
+  it("installs bundled skill-creator resources for Codex", () => {
+    const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
+    const skillCreator = skills.find((skill) => skill.name === "skill-creator");
+    expect(skillCreator).toBeDefined();
+    if (!skillCreator) return;
+
+    installSkill(skillCreator, "codex", TEST_ROOT);
+
+    const installedDir = resolve(TEST_ROOT, ".codex/skills/skill-creator");
+    expect(existsSync(resolve(installedDir, "SKILL.md"))).toBe(true);
+    expect(existsSync(resolve(installedDir, "agents/grader.md"))).toBe(true);
+    expect(existsSync(resolve(installedDir, "assets/eval_review.html"))).toBe(true);
+    expect(existsSync(resolve(installedDir, "eval-viewer/generate_review.py"))).toBe(true);
+    expect(existsSync(resolve(installedDir, "references/schemas.md"))).toBe(true);
+    expect(existsSync(resolve(installedDir, "scripts/run_loop.py"))).toBe(true);
+    expect(existsSync(resolve(installedDir, "skill.yaml"))).toBe(false);
+  });
+
   // Dynamic: all agents x all platforms
   const { agents } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
   const { hooks } = scanSkills(SKILLS_ROOT, AGENTS_ROOT, HOOKS_ROOT);
@@ -275,7 +323,6 @@ describe("installer integration", () => {
 
   // Gemini command TOML tests
   it.each([
-    { skillName: "auditing-behaviors", commandName: "audit-behavior" },
     { skillName: "brainstorming", commandName: "brainstorm" },
     { skillName: "writing-plans", commandName: "write-plan" },
     { skillName: "executing-plans", commandName: "execute-plan" },
@@ -294,7 +341,6 @@ describe("installer integration", () => {
   });
 
   it.each([
-    "auditing-behaviors",
     "brainstorming",
     "writing-plans",
     "executing-plans",
@@ -309,20 +355,20 @@ describe("installer integration", () => {
 
   it("throws when command is enabled but command_name is missing", () => {
     const { skills } = scanSkills(SKILLS_ROOT, AGENTS_ROOT);
-    const auditing = skills.find((s) => s.name === "auditing-behaviors");
-    expect(auditing).toBeDefined();
-    if (!auditing) return;
+    const brainstorming = skills.find((s) => s.name === "brainstorming");
+    expect(brainstorming).toBeDefined();
+    if (!brainstorming) return;
 
     const broken = {
-      ...auditing,
+      ...brainstorming,
       manifest: {
-        ...auditing.manifest,
+        ...brainstorming.manifest,
         command_name: undefined,
       },
     };
 
     expect(() => installSkill(broken, "gemini", TEST_ROOT)).toThrow(
-      'Skill "auditing-behaviors" has command: true but missing command_name',
+      'Skill "brainstorming" has command: true but missing command_name',
     );
   });
 

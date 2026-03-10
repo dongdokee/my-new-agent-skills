@@ -75,10 +75,6 @@ export function scanSkills(skillsDir: string, agentsDir?: string, hooksDir?: str
       if (!skillFrontmatter) continue;
 
       skills.push({ name: skillFrontmatter.name, description: skillFrontmatter.description, dir, manifest, skillFilePath });
-
-      for (const agentPath of manifest.agents ?? []) {
-        scanAgentPath(resolve(dir, agentPath), skillFrontmatter.name, agents);
-      }
     }
   }
 

@@ -10,7 +10,6 @@ A collection of reusable AI agent skills with a CLI installer that handles platf
 
 | Skill | Description |
 |-------|-------------|
-| `auditing-behaviors` | Behavior-contract audit workflow: User Story/Acceptance Criteria/User Journey extraction + test/entry-point mapping + gap tracking in `docs/behavior-contract.md` |
 | `brainstorming` | Discovery and design workflow for creative or behavior-changing requests before implementation |
 | `reciting-task-state` | File-based task state (`todo.md`) for platforms without native task APIs |
 | `test-driven-development` | RED-GREEN-REFACTOR execution discipline for implementation work |
@@ -27,7 +26,6 @@ For feature work, use this order when applicable:
 3. `using-git-worktrees` to prepare isolated execution workspace.
 4. `test-driven-development` for planned implementation steps.
 5. `writing-repro-test-before-fixing` for defect-fix iterations.
-6. `auditing-behaviors` to validate behavior contract coverage after changes.
 
 ## Installation
 
@@ -98,9 +96,8 @@ Hooks (selected bundles/platforms only):
 ```
 skills/<name>/
   SKILL.md       # platform-neutral content + frontmatter(name/description) SSOT
-  skill.yaml     # platforms, includes, agent refs, command settings
-  references/    # optional supporting docs, copied on install
-  agents/        # optional skill-local sub-agents
+  skill.yaml     # platforms + optional Gemini command settings
+  ...other files # everything except skill.yaml is copied on install
 
 agents/          # shared agents (not tied to any skill)
   <name>.md
@@ -108,16 +105,18 @@ agents/          # shared agents (not tied to any skill)
 
 Use `{{tool.<key>}}` placeholders in `SKILL.md` for platform-varying tool names. Mappings are defined in `installer/platforms.yaml`.
 
+On install, the entire `skills/<name>/` directory is copied into the platform skill directory, excluding only `skill.yaml`. That means bundled `references/`, `assets/`, `scripts/`, `agents/`, viewers, templates, and other helper files are always installed alongside `SKILL.md`.
+
 For Gemini custom commands, set both fields in `skill.yaml`:
 
 ```yaml
 command: true
-command_name: audit-behavior
+command_name: brainstorm
 ```
 
 When `command: true`, `command_name` is required and installer outputs `.gemini/commands/<command_name>.toml` (no fallback to skill name).
 Examples:
-- `auditing-behaviors -> audit-behavior.toml`
+- `brainstorming -> brainstorm.toml`
 
 ## Authoring Hooks
 
@@ -165,7 +164,7 @@ Available profiles:
 | `mid` | sonnet | gemini-3-flash-preview | gpt-5.3-codex (medium) | 12 |
 | `deep` | opus | gemini-3.1-pro-preview | gpt-5.3-codex (xhigh) | 20 |
 
-Legacy `platforms:` block is still supported for backward compatibility (e.g. skill-local agents needing per-platform overrides):
+Legacy `platforms:` block is still supported for backward compatibility:
 
 ```yaml
 ---

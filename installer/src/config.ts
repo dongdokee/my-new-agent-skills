@@ -36,8 +36,8 @@ export interface PlatformsConfig {
 
 export interface SkillManifest {
   platforms: string[];
-  install_as: "command" | "skill";
-  include: string[];
+  install_as?: "command" | "skill";
+  include?: string[];
   agents?: string[];
   command?: boolean;
   command_name?: string;

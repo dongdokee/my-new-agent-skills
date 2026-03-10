@@ -1,4 +1,3 @@
 platforms: [claude, gemini, codex]
-install_as: skill
 command: true
-command_name: execute-plan
+command_name: agile-req

@@ -1,11 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "../../..");
 
 function read(pathFromRoot: string): string {
   return readFileSync(resolve(ROOT, pathFromRoot), "utf-8");
+}
+
+function listBundledSkillFiles(dir: string, root: string = dir): string[] {
+  return readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => {
+      const fullPath = resolve(dir, entry.name);
+      if (entry.isDirectory()) return listBundledSkillFiles(fullPath, root);
+      const relativePath = fullPath.slice(root.length + 1);
+      if (relativePath === "skill.yaml" || relativePath === "SKILL.md") return [];
+      return [relativePath];
+    })
+    .sort();
 }
 
 describe("skill content contracts", () => {
@@ -15,15 +27,6 @@ describe("skill content contracts", () => {
     expect(body).toContain("Do NOT invoke any implementation skill");
     expect(body).toContain("{{tool.task_tracking}}");
     expect(body).toContain("The ONLY skill you invoke after brainstorming is writing-plans");
-  });
-
-  it("auditing-behaviors defines ssot target and boundary entry-point format", () => {
-    const body = read("skills/auditing-behaviors/SKILL.md");
-    expect(body).toContain("docs/behavior-contract.md");
-    expect(body).toContain("Story `Entry Points` value format:");
-    expect(body).toContain("At most 3 subagents may run at the same time.");
-    expect(body).toContain("Status values:");
-    expect(body).toContain("`Insufficient evidence`");
   });
 
   it("reciting-task-state enforces temp-path-only todo tracking", () => {
@@ -57,5 +60,19 @@ describe("skill content contracts", () => {
     const reviewBody = read("skills/requesting-code-review/SKILL.md");
     expect(reviewBody).toContain("{{tool.subagent_dispatch_code_review}}");
     expect(reviewBody).not.toContain("Use Task tool with code-reviewer type");
+  });
+
+  it("bundled skill files do not contain unresolved tool placeholders", () => {
+    const skillsRoot = resolve(ROOT, "skills");
+
+    for (const skillDirEntry of readdirSync(skillsRoot, { withFileTypes: true })) {
+      if (!skillDirEntry.isDirectory()) continue;
+      const skillDir = resolve(skillsRoot, skillDirEntry.name);
+
+      for (const relativePath of listBundledSkillFiles(skillDir)) {
+        const body = readFileSync(resolve(skillDir, relativePath), "utf-8");
+        expect(body, `${skillDirEntry.name}/${relativePath}`).not.toContain("{{tool.");
+      }
+    }
   });
 });

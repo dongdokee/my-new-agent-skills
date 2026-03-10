@@ -1,4 +1,2 @@
 platforms: [gemini]
 install_as: command
-include:
-  - SKILL.md

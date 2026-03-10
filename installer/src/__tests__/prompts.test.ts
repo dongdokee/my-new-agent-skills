@@ -57,8 +57,6 @@ describe("prompts helpers", () => {
       dir: "/tmp/brainstorming",
       manifest: {
         platforms: ["claude"],
-        install_as: "skill",
-        include: ["SKILL.md"],
       },
       skillFilePath: "/tmp/brainstorming/SKILL.md",
     };
@@ -90,8 +88,6 @@ describe("prompts helpers", () => {
       dir: "/tmp/brainstorming",
       manifest: {
         platforms: ["claude"],
-        install_as: "skill",
-        include: ["SKILL.md"],
       },
       skillFilePath: "/tmp/brainstorming/SKILL.md",
     };

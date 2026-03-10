@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, chmodSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { getPlatform, loadPlatforms, resolveAgentConfig } from "./config.js";
 import type { DiscoveredSkill, DiscoveredAgent, DiscoveredHook } from "./scanner.js";
 import { replacePlaceholders, buildMarkdownAgent, buildTomlAgent, updateCodexConfig, updateGeminiSettings, buildGeminiCommand, mergeHookSettings } from "./transform.js";
@@ -19,26 +19,25 @@ function writeOutput(path: string, content: string): void {
   writeFileSync(path, content, "utf-8");
 }
 
-function copyReferences(skillDir: string, targetDir: string): void {
-  const refsDir = resolve(skillDir, "references");
-  if (!existsSync(refsDir)) return;
-  const target = resolve(targetDir, "references");
-  mkdirSync(target, { recursive: true });
-  cpSync(refsDir, target, { recursive: true });
+function copySkillBundle(skillDir: string, targetDir: string): void {
+  const manifestPath = resolve(skillDir, "skill.yaml");
+  cpSync(skillDir, targetDir, {
+    recursive: true,
+    filter: (src) => src === skillDir || src !== manifestPath,
+  });
 }
 
 export function installSkill(skill: DiscoveredSkill, platformId: string, projectRoot: string): InstallResult[] {
   const platform = getPlatform(platformId);
+  const targetDir = resolve(projectRoot, platform.skill_path, skill.name);
   const body = replacePlaceholders(readFileSync(skill.skillFilePath, "utf-8").trim(), platform.tools);
   const output = body + "\n";
-  const outputPath = resolve(projectRoot, platform.skill_path, skill.name, `SKILL.md`);
+  const outputPath = resolve(targetDir, "SKILL.md");
+
+  copySkillBundle(skill.dir, targetDir);
   writeOutput(outputPath, output);
 
   const results: InstallResult[] = [{ type: "skill", name: skill.name, outputPath }];
-
-  if (skill.manifest.include?.some((i) => i.startsWith("references"))) {
-    copyReferences(skill.dir, resolve(projectRoot, platform.skill_path, skill.name));
-  }
 
   if (platformId === "gemini" && skill.manifest.command && platform.command_path) {
     if (!skill.manifest.command_name) {

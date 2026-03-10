@@ -1,4 +1,2 @@
 platforms: [claude, gemini, codex]
 install_as: skill
-include:
-  - SKILL.md
