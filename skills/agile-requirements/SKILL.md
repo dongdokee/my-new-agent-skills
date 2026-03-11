@@ -7,7 +7,7 @@ description: "Translate ideas, business requirements, or legacy code into struct
 
 ## Overview
 
-Turn ambiguous ideas, business requirements, or existing code into structured Agile documentation: Epic with Global CRAD, User Stories by type, and testable Acceptance Criteria in Given/When/Then format.
+Turn ambiguous ideas, business requirements, or existing code into structured Agile documentation: User Stories with testable Acceptance Criteria in Given/When/Then format. When scope is large enough, group stories under an Epic with Global CRAD.
 
 <HARD-GATE>
 Do NOT produce Epic/Story output until you have completed the Context Assessment and gathered enough information to write testable, specific acceptance criteria. Vague input produces vague output — keep interviewing until every AC can be expressed as a concrete Given/When/Then.
@@ -19,10 +19,10 @@ You MUST create a task for each of these items and complete them in order using 
 
 1. **Assess input source** — new initiative or reverse engineering from code
 2. **Gather context** — interview user or analyze codebase until ambiguity resolved
-3. **Define Epic** — Goal, KPIs, Global CRAD, Out of Scope
-4. **Break down Stories** — typed (Feature/Spike/Enabler/Tech Debt/Defect/Chore)
-5. **Detail each Story** — As a/I want/So that + Local Notes + Given/When/Then ACs
-6. **Validate completeness** — every AC testable, no global/local redundancy
+3. **Determine scope** — Epic (multi-story initiative) or standalone Story/Stories
+4. **If Epic: Define Epic** — Goal, KPIs, Global CRAD, Out of Scope
+5. **Break down / Detail Stories** — typed, As a/I want/So that + Local Notes + Given/When/Then ACs
+6. **Validate completeness** — every AC testable, no redundancy
 7. **Present to user** — get approval or iterate
 
 ## Process
@@ -49,13 +49,30 @@ Determine the input type:
 - What are the system boundaries and constraints?
 - What is explicitly out of scope?
 
-### Step 2: Epic Definition
+### Step 2: Scope Decision
 
-Define exactly one Epic:
+Determine whether the requirement warrants an Epic or standalone Stories:
+
+| Signal | → Scope |
+|--------|---------|
+| Multiple user personas or workflows involved | Epic |
+| Estimated 3+ stories to deliver full value | Epic |
+| Cross-cutting constraints shared by all stories | Epic |
+| Single feature, bug fix, or small enhancement | Standalone Story |
+| Isolated task with 1-2 stories | Standalone Story |
+
+Ask the user if ambiguous{{tool.ask_user}}.
+
+**If Epic** → proceed to Step 2a.
+**If Standalone** → skip to Step 3 directly. CRAD items, if any, go into each story's Local Notes.
+
+### Step 2a: Epic Definition (only when scope requires it)
+
+Define the Epic:
 
 - **Goal**: one sentence business outcome
 - **KPIs**: 2-4 measurable indicators (numbers, not adjectives)
-- **Global CRAD** (applies to ALL stories):
+- **Global CRAD** (applies to ALL stories under this Epic):
   - **Constraints**: system-wide limitations (legal, performance, technical)
   - **Risks**: uncertainties with likelihood/impact (H/M/L)
   - **Assumptions**: foundational hypotheses taken as true
@@ -108,7 +125,11 @@ Then [observable outcome with measurable assertion].
 - If you cannot write a specific Given/When/Then, the requirement is unclear — ask{{tool.ask_user}}.
 - **Tech Debt/Defect ACs**: focus on regression ("existing tests must pass") or restoring baseline behavior.
 
-## Output Template
+## Output Templates
+
+### Template A: Epic with Stories
+
+Use when scope decision = Epic.
 
 ```markdown
 # Epic: [Title]
@@ -142,9 +163,33 @@ When [action],
 Then [outcome].
 ```
 
+### Template B: Standalone Stories
+
+Use when scope decision = Standalone. No Epic wrapper needed.
+
+```markdown
+# ST-01: [Title] `[Type]`
+
+**As a** [persona], **I want** [action], **So that** [benefit].
+
+**Notes:** [Constraints, risks, assumptions, dependencies relevant to this story]
+
+**Acceptance Criteria:**
+
+AC-1: [Title]
+Given [precondition],
+When [action],
+Then [outcome].
+
+---
+
+# ST-02: [Title] `[Type]`
+...
+```
+
 ## Key Principles
 
-- **Strict hierarchy** — Epic → Stories → ACs. No cross-level mixing.
+- **Right-sized structure** — use Epic → Stories → ACs for large initiatives; standalone Stories → ACs for small scope. Do not force an Epic when one or two stories suffice.
 - **No redundancy** — Global CRAD inherited by all stories. Never repeat at story level.
 - **Testability over completeness** — 3 specific ACs beat 10 vague ones.
 - **Value-driven ordering** — highest value and dependency-unblocking first.
